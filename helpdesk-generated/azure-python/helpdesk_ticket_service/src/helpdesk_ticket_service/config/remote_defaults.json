@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "ticket_db_database": "helpdesk_ticket",
+    "ticket_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

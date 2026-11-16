@@ -1,0 +1,1301 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "AppConfigApplicationId": {
+      "Description": "AppConfig application the service's functions read their configuration from.",
+      "Export": {
+        "Name": "cityservices-system-cityservices-request-service-AppConfigApplicationId"
+      },
+      "Value": {
+        "Ref": "AppconfigApplication"
+      }
+    },
+    "AppConfigEnvironmentId": {
+      "Description": "AppConfig environment the service's functions read their configuration from.",
+      "Export": {
+        "Name": "cityservices-system-cityservices-request-service-AppConfigEnvironmentId"
+      },
+      "Value": {
+        "Ref": "AppconfigEnvironment"
+      }
+    },
+    "RequestEventsQueueArn": {
+      "Description": "ARN of the RequestEvents_queue queue a consumer function reads.",
+      "Export": {
+        "Name": "cityservices-system-cityservices-request-service-RequestEventsQueueArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "RequestEventsQueue",
+          "Arn"
+        ]
+      }
+    },
+    "ServiceSecurityGroupId": {
+      "Description": "The service's security group, which each callee admits.",
+      "Export": {
+        "Name": "cityservices-system-cityservices-request-service-ServiceSecurityGroupId"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "ServiceSecurityGroup",
+          "GroupId"
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "CityservicesRequestServiceImageTag": {
+      "AllowedPattern": "[0-9a-f]{64}",
+      "ConstraintDescription": "a lowercase SHA-256 hex content hash computed by the deploy script; never a floating tag such as 'latest'",
+      "Description": "Resolved content-hash tag of the 'cityservices_request_service' image, pushed by the deploy script.",
+      "Type": "String"
+    },
+    "PreflightCodeKey": {
+      "AllowedPattern": "[0-9A-Za-z!_.*'()/-]{1,1024}",
+      "ConstraintDescription": "an S3 object key of unreserved characters, 1-1024 long",
+      "Description": "Deployment-bucket key of the uploaded preflight function package.",
+      "Type": "String"
+    },
+    "PreflightRunId": {
+      "AllowedPattern": "[0-9A-Za-z-]{1,128}",
+      "ConstraintDescription": "1-128 letters, digits or '-'",
+      "Description": "A value that differs on every deploy, so the preflight runs each time.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "AppConfigDeploymentConnections": {
+      "Properties": {
+        "ApplicationId": {
+          "Ref": "AppconfigApplication"
+        },
+        "ConfigurationProfileId": {
+          "Ref": "AppConfigProfileConnections"
+        },
+        "ConfigurationVersion": {
+          "Ref": "AppConfigHostedVersionConnections"
+        },
+        "DeploymentStrategyId": {
+          "Ref": "AppconfigDeploymentStrategy"
+        },
+        "EnvironmentId": {
+          "Ref": "AppconfigEnvironment"
+        }
+      },
+      "Type": "AWS::AppConfig::Deployment"
+    },
+    "AppConfigDeploymentSettings": {
+      "Properties": {
+        "ApplicationId": {
+          "Ref": "AppconfigApplication"
+        },
+        "ConfigurationProfileId": {
+          "Ref": "AppConfigProfileSettings"
+        },
+        "ConfigurationVersion": {
+          "Ref": "AppConfigHostedVersionSettings"
+        },
+        "DeploymentStrategyId": {
+          "Ref": "AppconfigDeploymentStrategy"
+        },
+        "EnvironmentId": {
+          "Ref": "AppconfigEnvironment"
+        }
+      },
+      "Type": "AWS::AppConfig::Deployment"
+    },
+    "AppConfigHostedVersionConnections": {
+      "Properties": {
+        "ApplicationId": {
+          "Ref": "AppconfigApplication"
+        },
+        "ConfigurationProfileId": {
+          "Ref": "AppConfigProfileConnections"
+        },
+        "Content": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"cityservices_district_service_base_url\": \"http://cityservices-district-service.cityservices.System.local:8001\", \"geocoder_provider_base_url\": \"http://cityservices-geocoder-mock:8091\", \"request_db_database\": \"cityservices_request\", \"request_db_port\": 5432, \"request_db_user\": \"cityservices_request_service_request_db_rw\", \"sms_provider_base_url\": \"http://cityservices-sms-mock:8090\", \"request_db_host\": \"",
+              {
+                "Fn::ImportValue": "cityservices-system-cityservices-request-service-data-RequestDbDbHost"
+              },
+              "\", \"mq_request_events_address\": \"",
+              {
+                "Fn::Sub": [
+                  "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${TopicName}",
+                  {
+                    "TopicName": "cityservices_request_service-mq-request_events"
+                  }
+                ]
+              },
+              "\"}"
+            ]
+          ]
+        },
+        "ContentType": "application/json"
+      },
+      "Type": "AWS::AppConfig::HostedConfigurationVersion"
+    },
+    "AppConfigHostedVersionSettings": {
+      "Properties": {
+        "ApplicationId": {
+          "Ref": "AppconfigApplication"
+        },
+        "ConfigurationProfileId": {
+          "Ref": "AppConfigProfileSettings"
+        },
+        "Content": "{\"debugMode\": false}",
+        "ContentType": "application/json"
+      },
+      "Type": "AWS::AppConfig::HostedConfigurationVersion"
+    },
+    "AppConfigProfileConnections": {
+      "Properties": {
+        "ApplicationId": {
+          "Ref": "AppconfigApplication"
+        },
+        "LocationUri": "hosted",
+        "Name": "connections",
+        "Type": "AWS.Freeform"
+      },
+      "Type": "AWS::AppConfig::ConfigurationProfile"
+    },
+    "AppConfigProfileSettings": {
+      "Properties": {
+        "ApplicationId": {
+          "Ref": "AppconfigApplication"
+        },
+        "LocationUri": "hosted",
+        "Name": "settings",
+        "Type": "AWS.Freeform"
+      },
+      "Type": "AWS::AppConfig::ConfigurationProfile"
+    },
+    "AppconfigApplication": {
+      "Properties": {
+        "Description": "Config store for cityservices_request_service",
+        "Name": "portalder"
+      },
+      "Type": "AWS::AppConfig::Application"
+    },
+    "AppconfigDeploymentStrategy": {
+      "Properties": {
+        "DeploymentDurationInMinutes": 10,
+        "FinalBakeTimeInMinutes": 0,
+        "GrowthFactor": 100.0,
+        "GrowthType": "LINEAR",
+        "Name": "cityservices_request_service-linear",
+        "ReplicateTo": "NONE"
+      },
+      "Type": "AWS::AppConfig::DeploymentStrategy"
+    },
+    "AppconfigEnvironment": {
+      "Properties": {
+        "ApplicationId": {
+          "Ref": "AppconfigApplication"
+        },
+        "Name": "local"
+      },
+      "Type": "AWS::AppConfig::Environment"
+    },
+    "CityservicesRequestServiceMqRequestEventsTopic": {
+      "Properties": {
+        "KmsMasterKeyId": "alias/aws/sns",
+        "TopicName": "cityservices_request_service-mq-request_events"
+      },
+      "Type": "AWS::SNS::Topic"
+    },
+    "CloudMapService": {
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 10,
+              "Type": "A"
+            }
+          ],
+          "NamespaceId": {
+            "Fn::ImportValue": "cityservices-system-ecs-NamespaceId"
+          },
+          "RoutingPolicy": "MULTIVALUE"
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 1
+        },
+        "Name": "cityservices-request-service",
+        "NamespaceId": {
+          "Fn::ImportValue": "cityservices-system-ecs-NamespaceId"
+        }
+      },
+      "Type": "AWS::ServiceDiscovery::Service"
+    },
+    "ConfigPreflight": {
+      "DependsOn": [
+        "AppConfigDeploymentSettings",
+        "AppConfigDeploymentConnections"
+      ],
+      "Properties": {
+        "ConfigItems": [
+          {
+            "action_fn": "check_config_key",
+            "application": {
+              "Ref": "AppconfigApplication"
+            },
+            "environment": {
+              "Ref": "AppconfigEnvironment"
+            },
+            "key": "cityservices_district_service_base_url",
+            "profile": {
+              "Ref": "AppConfigProfileConnections"
+            }
+          },
+          {
+            "action_fn": "seed_config_default",
+            "application": {
+              "Ref": "AppconfigApplication"
+            },
+            "content_shape": "freeform",
+            "default_value": "\"http://cityservices-geocoder-mock:8091\"",
+            "environment": {
+              "Ref": "AppconfigEnvironment"
+            },
+            "key": "geocoder_provider_base_url",
+            "profile": {
+              "Ref": "AppConfigProfileConnections"
+            }
+          },
+          {
+            "action_fn": "check_config_key",
+            "application": {
+              "Ref": "AppconfigApplication"
+            },
+            "environment": {
+              "Ref": "AppconfigEnvironment"
+            },
+            "key": "mq_request_events_address",
+            "profile": {
+              "Ref": "AppConfigProfileConnections"
+            }
+          },
+          {
+            "action_fn": "seed_config_default",
+            "application": {
+              "Ref": "AppconfigApplication"
+            },
+            "content_shape": "freeform",
+            "default_value": "\"cityservices_request\"",
+            "environment": {
+              "Ref": "AppconfigEnvironment"
+            },
+            "key": "request_db_database",
+            "profile": {
+              "Ref": "AppConfigProfileConnections"
+            }
+          },
+          {
+            "action_fn": "check_config_key",
+            "application": {
+              "Ref": "AppconfigApplication"
+            },
+            "environment": {
+              "Ref": "AppconfigEnvironment"
+            },
+            "key": "request_db_host",
+            "profile": {
+              "Ref": "AppConfigProfileConnections"
+            }
+          },
+          {
+            "action_fn": "seed_config_default",
+            "application": {
+              "Ref": "AppconfigApplication"
+            },
+            "content_shape": "freeform",
+            "default_value": "5432",
+            "environment": {
+              "Ref": "AppconfigEnvironment"
+            },
+            "key": "request_db_port",
+            "profile": {
+              "Ref": "AppConfigProfileConnections"
+            }
+          },
+          {
+            "action_fn": "check_config_key",
+            "application": {
+              "Ref": "AppconfigApplication"
+            },
+            "environment": {
+              "Ref": "AppconfigEnvironment"
+            },
+            "key": "request_db_user",
+            "profile": {
+              "Ref": "AppConfigProfileConnections"
+            }
+          },
+          {
+            "action_fn": "seed_config_default",
+            "application": {
+              "Ref": "AppconfigApplication"
+            },
+            "content_shape": "freeform",
+            "default_value": "\"http://cityservices-sms-mock:8090\"",
+            "environment": {
+              "Ref": "AppconfigEnvironment"
+            },
+            "key": "sms_provider_base_url",
+            "profile": {
+              "Ref": "AppConfigProfileConnections"
+            }
+          },
+          {
+            "action_fn": "seed_config_default",
+            "application": {
+              "Ref": "AppconfigApplication"
+            },
+            "content_shape": "freeform",
+            "default_value": "false",
+            "environment": {
+              "Ref": "AppconfigEnvironment"
+            },
+            "key": "debugMode",
+            "profile": {
+              "Ref": "AppConfigProfileSettings"
+            }
+          }
+        ],
+        "RunId": {
+          "Ref": "PreflightRunId"
+        },
+        "ServiceTimeout": 360,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "ConfigPreflightFn",
+            "Arn"
+          ]
+        }
+      },
+      "Type": "AWS::CloudFormation::CustomResource"
+    },
+    "ConfigPreflightFn": {
+      "DependsOn": [
+        "ConfigPreflightRoleDefaultPolicy",
+        "ConfigPreflightRole"
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::ImportValue": "cityservices-system-bootstrap-DeploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "PreflightCodeKey"
+          }
+        },
+        "Handler": "preflight_handler.handler",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "ConfigPreflightLogGroup"
+          }
+        },
+        "MemorySize": 256,
+        "Role": {
+          "Fn::GetAtt": [
+            "ConfigPreflightRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 300
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "ConfigPreflightLogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "ConfigPreflightRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "ConfigPreflightRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ConfigPreflightLogGroup",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${ConfigPreflightLogGroup.Arn}:*"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "appconfig:StartConfigurationSession",
+                "appconfig:GetLatestConfiguration"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${ApplicationId}/environment/${EnvironmentId}/configuration/${ConfigurationProfileId}",
+                    {
+                      "ApplicationId": {
+                        "Ref": "AppconfigApplication"
+                      },
+                      "ConfigurationProfileId": {
+                        "Ref": "AppConfigProfileConnections"
+                      },
+                      "EnvironmentId": {
+                        "Ref": "AppconfigEnvironment"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${ApplicationId}/environment/${EnvironmentId}/configuration/${ConfigurationProfileId}",
+                    {
+                      "ApplicationId": {
+                        "Ref": "AppconfigApplication"
+                      },
+                      "ConfigurationProfileId": {
+                        "Ref": "AppConfigProfileSettings"
+                      },
+                      "EnvironmentId": {
+                        "Ref": "AppconfigEnvironment"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "appconfig:CreateHostedConfigurationVersion"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${ApplicationId}",
+                    {
+                      "ApplicationId": {
+                        "Ref": "AppconfigApplication"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${ApplicationId}/configurationprofile/${ConfigurationProfileId}",
+                    {
+                      "ApplicationId": {
+                        "Ref": "AppconfigApplication"
+                      },
+                      "ConfigurationProfileId": {
+                        "Ref": "AppConfigProfileConnections"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${ApplicationId}/configurationprofile/${ConfigurationProfileId}",
+                    {
+                      "ApplicationId": {
+                        "Ref": "AppconfigApplication"
+                      },
+                      "ConfigurationProfileId": {
+                        "Ref": "AppConfigProfileSettings"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "appconfig:StartDeployment"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${ApplicationId}",
+                    {
+                      "ApplicationId": {
+                        "Ref": "AppconfigApplication"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${ApplicationId}/configurationprofile/${ConfigurationProfileId}",
+                    {
+                      "ApplicationId": {
+                        "Ref": "AppconfigApplication"
+                      },
+                      "ConfigurationProfileId": {
+                        "Ref": "AppConfigProfileConnections"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${ApplicationId}/configurationprofile/${ConfigurationProfileId}",
+                    {
+                      "ApplicationId": {
+                        "Ref": "AppconfigApplication"
+                      },
+                      "ConfigurationProfileId": {
+                        "Ref": "AppConfigProfileSettings"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:deploymentstrategy/AppConfig.AllAtOnce"
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${ApplicationId}/environment/${EnvironmentId}",
+                    {
+                      "ApplicationId": {
+                        "Ref": "AppconfigApplication"
+                      },
+                      "EnvironmentId": {
+                        "Ref": "AppconfigEnvironment"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "ConfigPreflightRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "ConfigPreflightRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    },
+    "CpuScaling": {
+      "Properties": {
+        "PolicyName": "CpuScaling",
+        "PolicyType": "TargetTrackingScaling",
+        "ScalingTargetId": {
+          "Ref": "ScalableTarget"
+        },
+        "TargetTrackingScalingPolicyConfiguration": {
+          "PredefinedMetricSpecification": {
+            "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+          },
+          "ScaleInCooldown": 60,
+          "ScaleOutCooldown": 60,
+          "TargetValue": 70
+        }
+      },
+      "Type": "AWS::ApplicationAutoScaling::ScalingPolicy"
+    },
+    "FargateService": {
+      "DependsOn": [
+        "TaskRoleDefaultPolicy",
+        "TaskRole",
+        "ConfigPreflight"
+      ],
+      "Properties": {
+        "Cluster": {
+          "Fn::ImportValue": "cityservices-system-ecs-ClusterName"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "DesiredCount": 2,
+        "EnableECSManagedTags": false,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "cityservices_request_service",
+            "ContainerPort": 8003,
+            "TargetGroupArn": {
+              "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbTargetGroupArn"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "ServiceSecurityGroup",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet1Id"
+              },
+              {
+                "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet2Id"
+              }
+            ]
+          }
+        },
+        "ServiceRegistries": [
+          {
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "CloudMapService",
+                "Arn"
+              ]
+            }
+          }
+        ],
+        "TaskDefinition": {
+          "Ref": "TaskDefinition"
+        }
+      },
+      "Type": "AWS::ECS::Service"
+    },
+    "LogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "LogGroupName": "/ecs/cityservices_request_service",
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "RequestDbDbIngress": {
+      "Properties": {
+        "Description": "Database access to requestDb",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::ImportValue": "cityservices-system-cityservices-request-service-data-RequestDbDbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ServiceSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 5432
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "RequestEventsDlq": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "MessageRetentionPeriod": 1209600,
+        "QueueName": "cityservices_request_service-RequestEvents-dlq",
+        "SqsManagedSseEnabled": true
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "RequestEventsQueue": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "MessageRetentionPeriod": 345600,
+        "QueueName": "cityservices_request_service-RequestEvents",
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "RequestEventsDlq",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 5
+        },
+        "SqsManagedSseEnabled": true,
+        "VisibilityTimeout": 30
+      },
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "ScalableTarget": {
+      "Properties": {
+        "MaxCapacity": 4,
+        "MinCapacity": 2,
+        "ResourceId": {
+          "Fn::Join": [
+            "/",
+            [
+              "service",
+              {
+                "Fn::ImportValue": "cityservices-system-ecs-ClusterName"
+              },
+              {
+                "Fn::GetAtt": [
+                  "FargateService",
+                  "Name"
+                ]
+              }
+            ]
+          ]
+        },
+        "RoleARN": {
+          "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
+        },
+        "ScalableDimension": "ecs:service:DesiredCount",
+        "ServiceNamespace": "ecs"
+      },
+      "Type": "AWS::ApplicationAutoScaling::ScalableTarget"
+    },
+    "ServiceDashboard": {
+      "Properties": {
+        "DashboardBody": "{\"widgets\": [{\"type\": \"metric\", \"x\": 0, \"y\": 0, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"AWS/ECS\", \"CPUUtilization\", \"ServiceName\", \"cityservices.RequestService\", \"ClusterName\", \"cityservices.RequestService-cluster\", {\"stat\": \"Average\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"ECS CPU Utilization\", \"stat\": \"Average\", \"yAxis\": {\"left\": {\"min\": 0, \"max\": 100}}}}, {\"type\": \"metric\", \"x\": 12, \"y\": 0, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"AWS/ECS\", \"MemoryUtilization\", \"ServiceName\", \"cityservices.RequestService\", \"ClusterName\", \"cityservices.RequestService-cluster\", {\"stat\": \"Average\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"ECS Memory Utilization\", \"stat\": \"Average\", \"yAxis\": {\"left\": {\"min\": 0, \"max\": 100}}}}, {\"type\": \"metric\", \"x\": 0, \"y\": 6, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"AWS/ApiGateway\", \"4XXError\", \"ApiName\", \"cityservices.RequestService\", {\"stat\": \"Sum\", \"label\": \"4XX\"}], [\"AWS/ApiGateway\", \"5XXError\", \"ApiName\", \"cityservices.RequestService\", {\"stat\": \"Sum\", \"label\": \"5XX\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"API Gateway Errors - cityservices.RequestService\"}}, {\"type\": \"metric\", \"x\": 12, \"y\": 6, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"AWS/ApiGateway\", \"Count\", \"ApiName\", \"cityservices.RequestService\", {\"stat\": \"Sum\", \"label\": \"Requests\"}], [\"AWS/ApiGateway\", \"Latency\", \"ApiName\", \"cityservices.RequestService\", {\"stat\": \"Average\", \"label\": \"Latency\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"API Gateway Requests & Latency - cityservices.RequestService\"}}, {\"type\": \"metric\", \"x\": 0, \"y\": 12, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"AWS/RDS\", \"CPUUtilization\", \"DBInstanceIdentifier\", \"cityservices.RequestService-requestDb\", {\"stat\": \"Average\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"RDS CPU - cityservices.RequestService-requestDb\", \"stat\": \"Average\", \"yAxis\": {\"left\": {\"min\": 0, \"max\": 100}}}}, {\"type\": \"metric\", \"x\": 12, \"y\": 12, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"AWS/RDS\", \"DatabaseConnections\", \"DBInstanceIdentifier\", \"cityservices.RequestService-requestDb\", {\"stat\": \"Average\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"RDS Connections - cityservices.RequestService-requestDb\", \"stat\": \"Average\"}}, {\"type\": \"metric\", \"x\": 0, \"y\": 18, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"AWS/SNS\", \"NumberOfMessagesPublished\", \"TopicName\", \"cityservices.RequestService-mq\", {\"stat\": \"Sum\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"SNS Messages Published - cityservices.RequestService-mq\", \"stat\": \"Sum\"}}, {\"type\": \"metric\", \"x\": 12, \"y\": 18, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"AWS/SNS\", \"NumberOfNotificationsDelivered\", \"TopicName\", \"cityservices.RequestService-mq\", {\"stat\": \"Sum\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"SNS Notifications Delivered - cityservices.RequestService-mq\", \"stat\": \"Sum\"}}, {\"type\": \"metric\", \"x\": 0, \"y\": 24, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[{\"expression\": \"m1 / PERIOD(m1)\", \"label\": \"Requests/sec\", \"id\": \"e1\"}], [\"CruftFree/Application\", \"http_requests_total\", \"ServiceName\", \"cityservices.RequestService\", {\"stat\": \"Sum\", \"id\": \"m1\", \"visible\": false}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Request Rate - cityservices.RequestService\"}}, {\"type\": \"metric\", \"x\": 12, \"y\": 24, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"cityservices.RequestService\", {\"stat\": \"Average\", \"label\": \"avg\"}], [\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"cityservices.RequestService\", {\"stat\": \"Maximum\", \"label\": \"max\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Latency (s) - cityservices.RequestService\"}}, {\"type\": \"metric\", \"x\": 0, \"y\": 30, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[{\"expression\": \"m1 / PERIOD(m1)\", \"label\": \"Events/sec\", \"id\": \"e1\"}], [\"CruftFree/Application\", \"pubsub_publish_total\", \"ServiceName\", \"cityservices.RequestService\", {\"stat\": \"Sum\", \"id\": \"m1\", \"visible\": false}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"Pubsub Publish Rate - cityservices.RequestService\"}}, {\"type\": \"metric\", \"x\": 12, \"y\": 30, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[{\"expression\": \"m1 / PERIOD(m1)\", \"label\": \"Events/sec\", \"id\": \"e1\"}], [\"CruftFree/Application\", \"pubsub_consume_total\", \"ServiceName\", \"cityservices.RequestService\", {\"stat\": \"Sum\", \"id\": \"m1\", \"visible\": false}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"Pubsub Consume Rate - cityservices.RequestService\"}}]}",
+        "DashboardName": "cityservices.RequestService-dashboard"
+      },
+      "Type": "AWS::CloudWatch::Dashboard"
+    },
+    "ServiceSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Security group for cityservices_request_service ECS tasks",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "ServiceSecurityGroupEgress573ef375": {
+      "Properties": {
+        "CidrIp": "0.0.0.0/0",
+        "Description": "HTTPS to AWS service APIs (VPC endpoints or NAT) and external HTTPS integrations",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ServiceSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 443
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "ServiceSecurityGroupEgresse0fae6aa": {
+      "Properties": {
+        "Description": "Database access to requestDb",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "cityservices-system-cityservices-request-service-data-RequestDbDbSecurityGroupId"
+        },
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ServiceSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 5432
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "ServiceSecurityGroupFromGatewayNlbEgress": {
+      "Properties": {
+        "Description": "Allow traffic from the API gateway's NLB",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "ServiceSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "FromPort": 8003,
+        "GroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8003
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "ServiceSecurityGroupFromGatewayNlbIngress": {
+      "Properties": {
+        "Description": "Allow traffic from the API gateway's NLB",
+        "FromPort": 8003,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "ServiceSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "ToPort": 8003
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "TaskDefinition": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Environment": [
+              {
+                "Name": "SERVICE_NAME",
+                "Value": "cityservices-request-service"
+              },
+              {
+                "Name": "PORT",
+                "Value": "8003"
+              },
+              {
+                "Name": "CITYSERVICES_DISTRICT_SERVICE_SERVICE_URL",
+                "Value": "http://cityservices-district-service.cityservices.System.local:8001"
+              },
+              {
+                "Name": "CRUFTFREE_CALLER_AUDIENCE",
+                "Value": "urn:cruftfree:trusted-caller:cityservices-system"
+              },
+              {
+                "Name": "CRUFTFREE_CALLER_EXPECTED_ISSUER",
+                "Value": {
+                  "Fn::ImportValue": "cityservices-system-trusted-caller-Issuer"
+                }
+              },
+              {
+                "Name": "CRUFTFREE_CALLER_TRUSTED_PRINCIPAL_IDS",
+                "Value": {
+                  "Fn::Join": [
+                    ",",
+                    [
+                      {
+                        "Fn::Sub": [
+                          "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${RoleName}",
+                          {
+                            "RoleName": "cityservices-system-gateway-minter"
+                          }
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Essential": true,
+            "HealthCheck": {
+              "Command": [
+                "CMD-SHELL",
+                "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8003/ready')\""
+              ],
+              "Interval": 30,
+              "Retries": 3,
+              "StartPeriod": 60,
+              "Timeout": 5
+            },
+            "Image": {
+              "Fn::Sub": [
+                "${Repository}:${Tag}",
+                {
+                  "Repository": {
+                    "Fn::ImportValue": "cityservices-system-bootstrap-CityservicesRequestServiceRepositoryUri"
+                  },
+                  "Tag": {
+                    "Ref": "CityservicesRequestServiceImageTag"
+                  }
+                }
+              ]
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "LogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "cityservices_request_service"
+              }
+            },
+            "Name": "cityservices_request_service",
+            "PortMappings": [
+              {
+                "ContainerPort": 8003,
+                "Protocol": "tcp"
+              }
+            ]
+          },
+          {
+            "Cpu": 32,
+            "Essential": true,
+            "Image": "public.ecr.aws/xray/aws-xray-daemon:3.6.5@sha256:eb3aa7a5ef17fb3ffc3df9c15717be706713a3ca464ceb46ea4a3c6e20884dc5",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "LogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "xray"
+              }
+            },
+            "Memory": 256,
+            "Name": "xray-daemon",
+            "PortMappings": [
+              {
+                "ContainerPort": 2000,
+                "Protocol": "udp"
+              }
+            ]
+          },
+          {
+            "Cpu": 32,
+            "Environment": [
+              {
+                "Name": "AOT_CONFIG_CONTENT",
+                "Value": "{\"receivers\": {\"prometheus\": {\"config\": {\"global\": {\"scrape_interval\": \"1m\", \"scrape_timeout\": \"10s\"}, \"scrape_configs\": [{\"job_name\": \"cityservices_request_service\", \"metrics_path\": \"/metrics\", \"static_configs\": [{\"targets\": [\"localhost:8003\"], \"labels\": {\"ServiceName\": \"cityservices.RequestService\"}}]}]}}}, \"processors\": {\"cumulativetodelta\": {}}, \"exporters\": {\"awsemf\": {\"namespace\": \"CruftFree/Application\", \"log_group_name\": \"/ecs/cityservices_request_service\", \"log_stream_name\": \"application-metrics\", \"dimension_rollup_option\": \"NoDimensionRollup\", \"metric_declarations\": [{\"dimensions\": [[\"ServiceName\"]], \"metric_name_selectors\": [\".*\"]}, {\"dimensions\": [[\"ServiceName\", \"status\"]], \"metric_name_selectors\": [\"^cqrs_command_total$\", \"^cqrs_projection_total$\", \"^cqrs_query_total$\", \"^pubsub_consume_total$\", \"^pubsub_publish_total$\", \"^storage_operation_total$\"]}]}}, \"service\": {\"pipelines\": {\"metrics\": {\"receivers\": [\"prometheus\"], \"processors\": [\"cumulativetodelta\"], \"exporters\": [\"awsemf\"]}}}}"
+              }
+            ],
+            "Essential": true,
+            "Image": "public.ecr.aws/aws-observability/aws-otel-collector:v0.50.0@sha256:7968fb60db6a2390a47ba6a2df029745638486e285c9b2487da1b722d0855a3e",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "LogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "adot-collector"
+              }
+            },
+            "Memory": 256,
+            "Name": "adot-collector"
+          }
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "TaskExecutionRole",
+            "Arn"
+          ]
+        },
+        "Family": "cityservices-system-cityservices-request-service",
+        "Memory": "256",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "TaskRole",
+            "Arn"
+          ]
+        }
+      },
+      "Type": "AWS::ECS::TaskDefinition"
+    },
+    "TaskExecutionRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "TaskExecutionRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::ImportValue": "cityservices-system-bootstrap-CityservicesRequestServiceRepositoryArn"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ecr:GetAuthorizationToken"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LogGroup",
+                    "Arn"
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TaskExecutionRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "TaskExecutionRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    },
+    "TaskRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/AWSXRayDaemonWriteAccess"
+          },
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/CloudWatchAgentServerPolicy"
+          },
+          {
+            "Fn::ImportValue": "cityservices-system-trusted-caller-MintPolicyArn"
+          }
+        ],
+        "RoleName": "cityservices-system-cityservices-request-service-caller"
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "TaskRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "LogGroup",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "${Arn}:*",
+                    {
+                      "Arn": {
+                        "Fn::GetAtt": [
+                          "LogGroup",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "sns:Publish",
+                "sns:GetTopicAttributes"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Ref": "CityservicesRequestServiceMqRequestEventsTopic"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "appconfig:StartConfigurationSession",
+                "appconfig:GetLatestConfiguration"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${Application}/environment/${Environment}/configuration/*",
+                    {
+                      "Application": {
+                        "Ref": "AppconfigApplication"
+                      },
+                      "Environment": {
+                        "Ref": "AppconfigEnvironment"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}-??????",
+                    {
+                      "SecretName": "cityservices-request-service/cityservices_request_service_request_db_rw_password"
+                    }
+                  ]
+                },
+                {
+                  "Ref": "ZeroEnvGeocoderProviderApiKeySecret"
+                },
+                {
+                  "Ref": "ZeroEnvMachineIdentityClientSecretSecret"
+                },
+                {
+                  "Ref": "ZeroEnvSmsProviderApiKeySecret"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TaskRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "TaskRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    },
+    "XraySamplingRule": {
+      "Properties": {
+        "SamplingRule": {
+          "FixedRate": 0.1,
+          "HTTPMethod": "*",
+          "Host": "*",
+          "Priority": 1000,
+          "ReservoirSize": 1,
+          "ResourceARN": "*",
+          "RuleName": "cityservices_request_se-f5d85b99",
+          "ServiceName": "cityservices_request_service",
+          "ServiceType": "*",
+          "URLPath": "*",
+          "Version": 1
+        },
+        "Tags": [
+          {
+            "Key": "cruftfree-service",
+            "Value": "cityservices_request_service"
+          }
+        ]
+      },
+      "Type": "AWS::XRay::SamplingRule"
+    },
+    "ZeroEnvGeocoderProviderApiKeySecret": {
+      "Properties": {
+        "Description": "Connection credential for handle 'geocoder_provider_api_key' -- operator-owned, set with: aws secretsmanager put-secret-value --secret-id cityservices-request-service/geocoder_provider_api_key --secret-string <REAL_VALUE>",
+        "Name": "cityservices-request-service/geocoder_provider_api_key"
+      },
+      "Type": "AWS::SecretsManager::Secret"
+    },
+    "ZeroEnvMachineIdentityClientSecretSecret": {
+      "Properties": {
+        "Description": "Connection credential for handle 'machine_identity_client_secret' -- operator-owned, set with: aws secretsmanager put-secret-value --secret-id cityservices-request-service/machine_identity_client_secret --secret-string <REAL_VALUE>",
+        "Name": "cityservices-request-service/machine_identity_client_secret"
+      },
+      "Type": "AWS::SecretsManager::Secret"
+    },
+    "ZeroEnvSmsProviderApiKeySecret": {
+      "Properties": {
+        "Description": "Connection credential for handle 'sms_provider_api_key' -- operator-owned, set with: aws secretsmanager put-secret-value --secret-id cityservices-request-service/sms_provider_api_key --secret-string <REAL_VALUE>",
+        "Name": "cityservices-request-service/sms_provider_api_key"
+      },
+      "Type": "AWS::SecretsManager::Secret"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/payment-provider.cfree';
+include 'providers/email-provider.cfree';
+include 'course-service.cfree';
+include 'enrollment-service.cfree';
+include 'tutor-service.cfree';
+include 'mocks/payment-mock.cfree';
+include 'mocks/email-mock.cfree';
+include 'mocks/model-mock.cfree';
+include 'student-app.cfree';
+include 'instructor-app.cfree';
+
+/// Larkhill Academy: a student finds a course, pays for it, reads each lesson and answers its question,
+/// asks a tutor when stuck, and gets a certificate or, if an instructor agrees, their money back. The card
+/// vendor, the email vendor and the model behind the tutor run as mocks in the same stack.
+system lms.System('config/system.ccfg') : version('2.0.0') {
+}

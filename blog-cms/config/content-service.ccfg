@@ -1,0 +1,74 @@
+﻿config service blog.ContentService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8002;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms contentDb from postgresContainer(id: "585ce0ad-e9f6-4b41-8f2c-2d1bf27a8e69", database: "blog_content");
+    cache redis from redisContainer();
+    pubsub mq from kafkaContainer();
+    httpSecurity from localHttpSecurity(host: "blog-content-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    cacheOps from redisPool();
+    rateLimitOps from rateLimitWindow();
+    jobs {
+      jobs {
+        PublishScheduledPosts {
+          schedule = "* * * * *";
+          timeout = "60s";
+        }
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+          cache from standardCachePolicy();
+        }
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile azure as "azure" extends base {
+    alias env = "AZURE";
+    alias resource = "azure";
+
+    // Consumers run inside the web app, not in separate compute.
+    runtime { consumers = "in-process"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms contentDb from azurePostgres(id: "585ce0ad-e9f6-4b41-8f2c-2d1bf27a8e69", database: "blog_content", poolSize: 20, maxOverflow: 10);
+    replace cache redis from azureRedis();
+    replace pubsub mq from azureEventHubs();
+  }
+
+  profile development as "dev" extends azure {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

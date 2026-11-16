@@ -1,0 +1,22 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/carrier-provider.cfree';
+include 'providers/geocode-provider.cfree';
+include 'providers/sms-provider.cfree';
+include 'shipment-service.cfree';
+include 'fleet-service.cfree';
+include 'route-service.cfree';
+include 'notice-service.cfree';
+include 'mocks/carrier-mock.cfree';
+include 'mocks/geocode-mock.cfree';
+include 'mocks/sms-mock.cfree';
+include 'tracking-app.cfree';
+include 'dispatch-app.cfree';
+include 'driver-app.cfree';
+
+/// Quayline Freight: a dispatcher books a parcel, plans it onto a van's route and sends the route out; a
+/// driver follows it stop by stop; the recipient follows it on a public page and by text. A parcel outside
+/// the delivery area goes to a partner carrier. The carrier, the geocoder and the text vendor run as mocks
+/// in the same stack.
+system logistics.System('config/system.ccfg') : version('2.0.0') {
+}

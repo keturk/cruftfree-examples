@@ -14,8 +14,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -148,6 +148,9 @@ activemq-data/
 
 # SageMath parsed files
 *.sage.py
+
+# Per-machine settings of scripts/git (names this person's machines; the example file beside it is committed)
+/scripts/git/git-scripts.local.env
 
 # Environments
 .env

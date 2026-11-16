@@ -1,0 +1,637 @@
+{
+  "block": {
+    "name": "paymentDb"
+  },
+  "container": {
+    "kind": "service",
+    "name": "hotel.PaymentMock"
+  },
+  "cqrs_views": {},
+  "entities": {
+    "ApiKey": {
+      "checks": [
+        {
+          "name": "chk_api_keys_key_hash_455a30f8",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "key_hash"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 64
+            },
+            "string_operands": false
+          }
+        }
+      ],
+      "comment": "API keys the vendor issued. Only the SHA-256 hash of a key is stored.",
+      "fields": {
+        "createdAt": {
+          "column_name": "created_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "expiresAt": {
+          "column_name": "expires_at",
+          "default": null,
+          "nullable": true,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "id": {
+          "column_name": "id",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": "uuid",
+              "kind": "BuiltinCall"
+            },
+            "value": "uuid()"
+          },
+          "nullable": false,
+          "primary_key": true,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "isActive": {
+          "column_name": "is_active",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "tree": {
+              "kind": "Literal",
+              "type": "boolean",
+              "value": true
+            },
+            "value": "true"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Boolean",
+            "values": []
+          }
+        },
+        "keyHash": {
+          "column_name": "key_hash",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 64,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 64
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          },
+          "unique": true
+        },
+        "lastUsedAt": {
+          "column_name": "last_used_at",
+          "default": null,
+          "nullable": true,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "ownerId": {
+          "column_name": "owner_id",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "scopes": {
+          "column_name": "scopes",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "value": "[]"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "JSON",
+            "values": []
+          }
+        },
+        "updatedAt": {
+          "column_name": "updated_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        }
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "columns": [
+            "owner_id"
+          ],
+          "fulltext": false,
+          "name": "ix_api_keys_owner_id",
+          "unique": false
+        }
+      ],
+      "table_name": "api_keys",
+      "table_options": {}
+    },
+    "CardCharge": {
+      "checks": [
+        {
+          "name": "chk_card_charges_charge_id_fb5588e1",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "charge_id"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 40
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_card_charges_currency_011ea433",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "currency"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 3
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_card_charges_decline_reason_5db38c9a",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "decline_reason"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_card_charges_idempotency_key_8c42382d",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "idempotency_key"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 120
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_card_charges_reference_32bbf114",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "reference"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 80
+            },
+            "string_operands": false
+          }
+        }
+      ],
+      "comment": "A charge the vendor answered.",
+      "fields": {
+        "amount": {
+          "column_name": "amount",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Money",
+            "values": []
+          }
+        },
+        "chargeId": {
+          "column_name": "charge_id",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 40,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 40
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          },
+          "unique": true
+        },
+        "createdAt": {
+          "column_name": "created_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "currency": {
+          "column_name": "currency",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 3,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 3
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "declineReason": {
+          "column_name": "decline_reason",
+          "default": null,
+          "nullable": true,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "id": {
+          "column_name": "id",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": "uuid",
+              "kind": "BuiltinCall"
+            },
+            "value": "uuid()"
+          },
+          "nullable": false,
+          "primary_key": true,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "idempotencyKey": {
+          "column_name": "idempotency_key",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 120,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 120
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          },
+          "unique": true
+        },
+        "reference": {
+          "column_name": "reference",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 80,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 80
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "status": {
+          "column_name": "status",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "enum",
+            "name": "ChargeStatus",
+            "values": [
+              "Succeeded",
+              "Declined",
+              "Refunded"
+            ]
+          }
+        },
+        "updatedAt": {
+          "column_name": "updated_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        }
+      },
+      "foreign_keys": [],
+      "indexes": [],
+      "table_name": "card_charges",
+      "table_options": {}
+    }
+  },
+  "enums": [
+    {
+      "database_name": "charge_status",
+      "member_values": [
+        null,
+        null,
+        null
+      ],
+      "name": "ChargeStatus",
+      "values": [
+        "Succeeded",
+        "Declined",
+        "Refunded"
+      ]
+    }
+  ],
+  "format": "cruftfree.rdbms.schema",
+  "rdbms_id": "6a1e4f3c-2b80-47d9-a6c5-9e3b1d7f2c40",
+  "service": {
+    "name": "hotel.PaymentMock",
+    "version": "1.0.0"
+  },
+  "version": 9
+}

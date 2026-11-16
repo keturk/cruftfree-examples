@@ -1,0 +1,74 @@
+config service fooddelivery.DeliveryService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8003;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms deliveryDb from postgresContainer(id: "18d44982-b8c9-425f-a616-41441a08440c", database: "fooddelivery_delivery");
+    pubsub mq from kafkaContainer();
+    httpSecurity from localHttpSecurity(host: "fooddelivery-delivery-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // The default only exists on a local stack, where it matches the hash seeded in
+      // seed/route-mock.cseed, so the example runs with nothing to configure. Any other deployment
+      // must supply the handle's value.
+      secret route_provider_api_key {
+        required = true;
+        purpose = "API key for the maps vendor (RouteProvider contract).";
+        localDefault = "dev-only-route-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile azure as "azure" extends base {
+    alias env = "AZURE";
+    alias resource = "azure";
+
+    // Consumers run inside the web app, not in separate compute.
+    runtime { consumers = "in-process"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms deliveryDb from azurePostgres(id: "18d44982-b8c9-425f-a616-41441a08440c", database: "fooddelivery_delivery", poolSize: 20, maxOverflow: 10);
+    replace pubsub mq from azureEventHubs();
+  }
+
+  profile development as "dev" extends azure {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

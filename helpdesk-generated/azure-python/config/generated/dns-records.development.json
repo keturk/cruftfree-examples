@@ -1,0 +1,40 @@
+{
+  "environment": "development",
+  "records": [
+    {
+      "domain": "api.lanternpost.example.com",
+      "name": "api.lanternpost.example.com",
+      "purpose": "edge CNAME",
+      "recordType": "CNAME",
+      "value": "<value from the API Management instance's default hostname (*.azure-api.net)>"
+    },
+    {
+      "domain": "console.lanternpost.example.com",
+      "name": "console.lanternpost.example.com",
+      "purpose": "edge CNAME",
+      "recordType": "CNAME",
+      "value": "<value from the Static Web App's default hostname (*.azurestaticapps.net)>"
+    },
+    {
+      "domain": "console.lanternpost.example.com",
+      "name": "_dnsauth.console.lanternpost.example.com",
+      "purpose": "Static Web Apps domain verification",
+      "recordType": "TXT",
+      "value": "<value from Static Web Apps custom-domain validation token>"
+    },
+    {
+      "domain": "help.lanternpost.example.com",
+      "name": "help.lanternpost.example.com",
+      "purpose": "edge CNAME",
+      "recordType": "CNAME",
+      "value": "<value from the Static Web App's default hostname (*.azurestaticapps.net)>"
+    },
+    {
+      "domain": "help.lanternpost.example.com",
+      "name": "_dnsauth.help.lanternpost.example.com",
+      "purpose": "Static Web Apps domain verification",
+      "recordType": "TXT",
+      "value": "<value from Static Web Apps custom-domain validation token>"
+    }
+  ]
+}

@@ -1,0 +1,672 @@
+{
+  "target": "azure",
+  "generated_at": "2026-11-16T02:37:42Z",
+  "files": [
+    ".cruftfree/runtime-requirements.json",
+    "DEPLOYMENT.md",
+    "azure-pipelines.yml",
+    "clients/angular/static-web-apps/console/staticwebapp.config.json",
+    "clients/angular/static-web-apps/homes/staticwebapp.config.json",
+    "config/identity-provider-plan.json",
+    "infra/.gitignore",
+    "infra/bicepconfig.json",
+    "infra/canary.bicep",
+    "infra/canary.bicepparam",
+    "infra/canary.prod.bicepparam",
+    "infra/diagnostic-settings.json",
+    "infra/foundation.bicep",
+    "infra/foundation.bicepparam",
+    "infra/foundation.prod.bicepparam",
+    "infra/main.bicep",
+    "infra/main.bicepparam",
+    "infra/main.prod.bicepparam",
+    "infra/modules/api-management.bicep",
+    "infra/modules/apim-tls-certificate-vault.bicep",
+    "infra/modules/app-configuration.bicep",
+    "infra/modules/app-insights.bicep",
+    "infra/modules/app-service-plan.bicep",
+    "infra/modules/console-static-web-app.bicep",
+    "infra/modules/container-registry.bicep",
+    "infra/modules/deploy-script-infra.bicep",
+    "infra/modules/function-app-plan.bicep",
+    "infra/modules/function-runtime-storage.bicep",
+    "infra/modules/homes-static-web-app.bicep",
+    "infra/modules/identity/backend-audience.bicep",
+    "infra/modules/identity/identity-console-browser-entra-app-registration.bicep",
+    "infra/modules/identity/identity-entra-app-registration.bicep",
+    "infra/modules/identity/identity-homes-browser-entra-app-registration.bicep",
+    "infra/modules/identity/identity-homes-native-entra-app-registration.bicep",
+    "infra/modules/identity/machine-entra-app-registration.bicep",
+    "infra/modules/identity/machine-managed-identity.bicep",
+    "infra/modules/in-vnet-bootstrap-pg-admin.bicep",
+    "infra/modules/in-vnet-bootstrap-rg-grant.bicep",
+    "infra/modules/in-vnet-bootstrap.bicep",
+    "infra/modules/key-vault.bicep",
+    "infra/modules/monitor-alerts.bicep",
+    "infra/modules/monitor-workbooks.bicep",
+    "infra/modules/pooled-event-hubs-cobblestone-events-development-diag.bicep",
+    "infra/modules/pooled-event-hubs-cobblestone-events-development.bicep",
+    "infra/modules/private-dns-zone-appconfig.bicep",
+    "infra/modules/private-dns-zone-cache.bicep",
+    "infra/modules/private-dns-zone-cosmos.bicep",
+    "infra/modules/private-dns-zone-cosmosmongo.bicep",
+    "infra/modules/private-dns-zone-foundry.bicep",
+    "infra/modules/private-dns-zone-keyvault.bicep",
+    "infra/modules/private-dns-zone-messaging.bicep",
+    "infra/modules/private-dns-zone-search.bicep",
+    "infra/modules/private-dns-zone-storage.bicep",
+    "infra/modules/private-dns-zone-webapp.bicep",
+    "infra/modules/private-endpoint-appconfig.bicep",
+    "infra/modules/private-endpoint-cache.bicep",
+    "infra/modules/private-endpoint-cosmos.bicep",
+    "infra/modules/private-endpoint-cosmosmongo.bicep",
+    "infra/modules/private-endpoint-foundry.bicep",
+    "infra/modules/private-endpoint-keyvault.bicep",
+    "infra/modules/private-endpoint-messaging.bicep",
+    "infra/modules/private-endpoint-search.bicep",
+    "infra/modules/private-endpoint-storage.bicep",
+    "infra/modules/private-endpoint-webapp.bicep",
+    "infra/modules/realestate-deal-service-async-function-app.bicep",
+    "infra/modules/realestate-deal-service-deal-db-development-pool-diag.bicep",
+    "infra/modules/realestate-deal-service-deal-db-development-pool.bicep",
+    "infra/modules/realestate-deal-service-fn-role-app-configuration-data-reader.bicep",
+    "infra/modules/realestate-deal-service-fn-role-keyvault-secret-reader.bicep",
+    "infra/modules/realestate-deal-service-fn-role-keyvault-secrets.bicep",
+    "infra/modules/realestate-deal-service-fn-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/realestate-deal-service-fn-role-storage-blob-data-owner.bicep",
+    "infra/modules/realestate-deal-service-role-acr-pull.bicep",
+    "infra/modules/realestate-deal-service-role-app-configuration-data-reader.bicep",
+    "infra/modules/realestate-deal-service-role-keyvault-secret-reader.bicep",
+    "infra/modules/realestate-deal-service-role-keyvault-secrets.bicep",
+    "infra/modules/realestate-deal-service-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/realestate-deal-service-webapp.bicep",
+    "infra/modules/realestate-email-mock-email-db-development-pool-diag.bicep",
+    "infra/modules/realestate-email-mock-email-db-development-pool.bicep",
+    "infra/modules/realestate-email-mock-role-acr-pull.bicep",
+    "infra/modules/realestate-email-mock-role-app-configuration-data-reader.bicep",
+    "infra/modules/realestate-email-mock-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/realestate-email-mock-webapp.bicep",
+    "infra/modules/realestate-listing-service-listing-db-development-pool-diag.bicep",
+    "infra/modules/realestate-listing-service-listing-db-development-pool.bicep",
+    "infra/modules/realestate-listing-service-role-acr-pull.bicep",
+    "infra/modules/realestate-listing-service-role-app-configuration-data-reader.bicep",
+    "infra/modules/realestate-listing-service-role-eventhubs-data-sender.bicep",
+    "infra/modules/realestate-listing-service-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/realestate-listing-service-webapp.bicep",
+    "infra/modules/realestate-mortgage-mock-mortgage-db-development-pool-diag.bicep",
+    "infra/modules/realestate-mortgage-mock-mortgage-db-development-pool.bicep",
+    "infra/modules/realestate-mortgage-mock-role-acr-pull.bicep",
+    "infra/modules/realestate-mortgage-mock-role-app-configuration-data-reader.bicep",
+    "infra/modules/realestate-mortgage-mock-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/realestate-mortgage-mock-webapp.bicep",
+    "infra/modules/realestate-signature-mock-role-acr-pull.bicep",
+    "infra/modules/realestate-signature-mock-role-app-configuration-data-reader.bicep",
+    "infra/modules/realestate-signature-mock-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/realestate-signature-mock-signature-db-development-pool-diag.bicep",
+    "infra/modules/realestate-signature-mock-signature-db-development-pool.bicep",
+    "infra/modules/realestate-signature-mock-webapp.bicep",
+    "infra/modules/realestate-viewing-service-role-acr-pull.bicep",
+    "infra/modules/realestate-viewing-service-role-app-configuration-data-reader.bicep",
+    "infra/modules/realestate-viewing-service-role-eventhubs-data-receiver.bicep",
+    "infra/modules/realestate-viewing-service-role-eventhubs-data-sender.bicep",
+    "infra/modules/realestate-viewing-service-role-keyvault-secrets.bicep",
+    "infra/modules/realestate-viewing-service-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/realestate-viewing-service-viewing-db-development-pool-diag.bicep",
+    "infra/modules/realestate-viewing-service-viewing-db-development-pool.bicep",
+    "infra/modules/realestate-viewing-service-webapp.bicep",
+    "infra/modules/run-store.bicep",
+    "infra/modules/schema-owner-bootstrap.bicep",
+    "infra/modules/secret-seeding.bicep",
+    "infra/modules/trusted-caller-settings.bicep",
+    "infra/modules/virtual-network.bicep",
+    "realestate_deal_service/host.json",
+    "realestate_deal_service/src/functions/sync-signatures.ts",
+    "scripts/cost-guard.ps1",
+    "scripts/deploy.ps1",
+    "scripts/deploy.py",
+    "scripts/deploy.sh",
+    "scripts/operating-hours.ps1"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    ".cruftfree/runtime-requirements.json": "2cbcd40efff912e7c310deeaec6b9ed512aed54500532f81195334df6433c4b0",
+    "DEPLOYMENT.md": "6c50305a2623c5d4894e8904edf381de0a7cafff9cdf9da0a0e61beb5303b46c",
+    "azure-pipelines.yml": "597abf2307b2146f4a5b1a6f0f869f997ab1e7b03c3ebdb38ff2023e7db99092",
+    "clients/angular/static-web-apps/console/staticwebapp.config.json": "bd947e807839ff771ef91657bfbaad4025b6bec82a6011bc85875f2ad6fa214a",
+    "clients/angular/static-web-apps/homes/staticwebapp.config.json": "03be540eca4148a00082579fee1b4ab50d8d862e7d334e0f325283f117c83112",
+    "config/identity-provider-plan.json": "412ac63e3231fe7092fd84415a8322aa75ed85349f862d598399cd10bcd29460",
+    "infra/.gitignore": "870074775204814dafeadb3484d87393b101ec0fcb2eb282d1e5c288d94e211b",
+    "infra/bicepconfig.json": "7038f7ae67d943aa7d92a6067d41ec15d9ad255a080b2e3777ee5e5b5f7e014f",
+    "infra/canary.bicep": "8bd9f64011d23673d3bed659a61d6a79114f38dba2a005105a86880b9a4605ca",
+    "infra/canary.bicepparam": "7ef744a892dc94440edd161f5c9a08ea5d7a63fb05440211db7ad458902c3feb",
+    "infra/canary.prod.bicepparam": "2a3cfb43b6f3bc20731e80527e27a27c4e9f4f1ce41fadf8f846338dbe8a18f7",
+    "infra/diagnostic-settings.json": "f14d6a626a5a53c6bdeea0317cdf258ffd1f69680b543bfeb2c96b40c7d8f182",
+    "infra/foundation.bicep": "6f626b1140017a2337f24ebb2229e6e630b0f6d3b25f6110579d5aeffbb5fcc9",
+    "infra/foundation.bicepparam": "6d1596d5104d2fc692e43aee0b8a26583bfcf1b3d0b94aa81977bcde494f71cf",
+    "infra/foundation.prod.bicepparam": "f6e6a68c75e0a5330ae39c75709b45067ab9bdad9115e1a1b1495e34a321718f",
+    "infra/main.bicep": "c553afd7cff5260b5c8684f5af7d82b288abced6dd55dd94b9eb4a9cb09bd5d9",
+    "infra/main.bicepparam": "c7342e6eec1508afc71e24c694eef02450d8f3f9cc5160e18723491665af031d",
+    "infra/main.prod.bicepparam": "c1de3b252db5186c9473e311cd81c0fcb05583b8331fa7bc240863307148de79",
+    "infra/modules/api-management.bicep": "7c64917b446fce3876545f1a11e1228b685d1f811bf158789aa8da0169e5c4d5",
+    "infra/modules/apim-tls-certificate-vault.bicep": "9a0ddd2c3c1b76a1669cd79c6e31d3760c6309c614b8ce4cc469c0858d0c070a",
+    "infra/modules/app-configuration.bicep": "f6d25752e3b0921ce7ebca25cca5178c1d457c231645e76635edfbac261328b4",
+    "infra/modules/app-insights.bicep": "05722e149f3eea9a651b1e9810d5292f91071024bbd484c3478aff1c79175933",
+    "infra/modules/app-service-plan.bicep": "e90f2580398c87bdddf3bf64f83adea1c3d1b60e112907a9760854298829ef91",
+    "infra/modules/console-static-web-app.bicep": "801069bbeb85e35b11f65e92605be33c1899608105c5ffa81af42d72cb760e1c",
+    "infra/modules/container-registry.bicep": "b24f4ffee2b3eb07e0b8d67be6f45eb33930da6a04fd1e4c7c4c59ccb016d237",
+    "infra/modules/deploy-script-infra.bicep": "af714e706ded41e4172bbb72f93d18670b1bae33c11f4c4e7e62f806f92e9322",
+    "infra/modules/function-app-plan.bicep": "d13adf7a437b4ed5ef98fadc6e9c2cedb0f39a9f54be5a36f61538822ab4347d",
+    "infra/modules/function-runtime-storage.bicep": "bd657d750b348991a482db5a03cb5546e04744a8bd5dd502da105473fbd75de2",
+    "infra/modules/homes-static-web-app.bicep": "801069bbeb85e35b11f65e92605be33c1899608105c5ffa81af42d72cb760e1c",
+    "infra/modules/identity/backend-audience.bicep": "8ae96ea6319b1e76c61cd4b2b2ee0ee74b8a158e0d1ad7f69913de45d5ec79b1",
+    "infra/modules/identity/identity-console-browser-entra-app-registration.bicep": "6df84463811156948749f09448178b3ca26f994d0363220b3a813308a936734f",
+    "infra/modules/identity/identity-entra-app-registration.bicep": "5a7ebe6ce6ec4d69d416f3a2ee68f6cd073097ca8346c5aaec691a5b0a6687c2",
+    "infra/modules/identity/identity-homes-browser-entra-app-registration.bicep": "e7ed2a1c569f84c47bc8fa074a4a78a587e6787c7a23c28b3957e29fb46776e6",
+    "infra/modules/identity/identity-homes-native-entra-app-registration.bicep": "b6b9beb64700e533d813de54a122cfba65ae1583c90a5b06528bf9e72fd14941",
+    "infra/modules/identity/machine-entra-app-registration.bicep": "5deb75b3dd53586fc59a027b7f1cf57b063f064f21d725837c06f8f4800c9118",
+    "infra/modules/identity/machine-managed-identity.bicep": "90b596bbfb9a8faa74452ec4228d2c94ce5c6789b4cd0288f6649c1f4eec31d8",
+    "infra/modules/in-vnet-bootstrap-pg-admin.bicep": "ab7a598c783bcbfe8fc5e99fb76785ccb2e5fae88567070bc3d685707c34408f",
+    "infra/modules/in-vnet-bootstrap-rg-grant.bicep": "7b7a2ad4be9f49d1f41f7138c315c25bf52c0cbc1c17be1a984e675b5188acca",
+    "infra/modules/in-vnet-bootstrap.bicep": "547a87caa607849cce5f01d6d9a18d0fd687fb0a9bd655b0ffa3156ed200db71",
+    "infra/modules/key-vault.bicep": "75d3fe096b4985130b36dd81634162c4f7228a4ff3c712fa8a550742efbed0a9",
+    "infra/modules/monitor-alerts.bicep": "bf6b236c8e69f5ec25220f88d932ec524847ca9738f2de792f4eab4d9063bb2d",
+    "infra/modules/monitor-workbooks.bicep": "3b7bffb4c0d846f1e2279bf39ba2d473566defe60d365aa4a8e6dd33007b9411",
+    "infra/modules/pooled-event-hubs-cobblestone-events-development-diag.bicep": "c32608aa81a972b1efb9cf39d29014dc96b6fb7dab63b87b64c4a4a4b41a4020",
+    "infra/modules/pooled-event-hubs-cobblestone-events-development.bicep": "1cc0cdb7d3aa17c0cd9fca3cad757636d909ca7cd1de6955c100e095977999db",
+    "infra/modules/private-dns-zone-appconfig.bicep": "7cdaa9147439349e47d47d9a8d8118c57b53572a6815fb89b583fb1e2cd46b7e",
+    "infra/modules/private-dns-zone-cache.bicep": "3ffd094599d74326ab34a0e6a761db13f93b4a30bd7f6c50e65ecc8df1e8cc13",
+    "infra/modules/private-dns-zone-cosmos.bicep": "2c3fb864486eed87c4702ed741b2ef310cd3cb294cdf51f07f227a20964eb60f",
+    "infra/modules/private-dns-zone-cosmosmongo.bicep": "71a4a1fdf058a66dd70a26c3f67fe14f25d637d63ea279b01e67a076003f956d",
+    "infra/modules/private-dns-zone-foundry.bicep": "8f3dbca84254251172e15152938dc1cac73441604c952e2e15bcdfee8b317cd5",
+    "infra/modules/private-dns-zone-keyvault.bicep": "d0c63bb7e852fcadda01e25e54c86163cc846d4c7e47620998bbbcbd1b534d90",
+    "infra/modules/private-dns-zone-messaging.bicep": "5c66d636e91175346ccd6ea4fb905f3a0790f41d273d6831df5dec4bad6af742",
+    "infra/modules/private-dns-zone-search.bicep": "fb29683a0027159770e44db718ec0ec668d0dff81c4425904dd3b792c2a3efc0",
+    "infra/modules/private-dns-zone-storage.bicep": "a2ff19cd508205404c9d747b15a97a8747e4bae1951cb95b5ccfcebcf8698d2a",
+    "infra/modules/private-dns-zone-webapp.bicep": "6b43d5e2b801143b72d82cdb38bbe1915c8a46c56d008db4d1503dab99ef76e0",
+    "infra/modules/private-endpoint-appconfig.bicep": "9fe479f0323910f8964e61c7b130e187747a1d83de863820e07b94da1781f4a2",
+    "infra/modules/private-endpoint-cache.bicep": "c549362934c2febfaa938d97f1d44af27f08f500d139e6162f6c1f456624d6ab",
+    "infra/modules/private-endpoint-cosmos.bicep": "9a4a0011a725cb791adeb588389a4dc69c03ae933b27144ba1904c7a55726155",
+    "infra/modules/private-endpoint-cosmosmongo.bicep": "5b1d820d53b89a4ddfb577c68738c501e2f5825624e503067c264ee419a25c21",
+    "infra/modules/private-endpoint-foundry.bicep": "1ad60177d478aea3e244013a443e58017ce6ae8f6cdc9d017749a5d42dd70e12",
+    "infra/modules/private-endpoint-keyvault.bicep": "c1ec416676ebea7f0d6463435b21943e54489450abff6280640c2da76d300c7c",
+    "infra/modules/private-endpoint-messaging.bicep": "fe02fc04cec5a8187960c88ba733ddd081c164df02cc06cfcf192edebeb88b1a",
+    "infra/modules/private-endpoint-search.bicep": "ab44afc346e1815c04bed03f460f968e011d0fd31cd2160862afd2d8b9fce817",
+    "infra/modules/private-endpoint-storage.bicep": "a25f2fcfc7a7f28b675cbe33f0c0edee1f23b1e62eec48db6072cf5c1cc63b02",
+    "infra/modules/private-endpoint-webapp.bicep": "7eec13a22aea5bd3d7dbcf30635717cc45e32a50887e2c55c1405ee7cb355d9c",
+    "infra/modules/realestate-deal-service-async-function-app.bicep": "2bf34afa81b9d53a6b312b85612fb7c5d2bbf9d77e114952968493edc81eda69",
+    "infra/modules/realestate-deal-service-deal-db-development-pool-diag.bicep": "0ff54f9bbad99cdda76c5fe14793f665a68e82269c3bca9ecdca76a4a45a23ac",
+    "infra/modules/realestate-deal-service-deal-db-development-pool.bicep": "651f28ca5cf139035102f6e597c7b832174693c8a634764306446e6e6cd34f84",
+    "infra/modules/realestate-deal-service-fn-role-app-configuration-data-reader.bicep": "3a1582f290aca441bcbcae0eee4e928bc100fa5df21de85d02729fb068817941",
+    "infra/modules/realestate-deal-service-fn-role-keyvault-secret-reader.bicep": "78d45ed4ef34955cf49633572c3e1f309c1b5d13c884475b0a4d198f6e79f086",
+    "infra/modules/realestate-deal-service-fn-role-keyvault-secrets.bicep": "300b6f3662784d1cd6e82a1ab7af4dabddf0761526f1027b7c1863f838ddee5f",
+    "infra/modules/realestate-deal-service-fn-role-monitoring-metrics-publisher.bicep": "6a4826128293aea2453dc3597105c6657641ade33d7921418bb309a05d85ebee",
+    "infra/modules/realestate-deal-service-fn-role-storage-blob-data-owner.bicep": "6789d9ce798aeca2507e0b721c24e7fe5276b30372bcb1b9531326d8f2eaec9b",
+    "infra/modules/realestate-deal-service-role-acr-pull.bicep": "b671df389fd83efed424b5ff4d5e16f1f00b74a61f43d9545f8921720f7c27af",
+    "infra/modules/realestate-deal-service-role-app-configuration-data-reader.bicep": "3a1582f290aca441bcbcae0eee4e928bc100fa5df21de85d02729fb068817941",
+    "infra/modules/realestate-deal-service-role-keyvault-secret-reader.bicep": "78d45ed4ef34955cf49633572c3e1f309c1b5d13c884475b0a4d198f6e79f086",
+    "infra/modules/realestate-deal-service-role-keyvault-secrets.bicep": "300b6f3662784d1cd6e82a1ab7af4dabddf0761526f1027b7c1863f838ddee5f",
+    "infra/modules/realestate-deal-service-role-monitoring-metrics-publisher.bicep": "6a4826128293aea2453dc3597105c6657641ade33d7921418bb309a05d85ebee",
+    "infra/modules/realestate-deal-service-webapp.bicep": "0a1512fe420e99b285c619178b09b9cc9c7221cde7bc9c6664f5bacca993535d",
+    "infra/modules/realestate-email-mock-email-db-development-pool-diag.bicep": "f0d7024e73b1db2f21273b8f72636d391d4ebae23a3189c3a32ae7a23de546a6",
+    "infra/modules/realestate-email-mock-email-db-development-pool.bicep": "75e6f5e08d8abb2afe1846771ee0b223c496cad8d6c1bf78c5f691c2ca08cd08",
+    "infra/modules/realestate-email-mock-role-acr-pull.bicep": "bf283bcc26991aa5d938e727a364148a2f86eaecbb918bec93b8a6f218064ba0",
+    "infra/modules/realestate-email-mock-role-app-configuration-data-reader.bicep": "90ab4c96b252bd1d7c21de083d84f335b9e112fffb121c8df41707eb3d193098",
+    "infra/modules/realestate-email-mock-role-monitoring-metrics-publisher.bicep": "8f61366887d38c57e8757ebd39f7f030f036a80bd084aee6809725745d98eb82",
+    "infra/modules/realestate-email-mock-webapp.bicep": "a4507aee3c84ef3bf3200322b834899866d203dc09b89eb4d51b53960d62de93",
+    "infra/modules/realestate-listing-service-listing-db-development-pool-diag.bicep": "70deae054d80d376136064edea4837f7277ac8ba39acaa51d8eb6899531734c7",
+    "infra/modules/realestate-listing-service-listing-db-development-pool.bicep": "33c39ca44ffc47816cc62184e95dc6ab1d8d07533a6b9344383cfb5c96bc8562",
+    "infra/modules/realestate-listing-service-role-acr-pull.bicep": "02142f1fb98d3429f6a8007a3eda045cb60d04f6807992d9cf0976eede9d66e6",
+    "infra/modules/realestate-listing-service-role-app-configuration-data-reader.bicep": "0527c71e595454594135f71ace8ba2e529489b90654a1d5cd50f006c31174360",
+    "infra/modules/realestate-listing-service-role-eventhubs-data-sender.bicep": "2c24b647a51ea8680ec4e15079b267b228938c23f0e2d655281e2307ccb3c469",
+    "infra/modules/realestate-listing-service-role-monitoring-metrics-publisher.bicep": "3d97b313545c7b063ba488c67657dbe997aedfc069009a64c7b6b6a71ae65c61",
+    "infra/modules/realestate-listing-service-webapp.bicep": "6c2fc0ff12ed76951241ffa764da3f097238088b13d57e196c88e01aca23b5e1",
+    "infra/modules/realestate-mortgage-mock-mortgage-db-development-pool-diag.bicep": "ec84498acc60af6b3f60673da3802df8aa910f1f0b8ddf48a4a6596af0377f5e",
+    "infra/modules/realestate-mortgage-mock-mortgage-db-development-pool.bicep": "21ff3cf779c5139ac6f39c85192ba06d7928f6eb8ff734bbeb8439206d8260f3",
+    "infra/modules/realestate-mortgage-mock-role-acr-pull.bicep": "36acc6e5d1bd7947e425f3e4cfb668e3e7d6f62aeeffebc1afd4033d9bbeaa36",
+    "infra/modules/realestate-mortgage-mock-role-app-configuration-data-reader.bicep": "a8e683fe44db325710aa0cff2d8ace9177d98ba6f5761471de8d46ec177658c8",
+    "infra/modules/realestate-mortgage-mock-role-monitoring-metrics-publisher.bicep": "a7dd7594309d3a729711001c7cfb035aeecc0f3b28bb11492e7f1f357310656f",
+    "infra/modules/realestate-mortgage-mock-webapp.bicep": "dd5c352223eb402f5c8eb03737471696fcbdaf8234afaf705a832711a35435d2",
+    "infra/modules/realestate-signature-mock-role-acr-pull.bicep": "10fc758925e95c902f34113174a49f86ca0ca27be9618453bdfd1eedfb32fd0a",
+    "infra/modules/realestate-signature-mock-role-app-configuration-data-reader.bicep": "167e6b6656616d0df93a8e5c1413de748ceb15a418c83ad2458df421fb959e8d",
+    "infra/modules/realestate-signature-mock-role-monitoring-metrics-publisher.bicep": "7127cca66972b0198f3ab889130320e2324c9836e2e54ca33d3b7a73102a7e5c",
+    "infra/modules/realestate-signature-mock-signature-db-development-pool-diag.bicep": "84a4076550ca4594bdfbe6bb11edc17c81ebbd08242abd08620c65e6f93402b6",
+    "infra/modules/realestate-signature-mock-signature-db-development-pool.bicep": "785b73d26ff6f7bd842b679bf036f80adf7140506fc8d9f7e96391dbc6b6968b",
+    "infra/modules/realestate-signature-mock-webapp.bicep": "2e005030894a42d96c8cb2016bd4f9467353841293d2851f09b02dd3ea54f5dc",
+    "infra/modules/realestate-viewing-service-role-acr-pull.bicep": "503b9f0a6a369491e4e794c9242f2fe611320c9f6da1ecd2d41092196a205bea",
+    "infra/modules/realestate-viewing-service-role-app-configuration-data-reader.bicep": "bb702ac1e1a2d0b963ac7e1f6669063c91571d699ac219ccc9dda78ab66eaf8a",
+    "infra/modules/realestate-viewing-service-role-eventhubs-data-receiver.bicep": "c5bc55499d152d6741b0cbc0ea29a62a40830efb3ece04d06b8ea1ac674a8955",
+    "infra/modules/realestate-viewing-service-role-eventhubs-data-sender.bicep": "e8cdb1d8daa5ca426661aa546345ad9864da27a3e31e4167dad0f6502992cb61",
+    "infra/modules/realestate-viewing-service-role-keyvault-secrets.bicep": "e25fc384c853c9156bc6a3a94f8da62dd7d9ef188e44b5572487e501b682ddf5",
+    "infra/modules/realestate-viewing-service-role-monitoring-metrics-publisher.bicep": "c1f794da4c1de8634f956e68d61db9bc2f308659f552d0b2b0a12eb1b2878963",
+    "infra/modules/realestate-viewing-service-viewing-db-development-pool-diag.bicep": "0b06c5c927351210be5c00926868a334bc3035df9a489447c825d8be32842f9c",
+    "infra/modules/realestate-viewing-service-viewing-db-development-pool.bicep": "0b30ce465a1cf34ce54e5056e44d37d9bcd142869313cc7221981352811dd8e3",
+    "infra/modules/realestate-viewing-service-webapp.bicep": "2fde9f2c50eeb99b5459f58c40c29e7342ac46da42df59e1aec128a86047ee95",
+    "infra/modules/run-store.bicep": "5c17d423d7ebaf07ee626e0d3271191444273d4f62da2850a4bd0ffaa834d943",
+    "infra/modules/schema-owner-bootstrap.bicep": "35507764cd471408bb5f9727d51066c193b3d037f577e392a2cd5e16fa15a12d",
+    "infra/modules/secret-seeding.bicep": "789e7b3f9032b2096e59d0d608626778a28dba9f0ccae84c51c314bced4cbf44",
+    "infra/modules/trusted-caller-settings.bicep": "a21f860c6e8222f92f7664c43cafc0400a3ec4b1915985a514150bd5aa995d98",
+    "infra/modules/virtual-network.bicep": "909bb4abdf0f60d4ba0a28e39a6971d0492275360292f56746182f8328cf1f4a",
+    "realestate_deal_service/host.json": "eede42ed63d3bf5a9eadbbf5aecbad392538d876be2c7c7e9e9e31a7bc93c31a",
+    "realestate_deal_service/src/functions/sync-signatures.ts": "ed0f6e89c7cb1efc32fc083e82c30d16dcc984ab5e854d398407767139b69b58",
+    "scripts/cost-guard.ps1": "8a42b1d716f69cd06033b15ea1e0b85cedc39926d02a86d1f64b45f3ada506de",
+    "scripts/deploy.ps1": "aaf83acbb6a4db17b3550a475a9db4f8aefb31b4f4459d33278317892d921dc9",
+    "scripts/deploy.py": "b921ba7963b3a31ad1fca54982e172d3998bc2328bc4f28ceb874465b6ff8233",
+    "scripts/deploy.sh": "ff8a704f16b174c7eaa0da832d64b6f7e5de540a24e8102d684f23d2cdb94740",
+    "scripts/operating-hours.ps1": "8bb7259dbd821caf0b7dba4a4fe69c1cebf71895e8654f2bf966e40119fbc22d"
+  },
+  "output_hashes": {
+    ".cruftfree/runtime-requirements.json": "3a73b7c3d7a1ef5de828095bf796fc0c53b9e33d3febf36fbffe4ae2d8b71b90",
+    "DEPLOYMENT.md": "6c50305a2623c5d4894e8904edf381de0a7cafff9cdf9da0a0e61beb5303b46c",
+    "azure-pipelines.yml": "597abf2307b2146f4a5b1a6f0f869f997ab1e7b03c3ebdb38ff2023e7db99092",
+    "clients/angular/static-web-apps/console/staticwebapp.config.json": "bd947e807839ff771ef91657bfbaad4025b6bec82a6011bc85875f2ad6fa214a",
+    "clients/angular/static-web-apps/homes/staticwebapp.config.json": "03be540eca4148a00082579fee1b4ab50d8d862e7d334e0f325283f117c83112",
+    "config/identity-provider-plan.json": "cb911c76fa1df91dfa34f97fe6155612d1f355a64d1037a2a9cf20d7012ed373",
+    "infra/.gitignore": "870074775204814dafeadb3484d87393b101ec0fcb2eb282d1e5c288d94e211b",
+    "infra/bicepconfig.json": "7038f7ae67d943aa7d92a6067d41ec15d9ad255a080b2e3777ee5e5b5f7e014f",
+    "infra/canary.bicep": "8bd9f64011d23673d3bed659a61d6a79114f38dba2a005105a86880b9a4605ca",
+    "infra/canary.bicepparam": "7ef744a892dc94440edd161f5c9a08ea5d7a63fb05440211db7ad458902c3feb",
+    "infra/canary.prod.bicepparam": "2a3cfb43b6f3bc20731e80527e27a27c4e9f4f1ce41fadf8f846338dbe8a18f7",
+    "infra/diagnostic-settings.json": "f14d6a626a5a53c6bdeea0317cdf258ffd1f69680b543bfeb2c96b40c7d8f182",
+    "infra/foundation.bicep": "6f626b1140017a2337f24ebb2229e6e630b0f6d3b25f6110579d5aeffbb5fcc9",
+    "infra/foundation.bicepparam": "6d1596d5104d2fc692e43aee0b8a26583bfcf1b3d0b94aa81977bcde494f71cf",
+    "infra/foundation.prod.bicepparam": "f6e6a68c75e0a5330ae39c75709b45067ab9bdad9115e1a1b1495e34a321718f",
+    "infra/main.bicep": "c553afd7cff5260b5c8684f5af7d82b288abced6dd55dd94b9eb4a9cb09bd5d9",
+    "infra/main.bicepparam": "c7342e6eec1508afc71e24c694eef02450d8f3f9cc5160e18723491665af031d",
+    "infra/main.prod.bicepparam": "c1de3b252db5186c9473e311cd81c0fcb05583b8331fa7bc240863307148de79",
+    "infra/modules/api-management.bicep": "7c64917b446fce3876545f1a11e1228b685d1f811bf158789aa8da0169e5c4d5",
+    "infra/modules/apim-tls-certificate-vault.bicep": "9a0ddd2c3c1b76a1669cd79c6e31d3760c6309c614b8ce4cc469c0858d0c070a",
+    "infra/modules/app-configuration.bicep": "f6d25752e3b0921ce7ebca25cca5178c1d457c231645e76635edfbac261328b4",
+    "infra/modules/app-insights.bicep": "05722e149f3eea9a651b1e9810d5292f91071024bbd484c3478aff1c79175933",
+    "infra/modules/app-service-plan.bicep": "e90f2580398c87bdddf3bf64f83adea1c3d1b60e112907a9760854298829ef91",
+    "infra/modules/console-static-web-app.bicep": "801069bbeb85e35b11f65e92605be33c1899608105c5ffa81af42d72cb760e1c",
+    "infra/modules/container-registry.bicep": "b24f4ffee2b3eb07e0b8d67be6f45eb33930da6a04fd1e4c7c4c59ccb016d237",
+    "infra/modules/deploy-script-infra.bicep": "af714e706ded41e4172bbb72f93d18670b1bae33c11f4c4e7e62f806f92e9322",
+    "infra/modules/function-app-plan.bicep": "d13adf7a437b4ed5ef98fadc6e9c2cedb0f39a9f54be5a36f61538822ab4347d",
+    "infra/modules/function-runtime-storage.bicep": "bd657d750b348991a482db5a03cb5546e04744a8bd5dd502da105473fbd75de2",
+    "infra/modules/homes-static-web-app.bicep": "801069bbeb85e35b11f65e92605be33c1899608105c5ffa81af42d72cb760e1c",
+    "infra/modules/identity/backend-audience.bicep": "8ae96ea6319b1e76c61cd4b2b2ee0ee74b8a158e0d1ad7f69913de45d5ec79b1",
+    "infra/modules/identity/identity-console-browser-entra-app-registration.bicep": "6df84463811156948749f09448178b3ca26f994d0363220b3a813308a936734f",
+    "infra/modules/identity/identity-entra-app-registration.bicep": "5a7ebe6ce6ec4d69d416f3a2ee68f6cd073097ca8346c5aaec691a5b0a6687c2",
+    "infra/modules/identity/identity-homes-browser-entra-app-registration.bicep": "e7ed2a1c569f84c47bc8fa074a4a78a587e6787c7a23c28b3957e29fb46776e6",
+    "infra/modules/identity/identity-homes-native-entra-app-registration.bicep": "b6b9beb64700e533d813de54a122cfba65ae1583c90a5b06528bf9e72fd14941",
+    "infra/modules/identity/machine-entra-app-registration.bicep": "5deb75b3dd53586fc59a027b7f1cf57b063f064f21d725837c06f8f4800c9118",
+    "infra/modules/identity/machine-managed-identity.bicep": "90b596bbfb9a8faa74452ec4228d2c94ce5c6789b4cd0288f6649c1f4eec31d8",
+    "infra/modules/in-vnet-bootstrap-pg-admin.bicep": "ab7a598c783bcbfe8fc5e99fb76785ccb2e5fae88567070bc3d685707c34408f",
+    "infra/modules/in-vnet-bootstrap-rg-grant.bicep": "7b7a2ad4be9f49d1f41f7138c315c25bf52c0cbc1c17be1a984e675b5188acca",
+    "infra/modules/in-vnet-bootstrap.bicep": "547a87caa607849cce5f01d6d9a18d0fd687fb0a9bd655b0ffa3156ed200db71",
+    "infra/modules/key-vault.bicep": "75d3fe096b4985130b36dd81634162c4f7228a4ff3c712fa8a550742efbed0a9",
+    "infra/modules/monitor-alerts.bicep": "bf6b236c8e69f5ec25220f88d932ec524847ca9738f2de792f4eab4d9063bb2d",
+    "infra/modules/monitor-workbooks.bicep": "3b7bffb4c0d846f1e2279bf39ba2d473566defe60d365aa4a8e6dd33007b9411",
+    "infra/modules/pooled-event-hubs-cobblestone-events-development-diag.bicep": "c32608aa81a972b1efb9cf39d29014dc96b6fb7dab63b87b64c4a4a4b41a4020",
+    "infra/modules/pooled-event-hubs-cobblestone-events-development.bicep": "1cc0cdb7d3aa17c0cd9fca3cad757636d909ca7cd1de6955c100e095977999db",
+    "infra/modules/private-dns-zone-appconfig.bicep": "7cdaa9147439349e47d47d9a8d8118c57b53572a6815fb89b583fb1e2cd46b7e",
+    "infra/modules/private-dns-zone-cache.bicep": "3ffd094599d74326ab34a0e6a761db13f93b4a30bd7f6c50e65ecc8df1e8cc13",
+    "infra/modules/private-dns-zone-cosmos.bicep": "2c3fb864486eed87c4702ed741b2ef310cd3cb294cdf51f07f227a20964eb60f",
+    "infra/modules/private-dns-zone-cosmosmongo.bicep": "71a4a1fdf058a66dd70a26c3f67fe14f25d637d63ea279b01e67a076003f956d",
+    "infra/modules/private-dns-zone-foundry.bicep": "8f3dbca84254251172e15152938dc1cac73441604c952e2e15bcdfee8b317cd5",
+    "infra/modules/private-dns-zone-keyvault.bicep": "d0c63bb7e852fcadda01e25e54c86163cc846d4c7e47620998bbbcbd1b534d90",
+    "infra/modules/private-dns-zone-messaging.bicep": "5c66d636e91175346ccd6ea4fb905f3a0790f41d273d6831df5dec4bad6af742",
+    "infra/modules/private-dns-zone-search.bicep": "fb29683a0027159770e44db718ec0ec668d0dff81c4425904dd3b792c2a3efc0",
+    "infra/modules/private-dns-zone-storage.bicep": "a2ff19cd508205404c9d747b15a97a8747e4bae1951cb95b5ccfcebcf8698d2a",
+    "infra/modules/private-dns-zone-webapp.bicep": "6b43d5e2b801143b72d82cdb38bbe1915c8a46c56d008db4d1503dab99ef76e0",
+    "infra/modules/private-endpoint-appconfig.bicep": "9fe479f0323910f8964e61c7b130e187747a1d83de863820e07b94da1781f4a2",
+    "infra/modules/private-endpoint-cache.bicep": "c549362934c2febfaa938d97f1d44af27f08f500d139e6162f6c1f456624d6ab",
+    "infra/modules/private-endpoint-cosmos.bicep": "9a4a0011a725cb791adeb588389a4dc69c03ae933b27144ba1904c7a55726155",
+    "infra/modules/private-endpoint-cosmosmongo.bicep": "5b1d820d53b89a4ddfb577c68738c501e2f5825624e503067c264ee419a25c21",
+    "infra/modules/private-endpoint-foundry.bicep": "1ad60177d478aea3e244013a443e58017ce6ae8f6cdc9d017749a5d42dd70e12",
+    "infra/modules/private-endpoint-keyvault.bicep": "c1ec416676ebea7f0d6463435b21943e54489450abff6280640c2da76d300c7c",
+    "infra/modules/private-endpoint-messaging.bicep": "fe02fc04cec5a8187960c88ba733ddd081c164df02cc06cfcf192edebeb88b1a",
+    "infra/modules/private-endpoint-search.bicep": "ab44afc346e1815c04bed03f460f968e011d0fd31cd2160862afd2d8b9fce817",
+    "infra/modules/private-endpoint-storage.bicep": "a25f2fcfc7a7f28b675cbe33f0c0edee1f23b1e62eec48db6072cf5c1cc63b02",
+    "infra/modules/private-endpoint-webapp.bicep": "7eec13a22aea5bd3d7dbcf30635717cc45e32a50887e2c55c1405ee7cb355d9c",
+    "infra/modules/realestate-deal-service-async-function-app.bicep": "2bf34afa81b9d53a6b312b85612fb7c5d2bbf9d77e114952968493edc81eda69",
+    "infra/modules/realestate-deal-service-deal-db-development-pool-diag.bicep": "0ff54f9bbad99cdda76c5fe14793f665a68e82269c3bca9ecdca76a4a45a23ac",
+    "infra/modules/realestate-deal-service-deal-db-development-pool.bicep": "651f28ca5cf139035102f6e597c7b832174693c8a634764306446e6e6cd34f84",
+    "infra/modules/realestate-deal-service-fn-role-app-configuration-data-reader.bicep": "3a1582f290aca441bcbcae0eee4e928bc100fa5df21de85d02729fb068817941",
+    "infra/modules/realestate-deal-service-fn-role-keyvault-secret-reader.bicep": "78d45ed4ef34955cf49633572c3e1f309c1b5d13c884475b0a4d198f6e79f086",
+    "infra/modules/realestate-deal-service-fn-role-keyvault-secrets.bicep": "300b6f3662784d1cd6e82a1ab7af4dabddf0761526f1027b7c1863f838ddee5f",
+    "infra/modules/realestate-deal-service-fn-role-monitoring-metrics-publisher.bicep": "6a4826128293aea2453dc3597105c6657641ade33d7921418bb309a05d85ebee",
+    "infra/modules/realestate-deal-service-fn-role-storage-blob-data-owner.bicep": "6789d9ce798aeca2507e0b721c24e7fe5276b30372bcb1b9531326d8f2eaec9b",
+    "infra/modules/realestate-deal-service-role-acr-pull.bicep": "b671df389fd83efed424b5ff4d5e16f1f00b74a61f43d9545f8921720f7c27af",
+    "infra/modules/realestate-deal-service-role-app-configuration-data-reader.bicep": "3a1582f290aca441bcbcae0eee4e928bc100fa5df21de85d02729fb068817941",
+    "infra/modules/realestate-deal-service-role-keyvault-secret-reader.bicep": "78d45ed4ef34955cf49633572c3e1f309c1b5d13c884475b0a4d198f6e79f086",
+    "infra/modules/realestate-deal-service-role-keyvault-secrets.bicep": "300b6f3662784d1cd6e82a1ab7af4dabddf0761526f1027b7c1863f838ddee5f",
+    "infra/modules/realestate-deal-service-role-monitoring-metrics-publisher.bicep": "6a4826128293aea2453dc3597105c6657641ade33d7921418bb309a05d85ebee",
+    "infra/modules/realestate-deal-service-webapp.bicep": "0a1512fe420e99b285c619178b09b9cc9c7221cde7bc9c6664f5bacca993535d",
+    "infra/modules/realestate-email-mock-email-db-development-pool-diag.bicep": "f0d7024e73b1db2f21273b8f72636d391d4ebae23a3189c3a32ae7a23de546a6",
+    "infra/modules/realestate-email-mock-email-db-development-pool.bicep": "75e6f5e08d8abb2afe1846771ee0b223c496cad8d6c1bf78c5f691c2ca08cd08",
+    "infra/modules/realestate-email-mock-role-acr-pull.bicep": "bf283bcc26991aa5d938e727a364148a2f86eaecbb918bec93b8a6f218064ba0",
+    "infra/modules/realestate-email-mock-role-app-configuration-data-reader.bicep": "90ab4c96b252bd1d7c21de083d84f335b9e112fffb121c8df41707eb3d193098",
+    "infra/modules/realestate-email-mock-role-monitoring-metrics-publisher.bicep": "8f61366887d38c57e8757ebd39f7f030f036a80bd084aee6809725745d98eb82",
+    "infra/modules/realestate-email-mock-webapp.bicep": "a4507aee3c84ef3bf3200322b834899866d203dc09b89eb4d51b53960d62de93",
+    "infra/modules/realestate-listing-service-listing-db-development-pool-diag.bicep": "70deae054d80d376136064edea4837f7277ac8ba39acaa51d8eb6899531734c7",
+    "infra/modules/realestate-listing-service-listing-db-development-pool.bicep": "33c39ca44ffc47816cc62184e95dc6ab1d8d07533a6b9344383cfb5c96bc8562",
+    "infra/modules/realestate-listing-service-role-acr-pull.bicep": "02142f1fb98d3429f6a8007a3eda045cb60d04f6807992d9cf0976eede9d66e6",
+    "infra/modules/realestate-listing-service-role-app-configuration-data-reader.bicep": "0527c71e595454594135f71ace8ba2e529489b90654a1d5cd50f006c31174360",
+    "infra/modules/realestate-listing-service-role-eventhubs-data-sender.bicep": "2c24b647a51ea8680ec4e15079b267b228938c23f0e2d655281e2307ccb3c469",
+    "infra/modules/realestate-listing-service-role-monitoring-metrics-publisher.bicep": "3d97b313545c7b063ba488c67657dbe997aedfc069009a64c7b6b6a71ae65c61",
+    "infra/modules/realestate-listing-service-webapp.bicep": "6c2fc0ff12ed76951241ffa764da3f097238088b13d57e196c88e01aca23b5e1",
+    "infra/modules/realestate-mortgage-mock-mortgage-db-development-pool-diag.bicep": "ec84498acc60af6b3f60673da3802df8aa910f1f0b8ddf48a4a6596af0377f5e",
+    "infra/modules/realestate-mortgage-mock-mortgage-db-development-pool.bicep": "21ff3cf779c5139ac6f39c85192ba06d7928f6eb8ff734bbeb8439206d8260f3",
+    "infra/modules/realestate-mortgage-mock-role-acr-pull.bicep": "36acc6e5d1bd7947e425f3e4cfb668e3e7d6f62aeeffebc1afd4033d9bbeaa36",
+    "infra/modules/realestate-mortgage-mock-role-app-configuration-data-reader.bicep": "a8e683fe44db325710aa0cff2d8ace9177d98ba6f5761471de8d46ec177658c8",
+    "infra/modules/realestate-mortgage-mock-role-monitoring-metrics-publisher.bicep": "a7dd7594309d3a729711001c7cfb035aeecc0f3b28bb11492e7f1f357310656f",
+    "infra/modules/realestate-mortgage-mock-webapp.bicep": "dd5c352223eb402f5c8eb03737471696fcbdaf8234afaf705a832711a35435d2",
+    "infra/modules/realestate-signature-mock-role-acr-pull.bicep": "10fc758925e95c902f34113174a49f86ca0ca27be9618453bdfd1eedfb32fd0a",
+    "infra/modules/realestate-signature-mock-role-app-configuration-data-reader.bicep": "167e6b6656616d0df93a8e5c1413de748ceb15a418c83ad2458df421fb959e8d",
+    "infra/modules/realestate-signature-mock-role-monitoring-metrics-publisher.bicep": "7127cca66972b0198f3ab889130320e2324c9836e2e54ca33d3b7a73102a7e5c",
+    "infra/modules/realestate-signature-mock-signature-db-development-pool-diag.bicep": "84a4076550ca4594bdfbe6bb11edc17c81ebbd08242abd08620c65e6f93402b6",
+    "infra/modules/realestate-signature-mock-signature-db-development-pool.bicep": "785b73d26ff6f7bd842b679bf036f80adf7140506fc8d9f7e96391dbc6b6968b",
+    "infra/modules/realestate-signature-mock-webapp.bicep": "2e005030894a42d96c8cb2016bd4f9467353841293d2851f09b02dd3ea54f5dc",
+    "infra/modules/realestate-viewing-service-role-acr-pull.bicep": "503b9f0a6a369491e4e794c9242f2fe611320c9f6da1ecd2d41092196a205bea",
+    "infra/modules/realestate-viewing-service-role-app-configuration-data-reader.bicep": "bb702ac1e1a2d0b963ac7e1f6669063c91571d699ac219ccc9dda78ab66eaf8a",
+    "infra/modules/realestate-viewing-service-role-eventhubs-data-receiver.bicep": "c5bc55499d152d6741b0cbc0ea29a62a40830efb3ece04d06b8ea1ac674a8955",
+    "infra/modules/realestate-viewing-service-role-eventhubs-data-sender.bicep": "e8cdb1d8daa5ca426661aa546345ad9864da27a3e31e4167dad0f6502992cb61",
+    "infra/modules/realestate-viewing-service-role-keyvault-secrets.bicep": "e25fc384c853c9156bc6a3a94f8da62dd7d9ef188e44b5572487e501b682ddf5",
+    "infra/modules/realestate-viewing-service-role-monitoring-metrics-publisher.bicep": "c1f794da4c1de8634f956e68d61db9bc2f308659f552d0b2b0a12eb1b2878963",
+    "infra/modules/realestate-viewing-service-viewing-db-development-pool-diag.bicep": "0b06c5c927351210be5c00926868a334bc3035df9a489447c825d8be32842f9c",
+    "infra/modules/realestate-viewing-service-viewing-db-development-pool.bicep": "0b30ce465a1cf34ce54e5056e44d37d9bcd142869313cc7221981352811dd8e3",
+    "infra/modules/realestate-viewing-service-webapp.bicep": "2fde9f2c50eeb99b5459f58c40c29e7342ac46da42df59e1aec128a86047ee95",
+    "infra/modules/run-store.bicep": "5c17d423d7ebaf07ee626e0d3271191444273d4f62da2850a4bd0ffaa834d943",
+    "infra/modules/schema-owner-bootstrap.bicep": "35507764cd471408bb5f9727d51066c193b3d037f577e392a2cd5e16fa15a12d",
+    "infra/modules/secret-seeding.bicep": "789e7b3f9032b2096e59d0d608626778a28dba9f0ccae84c51c314bced4cbf44",
+    "infra/modules/trusted-caller-settings.bicep": "a21f860c6e8222f92f7664c43cafc0400a3ec4b1915985a514150bd5aa995d98",
+    "infra/modules/virtual-network.bicep": "909bb4abdf0f60d4ba0a28e39a6971d0492275360292f56746182f8328cf1f4a",
+    "realestate_deal_service/host.json": "37c943e43a41cd056b6f3abc5a62fd798b29974afcef19342485cb7ab800f0c2",
+    "realestate_deal_service/src/functions/sync-signatures.ts": "ed0f6e89c7cb1efc32fc083e82c30d16dcc984ab5e854d398407767139b69b58",
+    "scripts/cost-guard.ps1": "8a42b1d716f69cd06033b15ea1e0b85cedc39926d02a86d1f64b45f3ada506de",
+    "scripts/deploy.ps1": "aaf83acbb6a4db17b3550a475a9db4f8aefb31b4f4459d33278317892d921dc9",
+    "scripts/deploy.py": "b921ba7963b3a31ad1fca54982e172d3998bc2328bc4f28ceb874465b6ff8233",
+    "scripts/deploy.sh": "ff8a704f16b174c7eaa0da832d64b6f7e5de540a24e8102d684f23d2cdb94740",
+    "scripts/operating-hours.ps1": "8bb7259dbd821caf0b7dba4a4fe69c1cebf71895e8654f2bf966e40119fbc22d"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "config/identity-provider-plan.json": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/api-management.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/apim-tls-certificate-vault.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/app-configuration.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/app-service-plan.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/deploy-script-infra.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/function-app-plan.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/identity/backend-audience.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/identity/identity-console-browser-entra-app-registration.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/identity/identity-entra-app-registration.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/identity/identity-homes-browser-entra-app-registration.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/identity/identity-homes-native-entra-app-registration.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/identity/machine-entra-app-registration.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/identity/machine-managed-identity.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/in-vnet-bootstrap-pg-admin.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/in-vnet-bootstrap-rg-grant.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/in-vnet-bootstrap.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/monitor-alerts.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/monitor-workbooks.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/pooled-event-hubs-cobblestone-events-development-diag.bicep": [
+      "realestate.ListingService",
+      "realestate.ViewingService"
+    ],
+    "infra/modules/pooled-event-hubs-cobblestone-events-development.bicep": [
+      "realestate.ListingService",
+      "realestate.ViewingService"
+    ],
+    "infra/modules/private-dns-zone-appconfig.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-dns-zone-cache.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-dns-zone-cosmos.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-dns-zone-cosmosmongo.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-dns-zone-foundry.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-dns-zone-keyvault.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-dns-zone-messaging.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-dns-zone-search.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-dns-zone-storage.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-dns-zone-webapp.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-appconfig.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-cache.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-cosmos.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-cosmosmongo.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-foundry.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-keyvault.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-messaging.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-search.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-storage.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/private-endpoint-webapp.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/realestate-deal-service-async-function-app.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-deal-db-development-pool-diag.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-deal-db-development-pool.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-fn-role-app-configuration-data-reader.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-fn-role-keyvault-secret-reader.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-fn-role-keyvault-secrets.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-fn-role-monitoring-metrics-publisher.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-fn-role-storage-blob-data-owner.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-role-acr-pull.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-role-app-configuration-data-reader.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-role-keyvault-secret-reader.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-role-keyvault-secrets.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-role-monitoring-metrics-publisher.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-deal-service-webapp.bicep": [
+      "realestate.DealService"
+    ],
+    "infra/modules/realestate-email-mock-email-db-development-pool-diag.bicep": [
+      "realestate.EmailMock"
+    ],
+    "infra/modules/realestate-email-mock-email-db-development-pool.bicep": [
+      "realestate.EmailMock"
+    ],
+    "infra/modules/realestate-email-mock-role-acr-pull.bicep": [
+      "realestate.EmailMock"
+    ],
+    "infra/modules/realestate-email-mock-role-app-configuration-data-reader.bicep": [
+      "realestate.EmailMock"
+    ],
+    "infra/modules/realestate-email-mock-role-monitoring-metrics-publisher.bicep": [
+      "realestate.EmailMock"
+    ],
+    "infra/modules/realestate-email-mock-webapp.bicep": [
+      "realestate.EmailMock"
+    ],
+    "infra/modules/realestate-listing-service-listing-db-development-pool-diag.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/realestate-listing-service-listing-db-development-pool.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/realestate-listing-service-role-acr-pull.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/realestate-listing-service-role-app-configuration-data-reader.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/realestate-listing-service-role-eventhubs-data-sender.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/realestate-listing-service-role-monitoring-metrics-publisher.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/realestate-listing-service-webapp.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/realestate-mortgage-mock-mortgage-db-development-pool-diag.bicep": [
+      "realestate.MortgageMock"
+    ],
+    "infra/modules/realestate-mortgage-mock-mortgage-db-development-pool.bicep": [
+      "realestate.MortgageMock"
+    ],
+    "infra/modules/realestate-mortgage-mock-role-acr-pull.bicep": [
+      "realestate.MortgageMock"
+    ],
+    "infra/modules/realestate-mortgage-mock-role-app-configuration-data-reader.bicep": [
+      "realestate.MortgageMock"
+    ],
+    "infra/modules/realestate-mortgage-mock-role-monitoring-metrics-publisher.bicep": [
+      "realestate.MortgageMock"
+    ],
+    "infra/modules/realestate-mortgage-mock-webapp.bicep": [
+      "realestate.MortgageMock"
+    ],
+    "infra/modules/realestate-signature-mock-role-acr-pull.bicep": [
+      "realestate.SignatureMock"
+    ],
+    "infra/modules/realestate-signature-mock-role-app-configuration-data-reader.bicep": [
+      "realestate.SignatureMock"
+    ],
+    "infra/modules/realestate-signature-mock-role-monitoring-metrics-publisher.bicep": [
+      "realestate.SignatureMock"
+    ],
+    "infra/modules/realestate-signature-mock-signature-db-development-pool-diag.bicep": [
+      "realestate.SignatureMock"
+    ],
+    "infra/modules/realestate-signature-mock-signature-db-development-pool.bicep": [
+      "realestate.SignatureMock"
+    ],
+    "infra/modules/realestate-signature-mock-webapp.bicep": [
+      "realestate.SignatureMock"
+    ],
+    "infra/modules/realestate-viewing-service-role-acr-pull.bicep": [
+      "realestate.ViewingService"
+    ],
+    "infra/modules/realestate-viewing-service-role-app-configuration-data-reader.bicep": [
+      "realestate.ViewingService"
+    ],
+    "infra/modules/realestate-viewing-service-role-eventhubs-data-receiver.bicep": [
+      "realestate.ViewingService"
+    ],
+    "infra/modules/realestate-viewing-service-role-eventhubs-data-sender.bicep": [
+      "realestate.ViewingService"
+    ],
+    "infra/modules/realestate-viewing-service-role-keyvault-secrets.bicep": [
+      "realestate.ViewingService"
+    ],
+    "infra/modules/realestate-viewing-service-role-monitoring-metrics-publisher.bicep": [
+      "realestate.ViewingService"
+    ],
+    "infra/modules/realestate-viewing-service-viewing-db-development-pool-diag.bicep": [
+      "realestate.ViewingService"
+    ],
+    "infra/modules/realestate-viewing-service-viewing-db-development-pool.bicep": [
+      "realestate.ViewingService"
+    ],
+    "infra/modules/realestate-viewing-service-webapp.bicep": [
+      "realestate.ViewingService"
+    ],
+    "infra/modules/schema-owner-bootstrap.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/secret-seeding.bicep": [
+      "realestate.ListingService"
+    ],
+    "infra/modules/virtual-network.bicep": [
+      "realestate.ListingService"
+    ],
+    "realestate_deal_service/host.json": [
+      "realestate.DealService"
+    ],
+    "realestate_deal_service/src/functions/sync-signatures.ts": [
+      "realestate.DealService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

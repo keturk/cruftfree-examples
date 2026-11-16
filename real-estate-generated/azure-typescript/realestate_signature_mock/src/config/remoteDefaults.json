@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "signature_db_database": "realestate_signature_mock",
+    "signature_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

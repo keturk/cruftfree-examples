@@ -1,0 +1,71 @@
+// What several services and the apps share. BaseEntity and Address come from the CruftFree standard library.
+module ecommerce.common {
+
+    /// How much of a product is on the shelf. A reservation takes stock away and a release puts it back.
+    trait Inventoried {
+        Int inventory : min(0) = 0;
+
+        fn hasStock() -> Boolean {
+            return inventory > 0;
+        }
+    }
+
+    /// A price, and the higher price it is reduced from, if it is.
+    trait Discountable {
+        Money price : positive;
+        Money? compareAtPrice;
+
+        fn hasDiscount() -> Boolean {
+            return compareAtPrice != null && compareAtPrice > price;
+        }
+
+        fn getDiscountPercent() -> Percentage {
+            if (!hasDiscount()) return 0;
+            let Money listPrice = compareAtPrice ?? price;
+            return Math.round(((listPrice - price) / listPrice) * 100, 0);
+        }
+    }
+
+    /// One line of an order: the server looks up the price, so a client can only say what and how many.
+    struct OrderLineInput {
+        UUID productId;
+        Int quantity;
+    }
+
+    /// A line of a cart on a customer's device. The name and price are for showing it; an order sends only
+    /// what and how many, and the server looks the price up again.
+    struct CartLine {
+        UUID productId;
+        String name;
+        Money unitPrice;
+        Int quantity;
+    }
+
+    /// Stands in for the card form a real vendor would host. The application never sees a card number:
+    /// it only ever holds the vendor's token, and these two choose which token the mock is handed.
+    enum TestCard {
+        CardThatPays,
+        CardThatIsDeclined
+    }
+
+    /// The picture a product is shown with, chosen by its category. This shop stores no photographs.
+    enum ProductArt {
+        Candle,
+        Ceramic,
+        Linen,
+        Lamp,
+        Kitchen
+    }
+
+    fn generateOrderNumber() -> String {
+        return #"WW-{DateTime.now().format('yyMMDD')}-{Random.string(6, '0123456789')}";
+    }
+
+    fn generateTransactionId() -> String {
+        return #"TXN-{DateTime.now().format('YYYYMMDDHHmmss')}-{Random.string(8, '0123456789ABCDEF')}";
+    }
+
+    fn generateTrackingNumber() -> String {
+        return #"WWT{Random.string(10, '0123456789')}";
+    }
+}

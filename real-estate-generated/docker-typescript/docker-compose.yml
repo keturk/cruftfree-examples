@@ -1,0 +1,1688 @@
+services:
+  realestate-listing-service:
+    build:
+      context: ./realestate_listing_service
+      dockerfile: Dockerfile
+    image: realestate-listing-service:latest
+    container_name: realestate-listing-service
+    ports:
+    - 127.0.0.1::8001
+    environment:
+      PORT: '8001'
+      SERVICE_NAME: realestate-listing-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    depends_on:
+      access-realestate-listing-service-listing-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-kafka:
+        condition: service_healthy
+      realestate-listing-service-mq-init:
+        condition: service_completed_successfully
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+      realestate-listing-service-seed:
+        condition: service_completed_successfully
+      realestate-system-kafka-config-check:
+        condition: service_completed_successfully
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-listing-service/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-listing-service__listing_db_password
+      target: realestate_listing_service_listing_db_rw_password
+    cpu_shares: 1024
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget --quiet --tries=1 --spider http://localhost:8001/ready || exit 1
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+    - backend
+    - broker
+    - database
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-viewing-service:
+    build:
+      context: ./realestate_viewing_service
+      dockerfile: Dockerfile
+    image: realestate-viewing-service:latest
+    container_name: realestate-viewing-service
+    ports:
+    - 127.0.0.1::8002
+    environment:
+      PORT: '8002'
+      SERVICE_NAME: realestate-viewing-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      REALESTATE_LISTING_SERVICE_SERVICE_URL: http://realestate-listing-service:8001
+      EMAIL_PROVIDER_SERVICE_URL: http://realestate-email-mock:8092
+      email_provider_api_key: ${email_provider_api_key}
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    depends_on:
+      access-realestate-viewing-service-viewing-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-kafka:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+      realestate-viewing-service-seed:
+        condition: service_completed_successfully
+      realestate-system-kafka-config-check:
+        condition: service_completed_successfully
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-viewing-service/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-viewing-service__viewing_db_password
+      target: realestate_viewing_service_viewing_db_rw_password
+    - source: realestate-viewing-service__email_provider_api_key
+      target: email_provider_api_key
+    cpu_shares: 1024
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget --quiet --tries=1 --spider http://localhost:8002/ready || exit 1
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+    - backend
+    - broker
+    - database
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-deal-service:
+    build:
+      context: ./realestate_deal_service
+      dockerfile: Dockerfile
+    image: realestate-deal-service:latest
+    container_name: realestate-deal-service
+    ports:
+    - 127.0.0.1::8003
+    environment:
+      PORT: '8003'
+      SERVICE_NAME: realestate-deal-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      REALESTATE_LISTING_SERVICE_SERVICE_URL: http://realestate-listing-service:8001
+      MORTGAGE_PROVIDER_SERVICE_URL: http://realestate-mortgage-mock:8090
+      mortgage_provider_api_key: ${mortgage_provider_api_key}
+      SIGNATURE_PROVIDER_SERVICE_URL: http://realestate-signature-mock:8091
+      signature_provider_api_key: ${signature_provider_api_key}
+      EMAIL_PROVIDER_SERVICE_URL: http://realestate-email-mock:8092
+      email_provider_api_key: ${email_provider_api_key}
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    depends_on:
+      access-realestate-deal-service-deal-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+      realestate-deal-service-seed:
+        condition: service_completed_successfully
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-deal-service/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-deal-service__deal_db_password
+      target: realestate_deal_service_deal_db_rw_password
+    - source: realestate-deal-service__email_provider_api_key
+      target: email_provider_api_key
+    - source: realestate-deal-service__mortgage_provider_api_key
+      target: mortgage_provider_api_key
+    - source: realestate-deal-service__signature_provider_api_key
+      target: signature_provider_api_key
+    cpu_shares: 1024
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget --quiet --tries=1 --spider http://localhost:8003/ready || exit 1
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+    - backend
+    - database
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-mortgage-mock:
+    build:
+      context: ./realestate_mortgage_mock
+      dockerfile: Dockerfile
+    image: realestate-mortgage-mock:latest
+    container_name: realestate-mortgage-mock
+    ports:
+    - 127.0.0.1::8090
+    environment:
+      PORT: '8090'
+      SERVICE_NAME: realestate-mortgage-mock
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    depends_on:
+      access-realestate-mortgage-mock-mortgage-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+      realestate-mortgage-mock-seed:
+        condition: service_completed_successfully
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-mortgage-mock/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-mortgage-mock__mortgage_db_password
+      target: realestate_mortgage_mock_mortgage_db_rw_password
+    cpu_shares: 1024
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget --quiet --tries=1 --spider http://localhost:8090/ready || exit 1
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+    - backend
+    - database
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-signature-mock:
+    build:
+      context: ./realestate_signature_mock
+      dockerfile: Dockerfile
+    image: realestate-signature-mock:latest
+    container_name: realestate-signature-mock
+    ports:
+    - 127.0.0.1::8091
+    environment:
+      PORT: '8091'
+      SERVICE_NAME: realestate-signature-mock
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    depends_on:
+      access-realestate-signature-mock-signature-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+      realestate-signature-mock-seed:
+        condition: service_completed_successfully
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-signature-mock/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-signature-mock__signature_db_password
+      target: realestate_signature_mock_signature_db_rw_password
+    cpu_shares: 1024
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget --quiet --tries=1 --spider http://localhost:8091/ready || exit 1
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+    - backend
+    - database
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-email-mock:
+    build:
+      context: ./realestate_email_mock
+      dockerfile: Dockerfile
+    image: realestate-email-mock:latest
+    container_name: realestate-email-mock
+    ports:
+    - 127.0.0.1::8092
+    environment:
+      PORT: '8092'
+      SERVICE_NAME: realestate-email-mock
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    depends_on:
+      access-realestate-email-mock-email-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+      realestate-email-mock-seed:
+        condition: service_completed_successfully
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-email-mock/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-email-mock__email_db_password
+      target: realestate_email_mock_email_db_rw_password
+    cpu_shares: 1024
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget --quiet --tries=1 --spider http://localhost:8092/ready || exit 1
+      interval: 10s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+    - backend
+    - database
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-postgresql:
+    image: postgres:17-alpine
+    container_name: realestate-system-postgresql
+    ports:
+    - 127.0.0.1::5432
+    environment:
+      POSTGRES_DB: realestate_listing
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${REALESTATE_SYSTEM_POSTGRESQL_POSTGRES_PASSWORD}
+    volumes:
+    - realestate-system-postgresql-data:/var/lib/postgresql/data
+    - ./scripts/init-db/realestate-system-postgresql.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -h 127.0.0.1 -U $$POSTGRES_USER
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    cpu_shares: 1024
+    networks:
+    - database
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-kafka:
+    image: confluentinc/cp-kafka:7.8.0
+    container_name: realestate-system-kafka
+    ports:
+    - 127.0.0.1:${REALESTATE_SYSTEM_KAFKA_HOST_PORT:-29092}:29092
+    environment:
+      KAFKA_NODE_ID: '1'
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@realestate-system-kafka:9093
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://realestate-system-kafka:9092,EXTERNAL://localhost:${REALESTATE_SYSTEM_KAFKA_HOST_PORT:-29092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1'
+      KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: '1'
+      KAFKA_OFFSETS_TOPIC_SEGMENT_BYTES: '16777216'
+      KAFKA_LOG_CLEANER_ENABLE: 'true'
+      KAFKA_METADATA_LOG_SEGMENT_BYTES: '33554432'
+      KAFKA_LOG_RETENTION_MS: '604800000'
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    volumes:
+    - realestate-system-kafka-data:/var/lib/kafka/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - kafka-broker-api-versions --bootstrap-server localhost:9092 >/dev/null 2>&1
+      interval: 10s
+      timeout: 15s
+      retries: 20
+      start_period: 60s
+    cpu_shares: 1024
+    networks:
+    - broker
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-listing-service-mq-init:
+    image: confluentinc/cp-kafka:7.8.0
+    container_name: realestate-listing-service-mq-init
+    volumes:
+    - ./scripts/init-topics:/scripts/init-topics:ro
+    command:
+    - /bin/bash
+    - /scripts/init-topics/realestate-listing-service-mq.sh
+    depends_on:
+      realestate-system-kafka:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - broker
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-kafka-config-check:
+    image: confluentinc/cp-kafka:7.8.0
+    container_name: realestate-system-kafka-config-check
+    volumes:
+    - ./scripts/init-topics:/scripts/init-topics:ro
+    command:
+    - /bin/bash
+    - /scripts/init-topics/realestate-system-kafka-broker-config.sh
+    depends_on:
+      realestate-system-kafka:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - broker
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-cadvisor:
+    image: ghcr.io/google/cadvisor:v0.60.5@sha256:763aecf1c32c2be8a1a75f9abfc2fc461005c9dbbaa39cb356b354aac1296dbe
+    container_name: realestate-system-cadvisor
+    volumes:
+    - /sys:/sys:ro
+    - /proc:/rootfs/proc:ro
+    - /run/containerd/containerd.sock:/run/containerd/containerd.sock:ro
+    command:
+    - --enable_metrics=app,cpu,cpuLoad,diskIO,memory,network,oom_event,percpu,perf_event
+    - --docker=tcp://realestate-system-engine-api-proxy:2375
+    depends_on:
+      realestate-system-engine-api-proxy:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --no-verbose
+      - --tries=1
+      - --spider
+      - http://localhost:8080/api/v1.3/docker/realestate-system-cadvisor
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    cpu_shares: 256
+    networks:
+    - engine-api
+    - observability
+    cap_add:
+    - SYSLOG
+    devices:
+    - /dev/kmsg:/dev/kmsg:r
+    cap_drop:
+    - ALL
+    security_opt:
+    - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-prometheus:
+    image: prom/prometheus:v2.49.1@sha256:beb5e30ffba08d9ae8a7961b9a2145fc8af6296ff2a4f463df7cd722fcbfc789
+    container_name: realestate-system-prometheus
+    ports:
+    - 127.0.0.1::9090
+    volumes:
+    - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    - ./config/prometheus/rules:/etc/prometheus/rules:ro
+    - prometheus-data:/prometheus
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    - --storage.tsdb.path=/prometheus
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --no-verbose
+      - --tries=1
+      - --spider
+      - http://localhost:9090/-/healthy
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    cpu_shares: 256
+    networks:
+    - backend
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-jaeger:
+    image: jaegertracing/all-in-one:1.53@sha256:60e65bfffe1f66aee96d6fc8b6bf65afd42016be5dcc09d2e15d8462f7d9409c
+    container_name: realestate-system-jaeger
+    ports:
+    - 127.0.0.1::16686
+    - 127.0.0.1::14268
+    - 127.0.0.1::4318
+    environment:
+      COLLECTOR_OTLP_ENABLED: 'true'
+    volumes:
+    - ./config/jaeger/sampling_strategies.json:/etc/jaeger/sampling_strategies.json:ro
+    command:
+    - --sampling.strategies-file=/etc/jaeger/sampling_strategies.json
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --no-verbose
+      - --tries=1
+      - --spider
+      - http://localhost:14269/
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    cpu_shares: 256
+    networks:
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-loki:
+    image: grafana/loki:2.9.10@sha256:35b02acc67654ddc38273e519b4f26f3967a907b9db5489af300c21f37ee1ae7
+    container_name: realestate-system-loki
+    ports:
+    - 127.0.0.1::3100
+    volumes:
+    - loki-data:/loki
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    cpu_shares: 256
+    networks:
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-promtail:
+    image: grafana/promtail:2.9.10@sha256:63a2e57a5b1401109f77d36a49a637889d431280ed38f5f885eedcd3949e52cf
+    container_name: realestate-system-promtail
+    ports:
+    - 127.0.0.1::9080
+    volumes:
+    - ./config/promtail/promtail-config.yaml:/etc/promtail/config.yml:ro
+    command:
+    - -config.file=/etc/promtail/config.yml
+    depends_on:
+      realestate-system-loki:
+        condition: service_healthy
+      realestate-system-engine-api-proxy:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - bash
+      - -c
+      - 'exec 3<>/dev/tcp/127.0.0.1/9080 && printf "GET /ready HTTP/1.1\r\nHost: localhost\r\nConnection:
+        close\r\n\r\n" >&3 && head -1 <&3 | grep -q "200 OK"'
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    cpu_shares: 256
+    networks:
+    - engine-api
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-engine-api-proxy:
+    image: python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159
+    container_name: realestate-system-engine-api-proxy
+    volumes:
+    - ./config/engine-api-proxy/engine_api_proxy.py:/opt/cruftfree/engine_api_proxy.py:ro
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+    - python
+    - /opt/cruftfree/engine_api_proxy.py
+    - serve
+    healthcheck:
+      test:
+      - CMD
+      - python
+      - /opt/cruftfree/engine_api_proxy.py
+      - probe
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    cpu_shares: 256
+    networks:
+    - engine-api
+    cap_add:
+    - NET_BIND_SERVICE
+    cap_drop:
+    - ALL
+    read_only: true
+    security_opt:
+    - no-new-privileges:true
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-alertmanager:
+    image: prom/alertmanager:v0.27.0@sha256:e13b6ed5cb929eeaee733479dce55e10eb3bc2e9c4586c705a4e8da41e5eacf5
+    container_name: realestate-system-alertmanager
+    ports:
+    - 127.0.0.1::9093
+    volumes:
+    - ./config/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    command:
+    - --config.file=/etc/alertmanager/alertmanager.yml
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - wget --no-verbose --tries=1 --spider http://localhost:9093/-/healthy || exit
+        1
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    cpu_shares: 256
+    networks:
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-grafana:
+    image: grafana/grafana:10.2.3@sha256:6b5b37eb35bbf30e7f64bd7f0fd41c0a5b7637f65d3bf93223b04a192b8bf3e2
+    container_name: realestate-system-grafana
+    ports:
+    - 127.0.0.1::3000
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?GRAFANA_ADMIN_USER is required
+        -- set it in .env; Grafana must not run on a default account name}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD
+        is required -- set it in .env; Grafana must not run on a default password}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_SERVER_ROOT_URL: http://localhost:8080/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: 'true'
+    volumes:
+    - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+    - ./config/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    - grafana-data:/var/lib/grafana
+    depends_on:
+      realestate-system-cadvisor:
+        condition: service_started
+      realestate-system-prometheus:
+        condition: service_started
+      realestate-system-jaeger:
+        condition: service_started
+      realestate-system-loki:
+        condition: service_started
+      realestate-system-promtail:
+        condition: service_started
+      realestate-system-engine-api-proxy:
+        condition: service_started
+      realestate-system-alertmanager:
+        condition: service_started
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - curl -f http://localhost:3000/api/health || exit 1
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    cpu_shares: 256
+    networks:
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-zitadel-db:
+    image: postgres:16-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
+    container_name: realestate-system-zitadel-db
+    environment:
+      POSTGRES_DB: zitadel
+      POSTGRES_USER: zitadel
+      POSTGRES_PASSWORD: ${REALESTATE_SYSTEM_ZITADEL_DB_PASSWORD}
+    volumes:
+    - realestate-system-zitadel-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -h 127.0.0.1 -U zitadel -d zitadel
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    cpu_shares: 4096
+    networks:
+    - backend
+    - database
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-zitadel-machinekey-init:
+    image: busybox:1.37@sha256:a7dbc319b1438115a207e11930dc4bb3e643dcb3ec0bdd694bb36cd8fad289ec
+    container_name: realestate-system-zitadel-machinekey-init
+    volumes:
+    - realestate-system-zitadel-machinekey:/machinekey
+    command:
+    - chown
+    - 1000:1000
+    - /machinekey
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - backend
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-zitadel:
+    image: ghcr.io/zitadel/zitadel:v3.0.0@sha256:fe5371eac4f49695ad9488367809bba7b3bba389c218836acfca39ec49701872
+    container_name: realestate-system-zitadel
+    ports:
+    - ${ZITADEL_HOST_PORT:-8085}:8080
+    environment:
+      ZITADEL_DATABASE_POSTGRES_HOST: realestate-system-zitadel-db
+      ZITADEL_DATABASE_POSTGRES_PORT: '5432'
+      ZITADEL_DATABASE_POSTGRES_DATABASE: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_USERNAME: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_PASSWORD: ${REALESTATE_SYSTEM_ZITADEL_DB_PASSWORD}
+      ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME: zitadel
+      ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD: ${REALESTATE_SYSTEM_ZITADEL_DB_PASSWORD}
+      ZITADEL_MASTERKEY: ${IDENTITY_ZITADEL_MASTER_KEY}
+      ZITADEL_TLS_ENABLED: 'false'
+      ZITADEL_EXTERNALDOMAIN: localhost
+      ZITADEL_EXTERNALSECURE: 'false'
+      ZITADEL_EXTERNALPORT: '8085'
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME: admin
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD: ${IDENTITY_ZITADEL_ADMIN_PASSWORD}
+      ZITADEL_FIRSTINSTANCE_ORG_MACHINE_MACHINE_USERNAME: cruftfree-provisioner
+      ZITADEL_FIRSTINSTANCE_ORG_MACHINE_MACHINE_NAME: CruftFree Provisioner
+      ZITADEL_FIRSTINSTANCE_ORG_MACHINE_PAT_EXPIRATIONDATE: '9999-12-31T23:59:59Z'
+      ZITADEL_FIRSTINSTANCE_PATPATH: /machinekey/provisioner.pat
+    volumes:
+    - realestate-system-zitadel-machinekey:/machinekey
+    command:
+    - start-from-init
+    - --masterkeyFromEnv
+    - --tlsMode
+    - disabled
+    depends_on:
+      realestate-system-zitadel-db:
+        condition: service_healthy
+      realestate-system-zitadel-machinekey-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+      - CMD
+      - /app/zitadel
+      - ready
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 120s
+    cpu_shares: 4096
+    networks:
+      backend:
+        aliases:
+        - zitadel
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-zitadel-init:
+    image: python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159
+    container_name: realestate-system-zitadel-init
+    environment:
+      ZITADEL_INSTANCE_URL: http://realestate-system-zitadel:8080
+      ZITADEL_HOST_HEADER: localhost:8085
+      ZITADEL_PAT_FILE: /machinekey/provisioner.pat
+      ZITADEL_PROVISIONING_PATH: /provisioning/zitadel-provisioning.json
+      IDENTITY_PROVIDER_PLAN_TEMPLATE_FILE: /provisioning/identity-providers.template.json
+      IDENTITY_PROVIDER_PLAN_FILE: /identity/identity-providers.json
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    volumes:
+    - ./config/identity/zitadel-provisioning.json:/provisioning/zitadel-provisioning.json:ro
+    - ./scripts/zitadel/apply_provisioning.py:/scripts/apply_provisioning.py:ro
+    - ./config/identity/identity-providers.template.json:/provisioning/identity-providers.template.json:ro
+    - ./config/identity/identity-providers.json:/identity/identity-providers.json
+    - realestate-system-zitadel-machinekey:/machinekey:ro
+    - realestate-system-machine-credentials:/machine-credentials
+    - realestate-system-identity-client-ids:/identity-clients
+    command:
+    - python
+    - /scripts/apply_provisioning.py
+    depends_on:
+      realestate-system-zitadel:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - backend
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  cruftfree-test-jwks:
+    image: python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159
+    container_name: realestate-system-cruftfree-test-jwks
+    volumes:
+    - ./scripts/test_jwks_server.py:/jwks/test_jwks_server.py:ro
+    command:
+    - python
+    - /jwks/test_jwks_server.py
+    cpu_shares: 1024
+    networks:
+    - backend
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  access-realestate-listing-service-listing-db:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    container_name: realestate-system-access-realestate-listing-service-listing-db
+    environment:
+      ACCESS_DB_HOST: realestate-system-postgresql
+      ACCESS_DB_PORT: '5432'
+      ACCESS_DB_USER: postgres
+      ACCESS_DATABASE: realestate_listing
+    volumes:
+    - ./scripts/db-access:/db-access:ro
+    secrets:
+    - source: env__realestate_system_postgresql_postgres_password
+      target: env__realestate_system_postgresql_postgres_password
+    - source: env__realestate_listing_service_listing_db_owner_db_password
+      target: env__realestate_listing_service_listing_db_owner_db_password
+    - source: env__realestate_listing_service_listing_db_rw_db_password
+      target: env__realestate_listing_service_listing_db_rw_db_password
+    tmpfs:
+    - /run/schema-credential:rw,noexec,nosuid,nodev,size=64k,mode=0700
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - 'umask 077; trap ''rm -f /run/schema-credential/credential'' EXIT; trap ''exit
+      2'' HUP INT TERM; schema_credential=$$(cat /run/secrets/env__realestate_system_postgresql_postgres_password)
+      || { echo ''The schema client''"''"''s credential could not be fetched.'' >&2;
+      exit 2; }; [ -n "$$schema_credential" ] || { echo ''The schema client''"''"''s
+      credential is empty: the block''"''"''s owner secret is not set.'' >&2; exit
+      2; }; printf ''%s\n'' "$$schema_credential" | sed -e ''s/\\/\\\\/g'' -e ''s/:/\\:/g''
+      -e ''s/^/*:*:*:*:/'' > /run/schema-credential/credential || { echo ''The schema
+      client''"''"''s credential file could not be written.'' >&2; exit 2; }; unset
+      schema_credential; [ "$$(wc -l < /run/schema-credential/credential)" -eq 1 ]
+      || { echo ''The schema client''"''"''s credential holds a line break, which
+      its file cannot.'' >&2; exit 2; }; export PGPASSFILE=/run/schema-credential/credential;
+      REALESTATE_LISTING_SERVICE_LISTING_DB_OWNER_DB_PASSWORD=$$(cat /run/secrets/env__realestate_listing_service_listing_db_owner_db_password)
+      || { echo ''The secret REALESTATE_LISTING_SERVICE_LISTING_DB_OWNER_DB_PASSWORD
+      could not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_LISTING_SERVICE_LISTING_DB_OWNER_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_LISTING_SERVICE_LISTING_DB_OWNER_DB_PASSWORD
+      is empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_LISTING_SERVICE_LISTING_DB_OWNER_DB_PASSWORD;
+      REALESTATE_LISTING_SERVICE_LISTING_DB_RW_DB_PASSWORD=$$(cat /run/secrets/env__realestate_listing_service_listing_db_rw_db_password)
+      || { echo ''The secret REALESTATE_LISTING_SERVICE_LISTING_DB_RW_DB_PASSWORD
+      could not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_LISTING_SERVICE_LISTING_DB_RW_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_LISTING_SERVICE_LISTING_DB_RW_DB_PASSWORD
+      is empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_LISTING_SERVICE_LISTING_DB_RW_DB_PASSWORD;
+      psql -h "$$ACCESS_DB_HOST" -p "$$ACCESS_DB_PORT" -U "$$ACCESS_DB_USER" -d "$$ACCESS_DATABASE"
+      -v ON_ERROR_STOP=1 -f /db-access/realestate-listing-service-listing-db.sql'
+    depends_on:
+      realestate-system-postgresql:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  access-realestate-viewing-service-viewing-db:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    container_name: realestate-system-access-realestate-viewing-service-viewing-db
+    environment:
+      ACCESS_DB_HOST: realestate-system-postgresql
+      ACCESS_DB_PORT: '5432'
+      ACCESS_DB_USER: postgres
+      ACCESS_DATABASE: realestate_viewing
+    volumes:
+    - ./scripts/db-access:/db-access:ro
+    secrets:
+    - source: env__realestate_system_postgresql_postgres_password
+      target: env__realestate_system_postgresql_postgres_password
+    - source: env__realestate_viewing_service_viewing_db_owner_db_password
+      target: env__realestate_viewing_service_viewing_db_owner_db_password
+    - source: env__realestate_viewing_service_viewing_db_rw_db_password
+      target: env__realestate_viewing_service_viewing_db_rw_db_password
+    tmpfs:
+    - /run/schema-credential:rw,noexec,nosuid,nodev,size=64k,mode=0700
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - 'umask 077; trap ''rm -f /run/schema-credential/credential'' EXIT; trap ''exit
+      2'' HUP INT TERM; schema_credential=$$(cat /run/secrets/env__realestate_system_postgresql_postgres_password)
+      || { echo ''The schema client''"''"''s credential could not be fetched.'' >&2;
+      exit 2; }; [ -n "$$schema_credential" ] || { echo ''The schema client''"''"''s
+      credential is empty: the block''"''"''s owner secret is not set.'' >&2; exit
+      2; }; printf ''%s\n'' "$$schema_credential" | sed -e ''s/\\/\\\\/g'' -e ''s/:/\\:/g''
+      -e ''s/^/*:*:*:*:/'' > /run/schema-credential/credential || { echo ''The schema
+      client''"''"''s credential file could not be written.'' >&2; exit 2; }; unset
+      schema_credential; [ "$$(wc -l < /run/schema-credential/credential)" -eq 1 ]
+      || { echo ''The schema client''"''"''s credential holds a line break, which
+      its file cannot.'' >&2; exit 2; }; export PGPASSFILE=/run/schema-credential/credential;
+      REALESTATE_VIEWING_SERVICE_VIEWING_DB_OWNER_DB_PASSWORD=$$(cat /run/secrets/env__realestate_viewing_service_viewing_db_owner_db_password)
+      || { echo ''The secret REALESTATE_VIEWING_SERVICE_VIEWING_DB_OWNER_DB_PASSWORD
+      could not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_VIEWING_SERVICE_VIEWING_DB_OWNER_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_VIEWING_SERVICE_VIEWING_DB_OWNER_DB_PASSWORD
+      is empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_VIEWING_SERVICE_VIEWING_DB_OWNER_DB_PASSWORD;
+      REALESTATE_VIEWING_SERVICE_VIEWING_DB_RW_DB_PASSWORD=$$(cat /run/secrets/env__realestate_viewing_service_viewing_db_rw_db_password)
+      || { echo ''The secret REALESTATE_VIEWING_SERVICE_VIEWING_DB_RW_DB_PASSWORD
+      could not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_VIEWING_SERVICE_VIEWING_DB_RW_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_VIEWING_SERVICE_VIEWING_DB_RW_DB_PASSWORD
+      is empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_VIEWING_SERVICE_VIEWING_DB_RW_DB_PASSWORD;
+      psql -h "$$ACCESS_DB_HOST" -p "$$ACCESS_DB_PORT" -U "$$ACCESS_DB_USER" -d "$$ACCESS_DATABASE"
+      -v ON_ERROR_STOP=1 -f /db-access/realestate-viewing-service-viewing-db.sql'
+    depends_on:
+      realestate-system-postgresql:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  access-realestate-deal-service-deal-db:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    container_name: realestate-system-access-realestate-deal-service-deal-db
+    environment:
+      ACCESS_DB_HOST: realestate-system-postgresql
+      ACCESS_DB_PORT: '5432'
+      ACCESS_DB_USER: postgres
+      ACCESS_DATABASE: realestate_deal
+    volumes:
+    - ./scripts/db-access:/db-access:ro
+    secrets:
+    - source: env__realestate_system_postgresql_postgres_password
+      target: env__realestate_system_postgresql_postgres_password
+    - source: env__realestate_deal_service_deal_db_owner_db_password
+      target: env__realestate_deal_service_deal_db_owner_db_password
+    - source: env__realestate_deal_service_deal_db_rw_db_password
+      target: env__realestate_deal_service_deal_db_rw_db_password
+    tmpfs:
+    - /run/schema-credential:rw,noexec,nosuid,nodev,size=64k,mode=0700
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - 'umask 077; trap ''rm -f /run/schema-credential/credential'' EXIT; trap ''exit
+      2'' HUP INT TERM; schema_credential=$$(cat /run/secrets/env__realestate_system_postgresql_postgres_password)
+      || { echo ''The schema client''"''"''s credential could not be fetched.'' >&2;
+      exit 2; }; [ -n "$$schema_credential" ] || { echo ''The schema client''"''"''s
+      credential is empty: the block''"''"''s owner secret is not set.'' >&2; exit
+      2; }; printf ''%s\n'' "$$schema_credential" | sed -e ''s/\\/\\\\/g'' -e ''s/:/\\:/g''
+      -e ''s/^/*:*:*:*:/'' > /run/schema-credential/credential || { echo ''The schema
+      client''"''"''s credential file could not be written.'' >&2; exit 2; }; unset
+      schema_credential; [ "$$(wc -l < /run/schema-credential/credential)" -eq 1 ]
+      || { echo ''The schema client''"''"''s credential holds a line break, which
+      its file cannot.'' >&2; exit 2; }; export PGPASSFILE=/run/schema-credential/credential;
+      REALESTATE_DEAL_SERVICE_DEAL_DB_OWNER_DB_PASSWORD=$$(cat /run/secrets/env__realestate_deal_service_deal_db_owner_db_password)
+      || { echo ''The secret REALESTATE_DEAL_SERVICE_DEAL_DB_OWNER_DB_PASSWORD could
+      not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_DEAL_SERVICE_DEAL_DB_OWNER_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_DEAL_SERVICE_DEAL_DB_OWNER_DB_PASSWORD is
+      empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_DEAL_SERVICE_DEAL_DB_OWNER_DB_PASSWORD;
+      REALESTATE_DEAL_SERVICE_DEAL_DB_RW_DB_PASSWORD=$$(cat /run/secrets/env__realestate_deal_service_deal_db_rw_db_password)
+      || { echo ''The secret REALESTATE_DEAL_SERVICE_DEAL_DB_RW_DB_PASSWORD could
+      not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_DEAL_SERVICE_DEAL_DB_RW_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_DEAL_SERVICE_DEAL_DB_RW_DB_PASSWORD is empty:
+      its value is not set.'' >&2; exit 2; }; export REALESTATE_DEAL_SERVICE_DEAL_DB_RW_DB_PASSWORD;
+      psql -h "$$ACCESS_DB_HOST" -p "$$ACCESS_DB_PORT" -U "$$ACCESS_DB_USER" -d "$$ACCESS_DATABASE"
+      -v ON_ERROR_STOP=1 -f /db-access/realestate-deal-service-deal-db.sql'
+    depends_on:
+      realestate-system-postgresql:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  access-realestate-mortgage-mock-mortgage-db:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    container_name: realestate-system-access-realestate-mortgage-mock-mortgage-db
+    environment:
+      ACCESS_DB_HOST: realestate-system-postgresql
+      ACCESS_DB_PORT: '5432'
+      ACCESS_DB_USER: postgres
+      ACCESS_DATABASE: realestate_mortgage_mock
+    volumes:
+    - ./scripts/db-access:/db-access:ro
+    secrets:
+    - source: env__realestate_system_postgresql_postgres_password
+      target: env__realestate_system_postgresql_postgres_password
+    - source: env__realestate_mortgage_mock_mortgage_db_owner_db_password
+      target: env__realestate_mortgage_mock_mortgage_db_owner_db_password
+    - source: env__realestate_mortgage_mock_mortgage_db_rw_db_password
+      target: env__realestate_mortgage_mock_mortgage_db_rw_db_password
+    tmpfs:
+    - /run/schema-credential:rw,noexec,nosuid,nodev,size=64k,mode=0700
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - 'umask 077; trap ''rm -f /run/schema-credential/credential'' EXIT; trap ''exit
+      2'' HUP INT TERM; schema_credential=$$(cat /run/secrets/env__realestate_system_postgresql_postgres_password)
+      || { echo ''The schema client''"''"''s credential could not be fetched.'' >&2;
+      exit 2; }; [ -n "$$schema_credential" ] || { echo ''The schema client''"''"''s
+      credential is empty: the block''"''"''s owner secret is not set.'' >&2; exit
+      2; }; printf ''%s\n'' "$$schema_credential" | sed -e ''s/\\/\\\\/g'' -e ''s/:/\\:/g''
+      -e ''s/^/*:*:*:*:/'' > /run/schema-credential/credential || { echo ''The schema
+      client''"''"''s credential file could not be written.'' >&2; exit 2; }; unset
+      schema_credential; [ "$$(wc -l < /run/schema-credential/credential)" -eq 1 ]
+      || { echo ''The schema client''"''"''s credential holds a line break, which
+      its file cannot.'' >&2; exit 2; }; export PGPASSFILE=/run/schema-credential/credential;
+      REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_OWNER_DB_PASSWORD=$$(cat /run/secrets/env__realestate_mortgage_mock_mortgage_db_owner_db_password)
+      || { echo ''The secret REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_OWNER_DB_PASSWORD
+      could not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_OWNER_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_OWNER_DB_PASSWORD
+      is empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_OWNER_DB_PASSWORD;
+      REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_RW_DB_PASSWORD=$$(cat /run/secrets/env__realestate_mortgage_mock_mortgage_db_rw_db_password)
+      || { echo ''The secret REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_RW_DB_PASSWORD could
+      not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_RW_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_RW_DB_PASSWORD
+      is empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_RW_DB_PASSWORD;
+      psql -h "$$ACCESS_DB_HOST" -p "$$ACCESS_DB_PORT" -U "$$ACCESS_DB_USER" -d "$$ACCESS_DATABASE"
+      -v ON_ERROR_STOP=1 -f /db-access/realestate-mortgage-mock-mortgage-db.sql'
+    depends_on:
+      realestate-system-postgresql:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  access-realestate-signature-mock-signature-db:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    container_name: realestate-system-access-realestate-signature-mock-signature-db
+    environment:
+      ACCESS_DB_HOST: realestate-system-postgresql
+      ACCESS_DB_PORT: '5432'
+      ACCESS_DB_USER: postgres
+      ACCESS_DATABASE: realestate_signature_mock
+    volumes:
+    - ./scripts/db-access:/db-access:ro
+    secrets:
+    - source: env__realestate_system_postgresql_postgres_password
+      target: env__realestate_system_postgresql_postgres_password
+    - source: env__realestate_signature_mock_signature_db_owner_db_password
+      target: env__realestate_signature_mock_signature_db_owner_db_password
+    - source: env__realestate_signature_mock_signature_db_rw_db_password
+      target: env__realestate_signature_mock_signature_db_rw_db_password
+    tmpfs:
+    - /run/schema-credential:rw,noexec,nosuid,nodev,size=64k,mode=0700
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - 'umask 077; trap ''rm -f /run/schema-credential/credential'' EXIT; trap ''exit
+      2'' HUP INT TERM; schema_credential=$$(cat /run/secrets/env__realestate_system_postgresql_postgres_password)
+      || { echo ''The schema client''"''"''s credential could not be fetched.'' >&2;
+      exit 2; }; [ -n "$$schema_credential" ] || { echo ''The schema client''"''"''s
+      credential is empty: the block''"''"''s owner secret is not set.'' >&2; exit
+      2; }; printf ''%s\n'' "$$schema_credential" | sed -e ''s/\\/\\\\/g'' -e ''s/:/\\:/g''
+      -e ''s/^/*:*:*:*:/'' > /run/schema-credential/credential || { echo ''The schema
+      client''"''"''s credential file could not be written.'' >&2; exit 2; }; unset
+      schema_credential; [ "$$(wc -l < /run/schema-credential/credential)" -eq 1 ]
+      || { echo ''The schema client''"''"''s credential holds a line break, which
+      its file cannot.'' >&2; exit 2; }; export PGPASSFILE=/run/schema-credential/credential;
+      REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_OWNER_DB_PASSWORD=$$(cat /run/secrets/env__realestate_signature_mock_signature_db_owner_db_password)
+      || { echo ''The secret REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_OWNER_DB_PASSWORD
+      could not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_OWNER_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_OWNER_DB_PASSWORD
+      is empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_OWNER_DB_PASSWORD;
+      REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_RW_DB_PASSWORD=$$(cat /run/secrets/env__realestate_signature_mock_signature_db_rw_db_password)
+      || { echo ''The secret REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_RW_DB_PASSWORD
+      could not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_RW_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_RW_DB_PASSWORD
+      is empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_RW_DB_PASSWORD;
+      psql -h "$$ACCESS_DB_HOST" -p "$$ACCESS_DB_PORT" -U "$$ACCESS_DB_USER" -d "$$ACCESS_DATABASE"
+      -v ON_ERROR_STOP=1 -f /db-access/realestate-signature-mock-signature-db.sql'
+    depends_on:
+      realestate-system-postgresql:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  access-realestate-email-mock-email-db:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    container_name: realestate-system-access-realestate-email-mock-email-db
+    environment:
+      ACCESS_DB_HOST: realestate-system-postgresql
+      ACCESS_DB_PORT: '5432'
+      ACCESS_DB_USER: postgres
+      ACCESS_DATABASE: realestate_email_mock
+    volumes:
+    - ./scripts/db-access:/db-access:ro
+    secrets:
+    - source: env__realestate_system_postgresql_postgres_password
+      target: env__realestate_system_postgresql_postgres_password
+    - source: env__realestate_email_mock_email_db_owner_db_password
+      target: env__realestate_email_mock_email_db_owner_db_password
+    - source: env__realestate_email_mock_email_db_rw_db_password
+      target: env__realestate_email_mock_email_db_rw_db_password
+    tmpfs:
+    - /run/schema-credential:rw,noexec,nosuid,nodev,size=64k,mode=0700
+    entrypoint:
+    - sh
+    - -c
+    command:
+    - 'umask 077; trap ''rm -f /run/schema-credential/credential'' EXIT; trap ''exit
+      2'' HUP INT TERM; schema_credential=$$(cat /run/secrets/env__realestate_system_postgresql_postgres_password)
+      || { echo ''The schema client''"''"''s credential could not be fetched.'' >&2;
+      exit 2; }; [ -n "$$schema_credential" ] || { echo ''The schema client''"''"''s
+      credential is empty: the block''"''"''s owner secret is not set.'' >&2; exit
+      2; }; printf ''%s\n'' "$$schema_credential" | sed -e ''s/\\/\\\\/g'' -e ''s/:/\\:/g''
+      -e ''s/^/*:*:*:*:/'' > /run/schema-credential/credential || { echo ''The schema
+      client''"''"''s credential file could not be written.'' >&2; exit 2; }; unset
+      schema_credential; [ "$$(wc -l < /run/schema-credential/credential)" -eq 1 ]
+      || { echo ''The schema client''"''"''s credential holds a line break, which
+      its file cannot.'' >&2; exit 2; }; export PGPASSFILE=/run/schema-credential/credential;
+      REALESTATE_EMAIL_MOCK_EMAIL_DB_OWNER_DB_PASSWORD=$$(cat /run/secrets/env__realestate_email_mock_email_db_owner_db_password)
+      || { echo ''The secret REALESTATE_EMAIL_MOCK_EMAIL_DB_OWNER_DB_PASSWORD could
+      not be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_EMAIL_MOCK_EMAIL_DB_OWNER_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_EMAIL_MOCK_EMAIL_DB_OWNER_DB_PASSWORD is
+      empty: its value is not set.'' >&2; exit 2; }; export REALESTATE_EMAIL_MOCK_EMAIL_DB_OWNER_DB_PASSWORD;
+      REALESTATE_EMAIL_MOCK_EMAIL_DB_RW_DB_PASSWORD=$$(cat /run/secrets/env__realestate_email_mock_email_db_rw_db_password)
+      || { echo ''The secret REALESTATE_EMAIL_MOCK_EMAIL_DB_RW_DB_PASSWORD could not
+      be fetched.'' >&2; exit 2; }; [ -n "$$REALESTATE_EMAIL_MOCK_EMAIL_DB_RW_DB_PASSWORD"
+      ] || { echo ''The secret REALESTATE_EMAIL_MOCK_EMAIL_DB_RW_DB_PASSWORD is empty:
+      its value is not set.'' >&2; exit 2; }; export REALESTATE_EMAIL_MOCK_EMAIL_DB_RW_DB_PASSWORD;
+      psql -h "$$ACCESS_DB_HOST" -p "$$ACCESS_DB_PORT" -U "$$ACCESS_DB_USER" -d "$$ACCESS_DATABASE"
+      -v ON_ERROR_STOP=1 -f /db-access/realestate-email-mock-email-db.sql'
+    depends_on:
+      realestate-system-postgresql:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-listing-service-seed:
+    image: realestate-listing-service:latest
+    pull_policy: never
+    container_name: realestate-listing-service-seed
+    environment:
+      PORT: '8001'
+      SERVICE_NAME: realestate-listing-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-listing-service/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-listing-service__listing_db_password
+      target: realestate_listing_service_listing_db_rw_password
+    command:
+    - node
+    - dist/persistence/seed-runner.js
+    depends_on:
+      access-realestate-listing-service-listing-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-kafka:
+        condition: service_healthy
+      realestate-listing-service-mq-init:
+        condition: service_completed_successfully
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - backend
+    - broker
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-viewing-service-seed:
+    image: realestate-viewing-service:latest
+    pull_policy: never
+    container_name: realestate-viewing-service-seed
+    environment:
+      PORT: '8002'
+      SERVICE_NAME: realestate-viewing-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      REALESTATE_LISTING_SERVICE_SERVICE_URL: http://realestate-listing-service:8001
+      EMAIL_PROVIDER_SERVICE_URL: http://realestate-email-mock:8092
+      email_provider_api_key: ${email_provider_api_key}
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-viewing-service/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-viewing-service__viewing_db_password
+      target: realestate_viewing_service_viewing_db_rw_password
+    - source: realestate-viewing-service__email_provider_api_key
+      target: email_provider_api_key
+    command:
+    - node
+    - dist/persistence/seed-runner.js
+    depends_on:
+      access-realestate-viewing-service-viewing-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-kafka:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - backend
+    - broker
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-deal-service-seed:
+    image: realestate-deal-service:latest
+    pull_policy: never
+    container_name: realestate-deal-service-seed
+    environment:
+      PORT: '8003'
+      SERVICE_NAME: realestate-deal-service
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      REALESTATE_LISTING_SERVICE_SERVICE_URL: http://realestate-listing-service:8001
+      MORTGAGE_PROVIDER_SERVICE_URL: http://realestate-mortgage-mock:8090
+      mortgage_provider_api_key: ${mortgage_provider_api_key}
+      SIGNATURE_PROVIDER_SERVICE_URL: http://realestate-signature-mock:8091
+      signature_provider_api_key: ${signature_provider_api_key}
+      EMAIL_PROVIDER_SERVICE_URL: http://realestate-email-mock:8092
+      email_provider_api_key: ${email_provider_api_key}
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-deal-service/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-deal-service__deal_db_password
+      target: realestate_deal_service_deal_db_rw_password
+    - source: realestate-deal-service__email_provider_api_key
+      target: email_provider_api_key
+    - source: realestate-deal-service__mortgage_provider_api_key
+      target: mortgage_provider_api_key
+    - source: realestate-deal-service__signature_provider_api_key
+      target: signature_provider_api_key
+    command:
+    - node
+    - dist/persistence/seed-runner.js
+    depends_on:
+      access-realestate-deal-service-deal-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - backend
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-mortgage-mock-seed:
+    image: realestate-mortgage-mock:latest
+    pull_policy: never
+    container_name: realestate-mortgage-mock-seed
+    environment:
+      PORT: '8090'
+      SERVICE_NAME: realestate-mortgage-mock
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-mortgage-mock/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-mortgage-mock__mortgage_db_password
+      target: realestate_mortgage_mock_mortgage_db_rw_password
+    command:
+    - node
+    - dist/persistence/seed-runner.js
+    depends_on:
+      access-realestate-mortgage-mock-mortgage-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - backend
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-signature-mock-seed:
+    image: realestate-signature-mock:latest
+    pull_policy: never
+    container_name: realestate-signature-mock-seed
+    environment:
+      PORT: '8091'
+      SERVICE_NAME: realestate-signature-mock
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-signature-mock/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-signature-mock__signature_db_password
+      target: realestate_signature_mock_signature_db_rw_password
+    command:
+    - node
+    - dist/persistence/seed-runner.js
+    depends_on:
+      access-realestate-signature-mock-signature-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - backend
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-email-mock-seed:
+    image: realestate-email-mock:latest
+    pull_policy: never
+    container_name: realestate-email-mock-seed
+    environment:
+      PORT: '8092'
+      SERVICE_NAME: realestate-email-mock
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://realestate-system-jaeger:4318
+      DEBUG: 'false'
+      IDENTITY_MACHINE_CREDENTIALS_FILE: /machine-credentials/credentials.json
+    volumes:
+    - ./config/identity/identity-providers.json:/app/config/identity/identity-providers.json:ro
+    - realestate-system-machine-credentials:/machine-credentials:ro
+    - ./config/services/realestate-email-mock/config-store.json:/app/config/config-store.json:ro
+    secrets:
+    - source: realestate-email-mock__email_db_password
+      target: realestate_email_mock_email_db_rw_password
+    command:
+    - node
+    - dist/persistence/seed-runner.js
+    depends_on:
+      access-realestate-email-mock-email-db:
+        condition: service_completed_successfully
+      realestate-system-postgresql:
+        condition: service_healthy
+      realestate-system-jaeger:
+        condition: service_healthy
+      realestate-system-zitadel:
+        condition: service_healthy
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    networks:
+    - backend
+    - database
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-api-gateway:
+    image: nginx:1.30.5-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94
+    container_name: realestate-system-api-gateway
+    ports:
+    - ${GATEWAY_PORT:-8080}:80
+    volumes:
+    - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      realestate-listing-service:
+        condition: service_healthy
+      realestate-viewing-service:
+        condition: service_healthy
+      realestate-deal-service:
+        condition: service_healthy
+      realestate-mortgage-mock:
+        condition: service_healthy
+      realestate-signature-mock:
+        condition: service_healthy
+      realestate-email-mock:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - nginx
+      - -t
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    cpu_shares: 1024
+    networks:
+    - backend
+    - frontend
+    - observability
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  realestate-system-client-contract:
+    image: python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159
+    container_name: realestate-system-client-contract
+    volumes:
+    - ./config/client-contract/write_client_contract.py:/cruftfree/write_client_contract.py:ro
+    - realestate-system-identity-client-ids:/identity-clients:ro
+    command:
+    - python
+    - /cruftfree/write_client_contract.py
+    depends_on:
+      realestate-system-zitadel-init:
+        condition: service_completed_successfully
+    healthcheck:
+      disable: true
+    cpu_shares: 1024
+    network_mode: none
+    profiles:
+    - deploy-run
+    restart: 'no'
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+volumes:
+  realestate-system-postgresql-data:
+    driver: local
+  realestate-system-kafka-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  loki-data:
+    driver: local
+  realestate-system-zitadel-db-data:
+    driver: local
+  realestate-system-machine-credentials:
+    driver: local
+  realestate-system-identity-client-ids:
+    driver: local
+  realestate-system-zitadel-machinekey:
+    driver: local
+networks:
+  backend:
+    driver: bridge
+  broker:
+    driver: bridge
+  database:
+    driver: bridge
+  engine-api:
+    driver: bridge
+    internal: true
+  frontend:
+    driver: bridge
+  observability:
+    driver: bridge
+secrets:
+  realestate-listing-service__listing_db_password:
+    file: ./secrets/realestate-listing-service/listing_db_password
+  realestate-viewing-service__viewing_db_password:
+    file: ./secrets/realestate-viewing-service/viewing_db_password
+  realestate-viewing-service__email_provider_api_key:
+    file: ./secrets/realestate-viewing-service/email_provider_api_key
+  realestate-deal-service__deal_db_password:
+    file: ./secrets/realestate-deal-service/deal_db_password
+  realestate-deal-service__email_provider_api_key:
+    file: ./secrets/realestate-deal-service/email_provider_api_key
+  realestate-deal-service__mortgage_provider_api_key:
+    file: ./secrets/realestate-deal-service/mortgage_provider_api_key
+  realestate-deal-service__signature_provider_api_key:
+    file: ./secrets/realestate-deal-service/signature_provider_api_key
+  realestate-mortgage-mock__mortgage_db_password:
+    file: ./secrets/realestate-mortgage-mock/mortgage_db_password
+  realestate-signature-mock__signature_db_password:
+    file: ./secrets/realestate-signature-mock/signature_db_password
+  realestate-email-mock__email_db_password:
+    file: ./secrets/realestate-email-mock/email_db_password
+  env__realestate_system_postgresql_postgres_password:
+    environment: REALESTATE_SYSTEM_POSTGRESQL_POSTGRES_PASSWORD
+  env__realestate_listing_service_listing_db_owner_db_password:
+    environment: REALESTATE_LISTING_SERVICE_LISTING_DB_OWNER_DB_PASSWORD
+  env__realestate_listing_service_listing_db_rw_db_password:
+    environment: REALESTATE_LISTING_SERVICE_LISTING_DB_RW_DB_PASSWORD
+  env__realestate_viewing_service_viewing_db_owner_db_password:
+    environment: REALESTATE_VIEWING_SERVICE_VIEWING_DB_OWNER_DB_PASSWORD
+  env__realestate_viewing_service_viewing_db_rw_db_password:
+    environment: REALESTATE_VIEWING_SERVICE_VIEWING_DB_RW_DB_PASSWORD
+  env__realestate_deal_service_deal_db_owner_db_password:
+    environment: REALESTATE_DEAL_SERVICE_DEAL_DB_OWNER_DB_PASSWORD
+  env__realestate_deal_service_deal_db_rw_db_password:
+    environment: REALESTATE_DEAL_SERVICE_DEAL_DB_RW_DB_PASSWORD
+  env__realestate_mortgage_mock_mortgage_db_owner_db_password:
+    environment: REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_OWNER_DB_PASSWORD
+  env__realestate_mortgage_mock_mortgage_db_rw_db_password:
+    environment: REALESTATE_MORTGAGE_MOCK_MORTGAGE_DB_RW_DB_PASSWORD
+  env__realestate_signature_mock_signature_db_owner_db_password:
+    environment: REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_OWNER_DB_PASSWORD
+  env__realestate_signature_mock_signature_db_rw_db_password:
+    environment: REALESTATE_SIGNATURE_MOCK_SIGNATURE_DB_RW_DB_PASSWORD
+  env__realestate_email_mock_email_db_owner_db_password:
+    environment: REALESTATE_EMAIL_MOCK_EMAIL_DB_OWNER_DB_PASSWORD
+  env__realestate_email_mock_email_db_rw_db_password:
+    environment: REALESTATE_EMAIL_MOCK_EMAIL_DB_RW_DB_PASSWORD

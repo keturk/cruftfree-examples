@@ -1,0 +1,334 @@
+// Projects and who belongs to them. Membership is what every read and write in Millrace is checked against:
+// someone who is not on a project cannot learn it exists. Each project hands out its own task numbers under
+// a lock, so WEB-41 and WEB-42 can never be the same task.
+service taskapp.ProjectService('config/project-service.ccfg') : version('2.0.0'), description('Projects, members and milestones') {
+
+    discovery { }
+
+    identity {
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+            group "operator" as operator;
+        }
+        provider machine config('config/identity/machine.ccfg') { }
+        provider chatKeys config('config/identity/chat-keys.ccfg') { }
+        provider emailKeys config('config/identity/email-keys.ccfg') { }
+    }
+
+    exceptions {
+        NoSuchProjectError : status(404), message("Project not found");
+        OwnersOnlyError : status(403), message("Only an owner of this project can do that");
+        EditorsOnlyError : status(403), message("You can read this project but not change it");
+        CodeTakenError : status(409), message("Another project already uses that code");
+        AlreadyMemberError : status(409), message("That person is already on this project");
+        LastOwnerError : status(409), message("A project needs at least one owner");
+    }
+
+    enum ProjectRole {
+        Owner : tone(success),
+        Editor : tone(info),
+        Viewer : tone(neutral)
+    }
+
+    enum ProjectState {
+        Active : tone(success),
+        Archived : tone(neutral)
+    }
+
+    rdbms projectDb {
+
+        entity Project extends BaseEntity {
+            String(120) name : filterable;
+            /// The prefix of every task number on this project: WEB in WEB-42.
+            String(6) code : unique;
+            Text summary;
+            ProjectState state : filterable = ProjectState.Active;
+            /// Where this project's news is posted.
+            String(80) chatChannel;
+            Int nextNumber = 1;
+        }
+
+        entity Member extends BaseEntity {
+            String(200) personName : filterable;
+            ProjectRole role : filterable;
+            Email email : index;
+            UUID projectId : index;
+
+            index(projectId, email) : unique;
+        }
+
+        entity Milestone extends BaseEntity {
+            String(120) name;
+            DateTime dueAt;
+            Boolean isDone = false;
+            UUID projectId : index;
+        }
+    }
+
+    pubsub mq {
+        topic ProjectEvents {
+            publish MemberAdded(String projectName, String personName, String email, String addedBy) {
+                ensure email != "";
+            }
+        }
+    }
+
+    struct NewProject {
+        String(120) name;
+        String(6) code;
+        Text summary;
+        String(80) chatChannel;
+    }
+
+    struct NewMember {
+        UUID projectId;
+        String(200) personName;
+        Email email;
+        ProjectRole role;
+    }
+
+    struct NewMilestone {
+        UUID projectId;
+        String(120) name;
+        DateTime dueAt;
+    }
+
+    struct ProjectCard {
+        UUID id;
+        String name;
+        String code;
+        Text summary;
+        ProjectState state;
+        ProjectRole myRole;
+        Int people;
+        Int milestonesOpen;
+    }
+
+    struct ProjectPage {
+        ProjectCard project;
+        Array<Member> people;
+        Array<Milestone> milestones;
+        Boolean canEdit;
+        Boolean canManage;
+    }
+
+    struct AccessQuestion {
+        UUID projectId;
+        String email;
+    }
+
+    /// What the task service needs to know before it acts for someone.
+    struct ProjectAccess {
+        Boolean isMember;
+        Boolean canEdit;
+        String projectName;
+        String code;
+        String chatChannel;
+    }
+
+    struct NumberRequest {
+        UUID projectId;
+    }
+
+    struct TaskNumber {
+        String number;
+    }
+
+    struct PersonOnProject {
+        String personName;
+        String email;
+    }
+
+    struct ProjectPeople {
+        Array<PersonOnProject> people;
+    }
+
+    fn myMembership(UUID projectId) -> projectDb.Member {
+        let projectDb.Member? mine = projectDb.Member.where(projectId: projectId, email: Auth.identity.email).first();
+        if (mine == null) {
+            throw NoSuchProjectError();
+        }
+        return mine;
+    }
+
+    fn requireEditor(UUID projectId) {
+        let projectDb.Member mine = myMembership(projectId);
+        if (mine.role == ProjectRole.Viewer) {
+            throw EditorsOnlyError();
+        }
+    }
+
+    fn requireOwner(UUID projectId) {
+        let projectDb.Member mine = myMembership(projectId);
+        if (mine.role != ProjectRole.Owner) {
+            throw OwnersOnlyError();
+        }
+    }
+
+    fn cardOf(projectDb.Project project, ProjectRole role) -> ProjectCard {
+        return ProjectCard {
+            id: project.id,
+            name: project.name,
+            code: project.code,
+            summary: project.summary,
+            state: project.state,
+            myRole: role,
+            people: projectDb.Member.where(projectId: project.id).count(),
+            milestonesOpen: projectDb.Milestone.where(projectId: project.id, isDone: false).count()
+        };
+    }
+
+    // What someone signed in does. They only ever see projects they are on.
+    rest_api ProjectAPI : basePath('/api/v1/projects'), rdbms(projectDb) {
+        @path('/mine')
+        get mine() : auth(required, providers: [identity]) -> Array<ProjectCard> {
+            let Array<Member> memberships = Member.where(email: Auth.identity.email).limit(100).all();
+            let Array<ProjectCard> cards = [];
+            foreach membership in memberships {
+                let Project project = Project.findOrFail(membership.projectId);
+                cards.push(cardOf(project, membership.role));
+            }
+            return cards;
+        }
+
+        @path('/page/:id')
+        get page(UUID id) : auth(required, providers: [identity]) -> ProjectPage {
+            let Member mine = myMembership(id);
+            let Project project = Project.findOrFail(id);
+            return ProjectPage {
+                project: cardOf(project, mine.role),
+                people: Member.where(projectId: id).orderBy(personName: asc).limit(200).all(),
+                milestones: Milestone.where(projectId: id).orderBy(dueAt: asc).limit(50).all(),
+                canEdit: mine.role != ProjectRole.Viewer,
+                canManage: mine.role == ProjectRole.Owner
+            };
+        }
+
+        @path('/new')
+        post createProject(NewProject request) : auth(required, providers: [identity]) -> Project {
+            if (Project.where(code: request.code).first() != null) {
+                throw CodeTakenError();
+            }
+            let Project created = Project.create({
+                name: request.name,
+                code: request.code,
+                summary: request.summary,
+                chatChannel: request.chatChannel
+            });
+            Member.create({
+                projectId: created.id,
+                personName: (Auth.identity.fullName ?? Auth.identity.email).toString(),
+                email: Auth.identity.email,
+                role: ProjectRole.Owner
+            });
+            return created;
+        }
+
+        @path('/members')
+        post addMember(NewMember request) : auth(required, providers: [identity]) -> Member {
+            requireOwner(request.projectId);
+            if (Member.where(projectId: request.projectId, email: request.email).first() != null) {
+                throw AlreadyMemberError();
+            }
+            let Project project = Project.findOrFail(request.projectId);
+            let Member added = Member.create({
+                projectId: request.projectId,
+                personName: request.personName,
+                email: request.email,
+                role: request.role
+            });
+            dispatch MemberAdded(project.name, request.personName, request.email.toString(), (Auth.identity.fullName ?? Auth.identity.email).toString());
+            return added;
+        }
+
+        @path('/members/remove/:id')
+        post removeMember(UUID id) : auth(required, providers: [identity]) -> ProjectPeopleCount {
+            let Member member = Member.findOrFail(id);
+            requireOwner(member.projectId);
+            if (member.role == ProjectRole.Owner && Member.where(projectId: member.projectId, role: ProjectRole.Owner).count() == 1) {
+                throw LastOwnerError();
+            }
+            let UUID projectId = member.projectId;
+            member.delete();
+            return ProjectPeopleCount { people: Member.where(projectId: projectId).count() };
+        }
+
+        @path('/milestones')
+        post addMilestone(NewMilestone request) : auth(required, providers: [identity]) -> Milestone {
+            requireEditor(request.projectId);
+            return Milestone.create({ projectId: request.projectId, name: request.name, dueAt: request.dueAt });
+        }
+
+        @path('/milestones/done/:id')
+        post finishMilestone(UUID id) : auth(required, providers: [identity]) -> Milestone {
+            let Milestone milestone = Milestone.findOrFail(id);
+            requireEditor(milestone.projectId);
+            milestone.isDone = true;
+            milestone.save();
+            return milestone;
+        }
+
+        @path('/archive/:id')
+        post archive(UUID id) : auth(required, providers: [identity]) -> Project {
+            requireOwner(id);
+            let Project project = Project.findOrFail(id);
+            project.state = ProjectState.Archived;
+            project.save();
+            return project;
+        }
+    }
+
+    struct ProjectPeopleCount {
+        Int people;
+    }
+
+    // What the task service asks before it acts for someone.
+    rest_api ProjectInternalAPI : basePath('/internal/projects'), rdbms(projectDb) {
+        @path('/access')
+        post access(AccessQuestion question) : auth(service, providers: [machine]) -> ProjectAccess {
+            let Project? project = Project.where(id: question.projectId).first();
+            let Member? member = Member.where(projectId: question.projectId, email: question.email).first();
+            if (project == null || member == null) {
+                return ProjectAccess { isMember: false, canEdit: false, projectName: "", code: "", chatChannel: "" };
+            }
+            return ProjectAccess {
+                isMember: true,
+                canEdit: member.role != ProjectRole.Viewer,
+                projectName: project.name,
+                code: project.code,
+                chatChannel: project.chatChannel
+            };
+        }
+
+        // Two tasks made at the same moment queue on this lock and get different numbers.
+        @path('/next-number')
+        post nextNumber(NumberRequest request) : auth(service, providers: [machine]) -> TaskNumber {
+            let String number = "";
+            transaction(projectDb) {
+                let Project project = Project.where(id: request.projectId).forUpdate().firstOrFail();
+                number = #"{project.code}-{project.nextNumber}";
+                project.nextNumber = project.nextNumber + 1;
+                project.save();
+            }
+            return TaskNumber { number: number };
+        }
+
+        @path('/people')
+        post people(NumberRequest request) : auth(service, providers: [machine]) -> ProjectPeople {
+            let Array<Member> members = Member.where(projectId: request.projectId).orderBy(personName: asc).limit(200).all();
+            return ProjectPeople { people: members.map(m => PersonOnProject { personName: m.personName, email: m.email.toString() }) };
+        }
+    }
+
+    test("a new project starts numbering at one") {
+        let projectDb.Project created = projectDb.Project.create({
+            name: "Test project",
+            code: "TST",
+            summary: "A test project.",
+            chatChannel: "test"
+        });
+        assert created.nextNumber == 1;
+        assert created.state == ProjectState.Active;
+    }
+}

@@ -1,0 +1,186 @@
+from iot.common import DeviceStatus;
+
+// New firmware, a few devices at a time. A rollout takes a snapshot of the fleet, and a job sends the
+// next batch and asks how the last went. A device that refuses is recorded and the rollout carries on,
+// and too many refusals stop it before it reaches everything.
+service iot.FirmwareService('config/firmware-service.ccfg') : version('2.0.0'), description('Firmware and rollouts') {
+
+    discovery { }
+
+    uses DeviceService;
+    uses FleetProvider;
+
+    exceptions {
+        RolloutRunningError : status(409), message("Only one rollout can run at a time");
+        NotPausedError : status(409), message("Only a paused rollout can be resumed");
+    }
+
+    enum RolloutStatus {
+        Running : tone(info),
+        Paused : tone(warning),
+        Finished : tone(success)
+    }
+
+    enum StepStatus {
+        Waiting : tone(neutral),
+        Sent : tone(info),
+        Updated : tone(success),
+        Refused : tone(danger)
+    }
+
+    /// How many devices each run of the job sends to.
+    const BATCH_SIZE = 2;
+    /// How many refusals stop a rollout.
+    const REFUSALS_ALLOWED = 2;
+
+    rdbms firmwareDb {
+
+        entity FirmwareRelease extends BaseEntity {
+            String(40) version : unique, filterable;
+            String(500) notes;
+        }
+
+        entity Rollout extends BaseEntity {
+            String(40) version : filterable;
+            RolloutStatus status : filterable = RolloutStatus.Running;
+            Int devices = 0;
+            Int updated = 0;
+            Int refused = 0;
+            String(200) startedByName;
+        }
+
+        /// One device in a rollout.
+        entity RolloutStep extends BaseEntity {
+            String(40) serialNumber : filterable;
+            String(120) deviceName;
+            String(120) siteName : filterable;
+            StepStatus status : filterable = StepStatus.Waiting;
+            String(40)? commandId : hidden;
+            String(200)? refusal;
+
+            belongsTo Rollout : index;
+
+            index(rolloutId, status);
+        }
+    }
+
+    struct StartRolloutRequest {
+        String(40) version;
+    }
+
+    struct RolloutDetail {
+        firmwareDb.Rollout rollout;
+        Array<firmwareDb.RolloutStep> steps;
+    }
+
+    rest_api FirmwareAPI : basePath('/api/v1/firmware'), rdbms(firmwareDb) {
+        resource FirmwareRelease : only(list, create), auth(required, providers: [identity], roles: [opsLead]);
+        resource Rollout : only(list), auth(required, providers: [identity], roles: [opsLead]);
+
+        @path('/rollouts')
+        post start(StartRolloutRequest request) : auth(required, providers: [identity], roles: [opsLead]) -> Rollout {
+            if (Rollout.where(status: RolloutStatus.Running).first() != null) {
+                throw RolloutRunningError();
+            }
+            let Array<DeviceCard> fleet = DeviceService.DeviceCardAPI.get.activeSerials();
+            let Rollout rollout = Rollout.create({
+                version: request.version,
+                devices: fleet.length,
+                startedByName: (Auth.identity.fullName ?? Auth.identity.email).toString()
+            });
+            foreach device in fleet {
+                RolloutStep.create({
+                    rolloutId: rollout.id,
+                    serialNumber: device.serialNumber,
+                    deviceName: device.name,
+                    siteName: device.siteName
+                });
+            }
+            return rollout;
+        }
+
+        @path('/rollouts/:id')
+        get detail(UUID id) : auth(required, providers: [identity], roles: [opsLead]) -> RolloutDetail {
+            let Rollout rollout = Rollout.findOrFail(id);
+            return RolloutDetail {
+                rollout: rollout,
+                steps: RolloutStep.where(rolloutId: id).orderBy(siteName: asc).limit(5000).all()
+            };
+        }
+
+        @path('/rollouts/:id/resume')
+        post resume(UUID id) : auth(required, providers: [identity], roles: [opsLead]) -> Rollout {
+            let Rollout rollout = Rollout.findOrFail(id);
+            if (rollout.status != RolloutStatus.Paused) {
+                throw NotPausedError();
+            }
+            rollout.status = RolloutStatus.Running;
+            rollout.refused = 0;
+            rollout.save();
+            return rollout;
+        }
+    }
+
+    jobs {
+        job AdvanceRollouts {
+            let Array<firmwareDb.Rollout> running = firmwareDb.Rollout.where(status: RolloutStatus.Running).limit(5).all();
+            foreach rollout in running {
+                // How the last batch went.
+                let Array<firmwareDb.RolloutStep> sent = firmwareDb.RolloutStep.where(rolloutId: rollout.id, status: StepStatus.Sent).limit(200).all();
+                foreach step in sent {
+                    if (step.commandId != null) {
+                        try {
+                            let DeviceCommand command = FleetProvider.FleetAPI.get.commandById(id: step.commandId);
+                            if (command.status == CommandStatus.Applied) {
+                                step.status = StepStatus.Updated;
+                                step.save();
+                                rollout.updated = rollout.updated + 1;
+                                DeviceService.DeviceCardAPI.post.firmwareReported({ serialNumber: step.serialNumber, firmwareVersion: rollout.version });
+                            } else if (command.status == CommandStatus.Rejected) {
+                                step.status = StepStatus.Refused;
+                                step.refusal = command.rejectionReason;
+                                step.save();
+                                rollout.refused = rollout.refused + 1;
+                            }
+                        } catch (Exception e) {
+                            Log.warn("Fleet gateway not reached", { serialNumber: step.serialNumber });
+                        }
+                    }
+                }
+                // Too many refusals: stop before this reaches everything.
+                if (rollout.refused >= REFUSALS_ALLOWED) {
+                    rollout.status = RolloutStatus.Paused;
+                } else {
+                    let Array<firmwareDb.RolloutStep> waiting = firmwareDb.RolloutStep.where(rolloutId: rollout.id, status: StepStatus.Waiting).limit(BATCH_SIZE).all();
+                    foreach step in waiting {
+                        try {
+                            let DeviceCommand command = FleetProvider.FleetAPI.post.sendCommand(SendCommandRequest {
+                                serialNumber: step.serialNumber,
+                                kind: CommandKind.UpdateFirmware,
+                                firmwareVersion: rollout.version,
+                                idempotencyKey: #"rollout-{rollout.id}-{step.serialNumber}"
+                            });
+                            step.commandId = command.id;
+                            step.status = StepStatus.Sent;
+                            step.save();
+                        } catch (Exception e) {
+                            Log.warn("Command not sent", { serialNumber: step.serialNumber });
+                        }
+                    }
+                    if (firmwareDb.RolloutStep.where(rolloutId: rollout.id, status: StepStatus.Waiting).count() == 0 && firmwareDb.RolloutStep.where(rolloutId: rollout.id, status: StepStatus.Sent).count() == 0) {
+                        rollout.status = RolloutStatus.Finished;
+                    }
+                }
+                rollout.save();
+            }
+        }
+    }
+
+    test("a new rollout is running") {
+        let firmwareDb.Rollout created = firmwareDb.Rollout.create({
+            version: "2.0.0",
+            startedByName: "Ana Ferreira"
+        });
+        assert created.status == RolloutStatus.Running;
+    }
+}

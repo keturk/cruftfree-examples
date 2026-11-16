@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "district_db_database": "cityservices_district",
+    "district_db_host": "cityservices-system-postgresql",
+    "district_db_port": 5432,
+    "district_db_user": "cityservices_district_service_district_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

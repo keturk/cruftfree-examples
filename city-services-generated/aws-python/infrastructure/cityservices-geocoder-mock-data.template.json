@@ -1,0 +1,983 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "GeocoderDbDbHost": {
+      "Description": "The address a client of the geocoderDb database connects to",
+      "Export": {
+        "Name": "cityservices-system-cityservices-geocoder-mock-data-GeocoderDbDbHost"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "GeocoderDbDb",
+          "Endpoint.Address"
+        ]
+      }
+    },
+    "GeocoderDbDbSecurityGroupId": {
+      "Description": "The security group a client of the geocoderDb database admits itself on",
+      "Export": {
+        "Name": "cityservices-system-cityservices-geocoder-mock-data-GeocoderDbDbSecurityGroupId"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "GeocoderDbSg",
+          "GroupId"
+        ]
+      }
+    },
+    "GeocoderDbSchemaTaskDefinitionArn": {
+      "Description": "The schema task definition of database 'geocoderDb'.",
+      "Value": {
+        "Ref": "GeocoderDbSchemaTaskDefinition"
+      }
+    },
+    "GeocoderDbSchemaTaskSecurityGroupId": {
+      "Description": "The security group the schema task of database 'geocoderDb' runs in.",
+      "Value": {
+        "Fn::GetAtt": [
+          "GeocoderDbSchemaTaskSg",
+          "GroupId"
+        ]
+      }
+    },
+    "SchemaTaskSubnetIds": {
+      "Description": "The subnets the stack's schema tasks run in.",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          [
+            {
+              "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet1Id"
+            },
+            {
+              "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet2Id"
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "RdbmsAccessProvisionCodeKey": {
+      "AllowedPattern": "[0-9A-Za-z!_.*'()/-]{1,1024}",
+      "ConstraintDescription": "an S3 object key of unreserved characters, 1-1024 long",
+      "Description": "Deployment-bucket key of the uploaded database access provisioning function package.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "Alarm1": {
+      "Properties": {
+        "AlarmDescription": "Baseline RDS alarm: CPUUtilization GreaterThanThreshold 80 for geocoderDb of service GeocoderMock",
+        "AlarmName": "CruftFree-Baseline-GeocoderMock-RDS-geocoderDb-CPUUtilization",
+        "ComparisonOperator": "GreaterThanThreshold",
+        "Dimensions": [
+          {
+            "Name": "DBInstanceIdentifier",
+            "Value": {
+              "Ref": "GeocoderDbDb"
+            }
+          }
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/RDS",
+        "Period": 300,
+        "Statistic": "Average",
+        "Tags": [
+          {
+            "Key": "cruftfree-alarm-type",
+            "Value": "baseline"
+          },
+          {
+            "Key": "cruftfree-managed",
+            "Value": "true"
+          }
+        ],
+        "Threshold": 80,
+        "TreatMissingData": "notBreaching"
+      },
+      "Type": "AWS::CloudWatch::Alarm"
+    },
+    "Alarm2": {
+      "Properties": {
+        "AlarmDescription": "Baseline RDS alarm: DatabaseConnections GreaterThanThreshold 80 for geocoderDb of service GeocoderMock",
+        "AlarmName": "CruftFree-Baseline-GeocoderMock-RDS-geocoderDb-DatabaseConnections",
+        "ComparisonOperator": "GreaterThanThreshold",
+        "Dimensions": [
+          {
+            "Name": "DBInstanceIdentifier",
+            "Value": {
+              "Ref": "GeocoderDbDb"
+            }
+          }
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "DatabaseConnections",
+        "Namespace": "AWS/RDS",
+        "Period": 300,
+        "Statistic": "Average",
+        "Tags": [
+          {
+            "Key": "cruftfree-alarm-type",
+            "Value": "baseline"
+          },
+          {
+            "Key": "cruftfree-managed",
+            "Value": "true"
+          }
+        ],
+        "Threshold": 80,
+        "TreatMissingData": "notBreaching"
+      },
+      "Type": "AWS::CloudWatch::Alarm"
+    },
+    "Alarm3": {
+      "Properties": {
+        "AlarmDescription": "Baseline RDS alarm: FreeStorageSpace LessThanThreshold 2147483648 for geocoderDb of service GeocoderMock",
+        "AlarmName": "CruftFree-Baseline-GeocoderMock-RDS-geocoderDb-FreeStorageSpace",
+        "ComparisonOperator": "LessThanThreshold",
+        "Dimensions": [
+          {
+            "Name": "DBInstanceIdentifier",
+            "Value": {
+              "Ref": "GeocoderDbDb"
+            }
+          }
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "FreeStorageSpace",
+        "Namespace": "AWS/RDS",
+        "Period": 300,
+        "Statistic": "Average",
+        "Tags": [
+          {
+            "Key": "cruftfree-alarm-type",
+            "Value": "baseline"
+          },
+          {
+            "Key": "cruftfree-managed",
+            "Value": "true"
+          }
+        ],
+        "Threshold": 2147483648,
+        "TreatMissingData": "notBreaching"
+      },
+      "Type": "AWS::CloudWatch::Alarm"
+    },
+    "GeocoderDbAccessProvision": {
+      "Properties": {
+        "AdminSecretArn": {
+          "Ref": "GeocoderDbSecret"
+        },
+        "Block": "cityservices.GeocoderMock.geocoderDb",
+        "Host": {
+          "Fn::GetAtt": [
+            "GeocoderDbDb",
+            "Endpoint.Address"
+          ]
+        },
+        "LoginSecretArns": {
+          "cityservices_geocoder_mock_geocoder_db_rw": {
+            "Ref": "ZeroEnvCityservicesGeocoderMockGeocoderDbRwPasswordSecret"
+          }
+        },
+        "Port": "5432",
+        "ServiceTimeout": 180,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "RdbmsAccessProvisionFn",
+            "Arn"
+          ]
+        }
+      },
+      "Type": "AWS::CloudFormation::CustomResource"
+    },
+    "GeocoderDbAccessProvisionAccessEgress": {
+      "Properties": {
+        "Description": "Database access provisioning",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "GeocoderDbSg",
+            "GroupId"
+          ]
+        },
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "RdbmsAccessProvisionSg",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 5432
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "GeocoderDbAccessProvisionAccessIngress": {
+      "Properties": {
+        "Description": "Database access provisioning",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "GeocoderDbSg",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "RdbmsAccessProvisionSg",
+            "GroupId"
+          ]
+        },
+        "ToPort": 5432
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "GeocoderDbDb": {
+      "DeletionPolicy": "Snapshot",
+      "Properties": {
+        "AllocatedStorage": "100",
+        "CopyTagsToSnapshot": true,
+        "DBInstanceClass": "db.t3.medium",
+        "DBName": "cityservices_geocoder_mock",
+        "DBSubnetGroupName": {
+          "Ref": "GeocoderDbDbSubnetGroup"
+        },
+        "Engine": "postgres",
+        "EngineVersion": "16",
+        "MasterUserPassword": {
+          "Fn::Join": [
+            "",
+            [
+              "{{resolve:secretsmanager:",
+              {
+                "Ref": "GeocoderDbSecret"
+              },
+              ":SecretString:password}}"
+            ]
+          ]
+        },
+        "MasterUsername": {
+          "Fn::Join": [
+            "",
+            [
+              "{{resolve:secretsmanager:",
+              {
+                "Ref": "GeocoderDbSecret"
+              },
+              ":SecretString:username}}"
+            ]
+          ]
+        },
+        "MultiAZ": false,
+        "Port": "5432",
+        "PubliclyAccessible": false,
+        "StorageEncrypted": true,
+        "StorageType": "gp2",
+        "VPCSecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "GeocoderDbSg",
+              "GroupId"
+            ]
+          }
+        ]
+      },
+      "Type": "AWS::RDS::DBInstance",
+      "UpdateReplacePolicy": "Snapshot"
+    },
+    "GeocoderDbDbSubnetGroup": {
+      "Properties": {
+        "DBSubnetGroupDescription": "Subnet group for geocoderDbDb database",
+        "SubnetIds": [
+          {
+            "Fn::ImportValue": "cityservices-system-vpc-IsolatedSubnet1Id"
+          },
+          {
+            "Fn::ImportValue": "cityservices-system-vpc-IsolatedSubnet2Id"
+          }
+        ]
+      },
+      "Type": "AWS::RDS::DBSubnetGroup"
+    },
+    "GeocoderDbSchemaTaskAccessEgress": {
+      "Properties": {
+        "Description": "Schema task",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "GeocoderDbSg",
+            "GroupId"
+          ]
+        },
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "GeocoderDbSchemaTaskSg",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 5432
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "GeocoderDbSchemaTaskAccessIngress": {
+      "Properties": {
+        "Description": "Schema task",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "GeocoderDbSg",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "GeocoderDbSchemaTaskSg",
+            "GroupId"
+          ]
+        },
+        "ToPort": 5432
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "GeocoderDbSchemaTaskDefinition": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Command": [
+              "set -eu; case \"${RUN_ID:-}\" in \"\"|.*|*[!A-Za-z0-9._-]*) echo \"RUN_ID must name the run: letters, digits, '.', '_' and '-', not starting with '.'\" >&2; exit 2;; esac; aws s3 cp \"s3://${RUN_STORE_BUCKET}/${RUN_STORE_PREFIX}${RUN_ID}/in\" \"/work/in\"; aws s3 cp \"s3://${RUN_STORE_BUCKET}/${RUN_STORE_PREFIX}${RUN_ID}/rds-global-bundle.pem\" \"/work/rds-global-bundle.pem\""
+            ],
+            "EntryPoint": [
+              "sh",
+              "-c"
+            ],
+            "Environment": [
+              {
+                "Name": "AWS_REGION",
+                "Value": {
+                  "Ref": "AWS::Region"
+                }
+              },
+              {
+                "Name": "RUN_STORE_BUCKET",
+                "Value": {
+                  "Fn::ImportValue": "cityservices-system-bootstrap-RunStoreBucketName"
+                }
+              },
+              {
+                "Name": "RUN_STORE_PREFIX",
+                "Value": "cityservices.GeocoderMock.geocoderDb/"
+              }
+            ],
+            "Essential": false,
+            "Image": "amazon/aws-cli:2.38.2@sha256:5d39fd52f236ed01c5c25fba66c9aebcfc6cbb88e7bb1b727c5fe1f150540597",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "GeocoderDbSchemaTaskLogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "copy-in"
+              }
+            },
+            "MountPoints": [
+              {
+                "ContainerPath": "/work",
+                "ReadOnly": false,
+                "SourceVolume": "work"
+              }
+            ],
+            "Name": "copy-in",
+            "ReadonlyRootFilesystem": true
+          },
+          {
+            "Command": [
+              "( umask 077; trap 'rm -f /dev/shm/credential' EXIT; trap 'exit 2' HUP INT TERM; schema_credential=$(printf '%s' \"${SCHEMA_OWNER_SECRET}\") || { echo 'The schema client'\"'\"'s credential could not be fetched.' >&2; exit 2; }; [ -n \"$schema_credential\" ] || { echo 'The schema client'\"'\"'s credential is empty: the block'\"'\"'s owner secret is not set.' >&2; exit 2; }; printf '%s\\n' \"$schema_credential\" | sed -e 's/\\\\/\\\\\\\\/g' -e 's/:/\\\\:/g' -e 's/^/*:*:*:*:/' > /dev/shm/credential || { echo 'The schema client'\"'\"'s credential file could not be written.' >&2; exit 2; }; unset schema_credential SCHEMA_OWNER_SECRET; [ \"$(wc -l < /dev/shm/credential)\" -eq 1 ] || { echo 'The schema client'\"'\"'s credential holds a line break, which its file cannot.' >&2; exit 2; }; export PGPASSFILE=/dev/shm/credential; timeout -k 10 600 psql -X -A -t -q -f - \"$@\" < /work/in ) > /work/out 2> /work/err; echo $? > /work/exit",
+              "sh"
+            ],
+            "DependsOn": [
+              {
+                "Condition": "SUCCESS",
+                "ContainerName": "copy-in"
+              }
+            ],
+            "EntryPoint": [
+              "sh",
+              "-c"
+            ],
+            "Environment": [
+              {
+                "Name": "PGHOST",
+                "Value": {
+                  "Fn::GetAtt": [
+                    "GeocoderDbDb",
+                    "Endpoint.Address"
+                  ]
+                }
+              },
+              {
+                "Name": "PGPORT",
+                "Value": "5432"
+              },
+              {
+                "Name": "PGDATABASE",
+                "Value": "cityservices_geocoder_mock"
+              },
+              {
+                "Name": "PGUSER",
+                "Value": "cruftfree_admin"
+              },
+              {
+                "Name": "PGSSLMODE",
+                "Value": "verify-full"
+              },
+              {
+                "Name": "PGSSLROOTCERT",
+                "Value": "/work/rds-global-bundle.pem"
+              }
+            ],
+            "Essential": false,
+            "Image": "postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "GeocoderDbSchemaTaskLogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "client"
+              }
+            },
+            "MountPoints": [
+              {
+                "ContainerPath": "/work",
+                "ReadOnly": false,
+                "SourceVolume": "work"
+              }
+            ],
+            "Name": "client",
+            "ReadonlyRootFilesystem": true,
+            "Secrets": [
+              {
+                "Name": "SCHEMA_OWNER_SECRET",
+                "ValueFrom": {
+                  "Fn::Sub": "${GeocoderDbSecret}:password::"
+                }
+              }
+            ]
+          },
+          {
+            "Command": [
+              "set -eu; case \"${RUN_ID:-}\" in \"\"|.*|*[!A-Za-z0-9._-]*) echo \"RUN_ID must name the run: letters, digits, '.', '_' and '-', not starting with '.'\" >&2; exit 2;; esac; aws s3 cp \"/work/out\" \"s3://${RUN_STORE_BUCKET}/${RUN_STORE_PREFIX}${RUN_ID}/out\"; aws s3 cp \"/work/err\" \"s3://${RUN_STORE_BUCKET}/${RUN_STORE_PREFIX}${RUN_ID}/err\"; aws s3 cp \"/work/exit\" \"s3://${RUN_STORE_BUCKET}/${RUN_STORE_PREFIX}${RUN_ID}/exit\""
+            ],
+            "DependsOn": [
+              {
+                "Condition": "COMPLETE",
+                "ContainerName": "client"
+              }
+            ],
+            "EntryPoint": [
+              "sh",
+              "-c"
+            ],
+            "Environment": [
+              {
+                "Name": "AWS_REGION",
+                "Value": {
+                  "Ref": "AWS::Region"
+                }
+              },
+              {
+                "Name": "RUN_STORE_BUCKET",
+                "Value": {
+                  "Fn::ImportValue": "cityservices-system-bootstrap-RunStoreBucketName"
+                }
+              },
+              {
+                "Name": "RUN_STORE_PREFIX",
+                "Value": "cityservices.GeocoderMock.geocoderDb/"
+              }
+            ],
+            "Essential": true,
+            "Image": "amazon/aws-cli:2.38.2@sha256:5d39fd52f236ed01c5c25fba66c9aebcfc6cbb88e7bb1b727c5fe1f150540597",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "GeocoderDbSchemaTaskLogGroup"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "copy-out"
+              }
+            },
+            "MountPoints": [
+              {
+                "ContainerPath": "/work",
+                "ReadOnly": false,
+                "SourceVolume": "work"
+              }
+            ],
+            "Name": "copy-out",
+            "ReadonlyRootFilesystem": true
+          }
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "GeocoderDbSchemaTaskExecutionRole",
+            "Arn"
+          ]
+        },
+        "Family": {
+          "Fn::Sub": "${AWS::StackName}-geocoder-db-schema"
+        },
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "GeocoderDbSchemaTaskRole",
+            "Arn"
+          ]
+        },
+        "Volumes": [
+          {
+            "Name": "work"
+          }
+        ]
+      },
+      "Type": "AWS::ECS::TaskDefinition"
+    },
+    "GeocoderDbSchemaTaskExecutionRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "secretsmanager:GetSecretValue"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Ref": "GeocoderDbSecret"
+                    }
+                  ]
+                },
+                {
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::GetAtt": [
+                        "GeocoderDbSchemaTaskLogGroup",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "GeocoderDbSchemaTaskExecutionRolePolicy"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "GeocoderDbSchemaTaskLogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "GeocoderDbSchemaTaskRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Fn::ImportValue": "cityservices-system-bootstrap-RunStoreBucketArn"
+                          },
+                          "/cityservices.GeocoderMock.geocoderDb/*"
+                        ]
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "GeocoderDbSchemaTaskRolePolicy"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "GeocoderDbSchemaTaskSg": {
+      "Properties": {
+        "GroupDescription": "Schema task",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "GeocoderDbSchemaTaskSgEgress573ef375": {
+      "Properties": {
+        "CidrIp": "0.0.0.0/0",
+        "Description": "HTTPS to AWS service APIs (VPC endpoints or NAT) and external HTTPS integrations",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "GeocoderDbSchemaTaskSg",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 443
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "GeocoderDbSecret": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "GenerateSecretString": {
+          "ExcludePunctuation": true,
+          "GenerateStringKey": "password",
+          "PasswordLength": 32,
+          "SecretStringTemplate": "{\"username\":\"cruftfree_admin\"}"
+        }
+      },
+      "Type": "AWS::SecretsManager::Secret",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "GeocoderDbSecretAttachment": {
+      "Properties": {
+        "SecretId": {
+          "Ref": "GeocoderDbSecret"
+        },
+        "TargetId": {
+          "Ref": "GeocoderDbDb"
+        },
+        "TargetType": "AWS::RDS::DBInstance"
+      },
+      "Type": "AWS::SecretsManager::SecretTargetAttachment"
+    },
+    "GeocoderDbSg": {
+      "Properties": {
+        "GroupDescription": "Security group for geocoderDb RDS",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "RdbmsAccessProvisionFn": {
+      "DependsOn": [
+        "RdbmsAccessProvisionFnServiceRoleDefaultPolicy",
+        "RdbmsAccessProvisionFnServiceRole"
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::ImportValue": "cityservices-system-bootstrap-DeploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "RdbmsAccessProvisionCodeKey"
+          }
+        },
+        "Handler": "index.cfn_handler",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "RdbmsAccessProvisionLogGroup"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "RdbmsAccessProvisionFnServiceRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 120,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "RdbmsAccessProvisionSg",
+                "GroupId"
+              ]
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet1Id"
+            },
+            {
+              "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet2Id"
+            }
+          ]
+        }
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "RdbmsAccessProvisionFnServiceRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "RdbmsAccessProvisionFnServiceRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "RdbmsAccessProvisionLogGroup",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${RdbmsAccessProvisionLogGroup.Arn}:*"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+                "ec2:AssignPrivateIpAddresses",
+                "ec2:UnassignPrivateIpAddresses"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:network-interface/*"
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:security-group/${Group}",
+                    {
+                      "Group": {
+                        "Fn::GetAtt": [
+                          "RdbmsAccessProvisionSg",
+                          "GroupId"
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:subnet/${Subnet}",
+                    {
+                      "Subnet": {
+                        "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet1Id"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:subnet/${Subnet}",
+                    {
+                      "Subnet": {
+                        "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet2Id"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeSubnets"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue",
+                "secretsmanager:DescribeSecret"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Ref": "GeocoderDbSecret"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Ref": "ZeroEnvCityservicesGeocoderMockGeocoderDbRwPasswordSecret"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "RdbmsAccessProvisionFnServiceRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "RdbmsAccessProvisionFnServiceRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    },
+    "RdbmsAccessProvisionLogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "RdbmsAccessProvisionSg": {
+      "Properties": {
+        "GroupDescription": "Database access provisioning",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "RdbmsAccessProvisionSgEgress573ef375": {
+      "Properties": {
+        "CidrIp": "0.0.0.0/0",
+        "Description": "HTTPS to AWS service APIs (VPC endpoints or NAT) and external HTTPS integrations",
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "RdbmsAccessProvisionSg",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 443
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "ZeroEnvCityservicesGeocoderMockGeocoderDbRwPasswordSecret": {
+      "Properties": {
+        "Description": "Password of login 'cityservices_geocoder_mock_geocoder_db_rw' of database 'geocoderDb', generated once; the database access provisioning sets it on the login.",
+        "GenerateSecretString": {
+          "ExcludePunctuation": true,
+          "PasswordLength": 32
+        },
+        "Name": "cityservices-geocoder-mock/cityservices_geocoder_mock_geocoder_db_rw_password"
+      },
+      "Type": "AWS::SecretsManager::Secret"
+    }
+  }
+}

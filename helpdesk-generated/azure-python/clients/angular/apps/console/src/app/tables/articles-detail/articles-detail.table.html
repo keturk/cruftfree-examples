@@ -1,0 +1,62 @@
+@if (__source.isLoaded) {
+@if (__source.error; as problem) {
+<div data-kind="callout" role="status" data-state="stale" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(problem, __source.site) ?? __messages.problemTitle(problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.isLoading || __source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+@let row = __item();
+<dl data-kind="detail">
+  <dt>{{ __messages.key(&#39;field.Article.title&#39;).text }}</dt>
+  <dd>{{ __textOf(row.title) }}
+</dd>
+  <dt>{{ __messages.key(&#39;field.Article.topic&#39;).text }}</dt>
+  <dd><span data-kind="badge" [attr.data-tone]="__enumTone(__topicTones, row.topic)">{{ __textOf(__messages.key(__topicLabels[row.topic])) }}</span></dd>
+  <dt>{{ __messages.key(&#39;field.Article.published&#39;).text }}</dt>
+  <dd>{{ __textOf(row.published) }}
+</dd>
+  <dt>{{ __messages.key(&#39;field.Article.summary&#39;).text }}</dt>
+  <dd>{{ __textOf(row.summary) }}
+</dd>
+  <dt>{{ __messages.key(&#39;field.Article.body&#39;).text }}</dt>
+  <dd>{{ __textOf(row.body) }}
+</dd>
+  <dt>{{ __messages.key(&#39;field.Article.helpful&#39;).text }}</dt>
+  <dd>{{ __textOf(__format.number(row.helpful)) }}
+</dd>
+  <dt>{{ __messages.key(&#39;field.Article.notHelpful&#39;).text }}</dt>
+  <dd>{{ __textOf(__format.number(row.notHelpful)) }}
+</dd>
+  <dt>{{ __messages.key(&#39;field.Article.updatedAt&#39;).text }}</dt>
+  <dd>{{ __textOf(__format.dateTime(row.updatedAt)) }}
+</dd>
+</dl>
+} @else if (__source.error; as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __source.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

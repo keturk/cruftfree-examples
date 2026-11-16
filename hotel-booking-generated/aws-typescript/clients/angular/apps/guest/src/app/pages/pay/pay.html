@@ -1,0 +1,83 @@
+@if (__loaded()) {
+@if (__stale(); as staleFailure) {
+<div data-kind="callout" role="status" data-state="stale">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(staleFailure.problem, staleFailure.binding.site) ?? __messages.problemTitle(staleFailure.problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="staleFailure.binding.isLoading || staleFailure.binding.pausedForMs &gt; 0" (click)="staleFailure.binding.refresh()">{{ staleFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(staleFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+
+<header data-kind="pageHeader">
+<a data-part="back" [routerLink]="&quot;/stays&quot;" [attr.aria-label]="__messages.key('framework.back').text"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span></a>
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+</header>
+
+@if (__when0()) {
+<div data-kind="callout" role="status" data-tone="warning" [attr.aria-label]="__aname0()">
+<span data-part="text">{{ __arg2() }}</span>
+</div>
+
+<div data-kind="card">
+<span data-kind="text">
+{{ __arg3() }}
+</span>
+<h2 data-kind="heading">
+{{ __arg4() }}
+</h2>
+<div data-kind="callout" role="status" data-tone="info" [attr.aria-label]="__aname1()">
+<span data-part="text">{{ __arg5() }}</span>
+</div>
+
+<div data-kind="row">
+<button data-kind="button" type="button" data-variant="primary" (click)="(((this.stay.value.status === StayStatus.Held)) ? (this.__ui.settle(this.payWithGoodCard())) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">credit_card</span>
+{{ __arg6() }}
+</button>
+<button data-kind="button" type="button" (click)="(((this.stay.value.status === StayStatus.Held)) ? (this.__ui.settle(this.payWithDeclinedCard())) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">credit_card_off</span>
+{{ __arg7() }}
+</button>
+</div>
+</div>
+
+} @else {
+<div data-kind="callout" role="status" data-tone="info" [attr.aria-label]="__aname2()">
+<span data-part="text">{{ __arg8() }}</span>
+</div>
+
+<a data-kind="link" [routerLink]="this.__nav.url(&quot;/stays/:id&quot;, &#123; &quot;id&quot;: __arg10() &#125;)">
+{{ __arg9() }}
+</a>
+}
+
+} @else if (__failed(); as failed) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(failed.problem, failed.binding.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(failed.problem) }}</span>
+    @if (failed.problem.detail) {
+    <span data-part="detail">{{ failed.problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="failed.binding.pausedForMs &gt; 0" (click)="failed.binding.refresh()">{{ failed.binding.pausedForMs &gt; 0 ? __messages.retryIn(failed.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

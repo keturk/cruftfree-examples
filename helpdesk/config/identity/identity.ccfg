@@ -1,0 +1,53 @@
+// The people who use Lanternpost. The generated stack hosts the sign-in: nothing here or in a service
+// handles a password. Anyone may sign up as a customer; agent and operator are granted, never self-assigned.
+config identity identity {
+  base {
+    audience = "customer";
+    mode = "platformManaged";
+    jwksCacheTtlSeconds = 3600;
+    signUp {
+      allowed = true;
+    }
+    publicClient {
+      flows = ["authorization_code"];
+    }
+    identityFields {
+      email {
+        claimPath = "email";
+        guarantee = "required";
+        syncPolicy = "syncOnAuth";
+      }
+      fullName {
+        claimPath = "name";
+        guarantee = "optional";
+        syncPolicy = "syncOnAuth";
+      }
+    }
+    roleSource {
+      claimPath = "urn:zitadel:iam:org:project:roles";
+      guarantee = "optional";
+    }
+  }
+
+  profile test as "test" extends base {
+  }
+
+  // Entra External ID opens no self-service registration through this generator, so on Azure an
+  // administrator creates or invites each account.
+  profile azure as "azure" extends base {
+    signUp {
+      allowed = false;
+    }
+    // Entra carries a person's app roles in the `roles` claim; Zitadel uses its own project-roles claim.
+    roleSource {
+      claimPath = "roles";
+      guarantee = "optional";
+    }
+  }
+
+  profile development as "dev" extends azure {
+  }
+
+  profile production as "prod" extends base {
+  }
+}

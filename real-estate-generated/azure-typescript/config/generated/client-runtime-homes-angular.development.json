@@ -1,0 +1,6 @@
+{
+  "map": {
+    "attribution": "OpenStreetMap contributors",
+    "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+  }
+}

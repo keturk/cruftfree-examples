@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "sms_db_database": "cityservices_sms_mock",
+    "sms_db_host": "cityservices-system-postgresql",
+    "sms_db_port": 5432,
+    "sms_db_user": "cityservices_sms_mock_sms_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

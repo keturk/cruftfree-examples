@@ -1,0 +1,118 @@
+{
+  "loginPolicy": {
+    "allowRegister": true
+  },
+  "oidcSettings": {
+    "accessTokenLifetime": "900s"
+  },
+  "projects": [
+    {
+      "identityProviders": [],
+      "machineUser": null,
+      "name": "lanternpost-identity",
+      "oidcApps": [
+        {
+          "accessTokenRoleAssertion": true,
+          "accessTokenType": "OIDC_TOKEN_TYPE_JWT",
+          "appType": "OIDC_APP_TYPE_USER_AGENT",
+          "authMethodType": "OIDC_AUTH_METHOD_TYPE_NONE",
+          "devMode": false,
+          "grantTypes": [
+            "OIDC_GRANT_TYPE_AUTHORIZATION_CODE",
+            "OIDC_GRANT_TYPE_REFRESH_TOKEN"
+          ],
+          "idTokenRoleAssertion": true,
+          "name": "lanternpost-identity-app",
+          "postLogoutRedirectUris": [],
+          "redirectUris": [],
+          "responseTypes": [
+            "OIDC_RESPONSE_TYPE_CODE"
+          ]
+        },
+        {
+          "accessTokenRoleAssertion": true,
+          "accessTokenType": "OIDC_TOKEN_TYPE_JWT",
+          "appType": "OIDC_APP_TYPE_USER_AGENT",
+          "authMethodType": "OIDC_AUTH_METHOD_TYPE_NONE",
+          "clientIdFile": "/identity-clients/IdentityConsoleBrowserPublicClientId",
+          "devMode": true,
+          "grantTypes": [
+            "OIDC_GRANT_TYPE_AUTHORIZATION_CODE",
+            "OIDC_GRANT_TYPE_REFRESH_TOKEN"
+          ],
+          "idTokenRoleAssertion": true,
+          "name": "Console-browser",
+          "postLogoutRedirectUris": [
+            "http://localhost:4300/auth/logout"
+          ],
+          "redirectUris": [
+            "http://localhost:4300/auth/callback"
+          ],
+          "responseTypes": [
+            "OIDC_RESPONSE_TYPE_CODE"
+          ]
+        },
+        {
+          "accessTokenRoleAssertion": true,
+          "accessTokenType": "OIDC_TOKEN_TYPE_JWT",
+          "appType": "OIDC_APP_TYPE_USER_AGENT",
+          "authMethodType": "OIDC_AUTH_METHOD_TYPE_NONE",
+          "clientIdFile": "/identity-clients/IdentityHelpCentreBrowserPublicClientId",
+          "devMode": true,
+          "grantTypes": [
+            "OIDC_GRANT_TYPE_AUTHORIZATION_CODE",
+            "OIDC_GRANT_TYPE_REFRESH_TOKEN"
+          ],
+          "idTokenRoleAssertion": true,
+          "name": "HelpCentre-browser",
+          "postLogoutRedirectUris": [
+            "http://localhost:4200/auth/logout"
+          ],
+          "redirectUris": [
+            "http://localhost:4200/auth/callback"
+          ],
+          "responseTypes": [
+            "OIDC_RESPONSE_TYPE_CODE"
+          ]
+        }
+      ],
+      "projectRoleAssertion": true,
+      "roles": [
+        {
+          "description": "CruftFree role mapped from provider-local group ''agents''",
+          "displayName": "agent",
+          "key": "agent"
+        },
+        {
+          "description": "CruftFree role mapped from provider-local group ''operators''",
+          "displayName": "operator",
+          "key": "operator"
+        }
+      ]
+    },
+    {
+      "identityProviders": [],
+      "machineUser": {
+        "name": "lanternpost-machine service account",
+        "userName": "lanternpost-machine-service-account"
+      },
+      "name": "lanternpost-machine",
+      "oidcApps": [],
+      "projectRoleAssertion": false,
+      "roles": []
+    }
+  ],
+  "tokenClaimAction": {
+    "claims": [
+      {
+        "claim": "email",
+        "source": "email"
+      },
+      {
+        "claim": "name",
+        "source": "name"
+      }
+    ],
+    "name": "cruftfreeInjectClaims"
+  }
+}

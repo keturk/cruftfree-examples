@@ -1,0 +1,8 @@
+<header data-kind="pageHeader">
+<a data-part="back" [routerLink]="&quot;/room-types&quot;" [attr.aria-label]="__messages.key('framework.back').text"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span></a>
+<div data-part="titles">
+<h1 data-part="title">{{ __messages.key(&#39;page.RoomTypes.detail&#39;).text }}</h1>
+</div>
+</header>
+
+<app-room-types-detail-table [id]="id()" />

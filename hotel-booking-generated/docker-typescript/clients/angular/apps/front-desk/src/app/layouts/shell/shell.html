@@ -1,0 +1,234 @@
+<a class="ui-skip-link" href="#" (click)="$event.preventDefault(); $any($event.currentTarget).ownerDocument.querySelector('[data-skip-target]')?.focus()">{{ __messages.key(&#39;framework.skipToContent&#39;).text }}</a>
+
+<aside data-kind="sidebar" [attr.aria-label]="__aname0()" [attr.data-collapsed]="__shell.collapsed()">
+<div data-kind="brand">
+<div data-part="tile">
+{{ __format.initials(__arg0()) }}
+</div>
+<span data-part="label">{{ __arg0() }}</span>
+</div>
+<nav [attr.aria-label]="__messages.key('framework.navigation').text">
+  <ul>
+    @if (__navVisible0() || __navVisible1() || __navVisible2() || __navVisible3()) {
+    <li role="presentation" data-part="group-divider"><hr></li>
+    <li role="presentation" data-part="group-heading">{{ __navGroup0() }}</li>
+    }
+    @if (__navVisible0()) {
+    <li>
+      <a routerLink="/" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }" [attr.title]="__navLabel0()">
+        <span class="material-symbols-outlined" aria-hidden="true">today</span>
+        <span data-part="label">{{ __navLabel0() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible1()) {
+    <li>
+      <a routerLink="/calendar" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel1()">
+        <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        <span data-part="label">{{ __navLabel1() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible2()) {
+    <li>
+      <a routerLink="/housekeeping" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel2()">
+        <span class="material-symbols-outlined" aria-hidden="true">cleaning_services</span>
+        <span data-part="label">{{ __navLabel2() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible3()) {
+    <li>
+      <a routerLink="/stays" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel3()">
+        <span class="material-symbols-outlined" aria-hidden="true">table_rows</span>
+        <span data-part="label">{{ __navLabel3() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible4()) {
+    <li role="presentation" data-part="group-divider"><hr></li>
+    <li role="presentation" data-part="group-heading">{{ __navGroup1() }}</li>
+    }
+    @if (__navVisible4()) {
+    <li>
+      <a routerLink="/room-types" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel4()">
+        <span class="material-symbols-outlined" aria-hidden="true">king_bed</span>
+        <span data-part="label">{{ __navLabel4() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible5() || __navVisible6() || __navVisible7() || __navVisible8()) {
+    <li role="presentation" data-part="group-divider"><hr></li>
+    <li role="presentation" data-part="group-heading">{{ __navGroup2() }}</li>
+    }
+    @if (__navVisible5()) {
+    <li>
+      <a routerLink="/charges" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel5()">
+        <span class="material-symbols-outlined" aria-hidden="true">credit_card</span>
+        <span data-part="label">{{ __navLabel5() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible6()) {
+    <li>
+      <a routerLink="/outbox" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel6()">
+        <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+        <span data-part="label">{{ __navLabel6() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible7()) {
+    <li>
+      <a routerLink="/channel" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel7()">
+        <span class="material-symbols-outlined" aria-hidden="true">public</span>
+        <span data-part="label">{{ __navLabel7() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible8()) {
+    <li>
+      <a routerLink="/notices" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel8()">
+        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+        <span data-part="label">{{ __navLabel8() }}</span>
+      </a>
+    </li>
+    }
+  </ul>
+</nav>
+
+<button type="button" data-part="collapse-toggle" (click)="__shell.toggle()" [attr.aria-label]="__messages.key(__shell.collapsed() ? 'framework.expandNavigation' : 'framework.collapseNavigation').text" [attr.aria-expanded]="!__shell.collapsed()">
+  <span class="material-symbols-outlined" aria-hidden="true">{{ __shell.collapsed() ? &#39;left_panel_open&#39; : &#39;left_panel_close&#39; }}</span>
+</button>
+
+</aside>
+<dialog #__drawerRef0 data-part="drawer" aria-modal="true" [attr.aria-label]="__messages.key('framework.navigation').text" (close)="__drawerOpen.set(false)">
+
+
+<nav [attr.aria-label]="__messages.key('framework.navigation').text">
+  <ul>
+    @if (__navVisible0() || __navVisible1() || __navVisible2() || __navVisible3()) {
+    <li role="presentation" data-part="group-divider"><hr></li>
+    <li role="presentation" data-part="group-heading">{{ __navGroup0() }}</li>
+    }
+    @if (__navVisible0()) {
+    <li>
+      <a routerLink="/" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }" [attr.title]="__navLabel0()" (click)="__closeDrawer()">
+        <span class="material-symbols-outlined" aria-hidden="true">today</span>
+        <span data-part="label">{{ __navLabel0() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible1()) {
+    <li>
+      <a routerLink="/calendar" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel1()" (click)="__closeDrawer()">
+        <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        <span data-part="label">{{ __navLabel1() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible2()) {
+    <li>
+      <a routerLink="/housekeeping" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel2()" (click)="__closeDrawer()">
+        <span class="material-symbols-outlined" aria-hidden="true">cleaning_services</span>
+        <span data-part="label">{{ __navLabel2() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible3()) {
+    <li>
+      <a routerLink="/stays" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel3()" (click)="__closeDrawer()">
+        <span class="material-symbols-outlined" aria-hidden="true">table_rows</span>
+        <span data-part="label">{{ __navLabel3() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible4()) {
+    <li role="presentation" data-part="group-divider"><hr></li>
+    <li role="presentation" data-part="group-heading">{{ __navGroup1() }}</li>
+    }
+    @if (__navVisible4()) {
+    <li>
+      <a routerLink="/room-types" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel4()" (click)="__closeDrawer()">
+        <span class="material-symbols-outlined" aria-hidden="true">king_bed</span>
+        <span data-part="label">{{ __navLabel4() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible5() || __navVisible6() || __navVisible7() || __navVisible8()) {
+    <li role="presentation" data-part="group-divider"><hr></li>
+    <li role="presentation" data-part="group-heading">{{ __navGroup2() }}</li>
+    }
+    @if (__navVisible5()) {
+    <li>
+      <a routerLink="/charges" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel5()" (click)="__closeDrawer()">
+        <span class="material-symbols-outlined" aria-hidden="true">credit_card</span>
+        <span data-part="label">{{ __navLabel5() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible6()) {
+    <li>
+      <a routerLink="/outbox" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel6()" (click)="__closeDrawer()">
+        <span class="material-symbols-outlined" aria-hidden="true">mail</span>
+        <span data-part="label">{{ __navLabel6() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible7()) {
+    <li>
+      <a routerLink="/channel" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel7()" (click)="__closeDrawer()">
+        <span class="material-symbols-outlined" aria-hidden="true">public</span>
+        <span data-part="label">{{ __navLabel7() }}</span>
+      </a>
+    </li>
+    }
+    @if (__navVisible8()) {
+    <li>
+      <a routerLink="/notices" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [attr.title]="__navLabel8()" (click)="__closeDrawer()">
+        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+        <span data-part="label">{{ __navLabel8() }}</span>
+      </a>
+    </li>
+    }
+  </ul>
+</nav>
+
+
+</dialog>
+
+<div data-kind="stack">
+<header data-kind="topBar">
+<button type="button" data-part="drawer-opener" (click)="__openDrawer()" [attr.aria-label]="__messages.key('framework.menu').text" aria-haspopup="dialog" [attr.aria-expanded]="__drawerOpen()">
+  <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+</button>
+
+<div data-kind="spacer" aria-hidden="true">
+</div>
+@if (__when0()) {
+<button data-kind="menuTrigger" data-part="menu-trigger" [attr.popovertarget]="__elRef0.id" aria-haspopup="menu" [attr.aria-expanded]="__elRef0.open()" type="button" [attr.aria-label]="__arg1()">
+<span data-kind="avatar" role="img">
+{{ __arg2() }}
+</span>
+</button>
+<div data-kind="menu" cruftfreeMenuKeys cruftfreePopover #__elRef0="cruftfreePopover" popover="" role="menu" data-part="menu-panel" [attr.aria-label]="__arg1()">
+<span data-kind="text">
+{{ __arg3() }}
+</span>
+<hr data-kind="divider" />
+<button data-kind="menuItem" type="button" role="menuitem" (click)="((this.__session.isAuthenticated) ? (this.__session.logout()) : this.__outsideWhen()); __elRef0.hide()">
+{{ __arg4() }}
+</button>
+</div>
+
+
+} @else {
+<button data-kind="button" type="button" (click)="((!(this.__session.isAuthenticated)) ? (this.__session.login()) : this.__outsideWhen())">
+{{ __arg5() }}
+</button>
+}
+</header>
+<main class="ui-content" data-skip-target tabindex="-1">
+<router-outlet />
+</main>
+</div>
+

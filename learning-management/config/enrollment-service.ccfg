@@ -1,0 +1,80 @@
+config service lms.EnrollmentService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8002;
+    language = "python";  // TutorService's agent needs Python, and one system generates in one language.
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms enrollmentDb from postgresContainer(id: "1dbc0032-7313-41ec-b80f-7325b276ea89", database: "lms_enrollment");
+    httpSecurity from localHttpSecurity(host: "lms-enrollment-service");
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    jobs {
+      jobs {
+        RemindQuietStudents {
+          schedule = "0 9 * * *";
+          timeout = "120s";
+        }
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // The defaults only exist on a local stack, where they match the hashes seeded in seed/, so the
+      // example runs with nothing to configure. Any other deployment must supply the handles' values.
+      secret payment_provider_api_key {
+        required = true;
+        purpose = "API key for the card vendor (PaymentProvider contract).";
+        localDefault = "dev-only-payment-key-not-a-credential";
+      }
+      secret email_provider_api_key {
+        required = true;
+        purpose = "API key for the email vendor (EmailProvider contract).";
+        localDefault = "dev-only-email-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile azure as "azure" extends base {
+    alias env = "AZURE";
+    alias resource = "azure";
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms enrollmentDb from azurePostgres(id: "1dbc0032-7313-41ec-b80f-7325b276ea89", database: "lms_enrollment", poolSize: 20, maxOverflow: 10);
+  }
+
+  profile development as "dev" extends azure {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

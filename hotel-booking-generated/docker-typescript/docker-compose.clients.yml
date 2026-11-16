@@ -1,0 +1,63 @@
+services:
+  hotel-system-guest-angular-web-static-site:
+    build:
+      context: ./clients/angular/
+      dockerfile: ../../config/web-static-site/guest-angular.dockerfile
+    container_name: hotel-system-guest-angular-web-static-site
+    ports:
+    - 127.0.0.1:${HOTEL_SYSTEM_GUEST_ANGULAR_WEB_STATIC_SITE_HOST_PORT:-4200}:80
+    volumes:
+    - ./config/nginx/web-guest-angular.conf:/etc/nginx/conf.d/default.conf:ro
+    - type: bind
+      source: ./config/resolved
+      target: /cruftfree-runtime-config
+      read_only: true
+      bind:
+        create_host_path: false
+    healthcheck:
+      test:
+      - CMD
+      - nginx
+      - -t
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    cpu_shares: 1024
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  hotel-system-front-desk-angular-web-static-site:
+    build:
+      context: ./clients/angular/
+      dockerfile: ../../config/web-static-site/front-desk-angular.dockerfile
+    container_name: hotel-system-front-desk-angular-web-static-site
+    ports:
+    - 127.0.0.1:${HOTEL_SYSTEM_FRONT_DESK_ANGULAR_WEB_STATIC_SITE_HOST_PORT:-4300}:80
+    volumes:
+    - ./config/nginx/web-front-desk-angular.conf:/etc/nginx/conf.d/default.conf:ro
+    - type: bind
+      source: ./config/resolved
+      target: /cruftfree-runtime-config
+      read_only: true
+      bind:
+        create_host_path: false
+    healthcheck:
+      test:
+      - CMD
+      - nginx
+      - -t
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    cpu_shares: 1024
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'

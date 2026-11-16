@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "geocoder_db_database": "cityservices_geocoder_mock",
+    "geocoder_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

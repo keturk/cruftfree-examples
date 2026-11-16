@@ -1,0 +1,92 @@
+@if (__loaded()) {
+@if (__stale(); as staleFailure) {
+<div data-kind="callout" role="status" data-state="stale">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(staleFailure.problem, staleFailure.binding.site) ?? __messages.problemTitle(staleFailure.problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="staleFailure.binding.isLoading || staleFailure.binding.pausedForMs &gt; 0" (click)="staleFailure.binding.refresh()">{{ staleFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(staleFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+
+<header data-kind="pageHeader">
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+</header>
+
+@if (__when0()) {
+<div data-kind="emptyState">
+<span class="material-symbols-outlined" aria-hidden="true">event</span>
+<p data-part="title">{{ __arg2() }}</p>
+<div data-part="actions">
+<a data-kind="link" data-variant="primary" [routerLink]="&quot;/&quot;">
+{{ __arg3() }}
+</a>
+</div>
+</div>
+
+}
+<ul data-kind="list" class="ui-list">
+@for (item of __items0(); track $index) {
+<li><h2 data-kind="heading">
+{{ this.__textOf(item.listingTitle) }}
+</h2>
+<span data-kind="badge" [attr.data-tone]="this.__enumTone(this.__enumTones0, item.status)">
+{{ this.__textOf(this.__enumText(this.__messages, this.__enumLabels0, item.status)) }}
+</span>
+<span data-kind="text">
+{{ this.__textOf(this.__format.dateTime(item.startsAt)) }}
+</span>
+<span data-kind="text">
+{{ this.__textOf(this.__messages.key(&quot;withAgent&quot;, &#123; &quot;name&quot;: item.agentName &#125;)) }}
+</span>
+@if (((item.status === ViewingStatus.Requested) || (item.status === ViewingStatus.Confirmed))) {
+<button data-kind="button" type="button" (click)="this.__ui.settle(this.cancel(item.id))">
+<span class="material-symbols-outlined" aria-hidden="true">event_busy</span>
+{{ __arg4() }}
+</button>
+}
+</li>
+} @empty {
+<li data-part="empty"><div data-kind="emptyState" data-state="empty">
+  <span class="material-symbols-outlined" aria-hidden="true">inbox</span>
+  <p data-part="title">{{ __empty0() }}</p>
+  @if (__messages.has('emptyDescription.viewings')) {
+  <p data-part="description">{{ __messages.key(&#39;emptyDescription.viewings&#39;).text }}</p>
+  }
+</div>
+
+</li>
+}
+</ul>
+
+
+
+} @else if (__failed(); as failed) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(failed.problem, failed.binding.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(failed.problem) }}</span>
+    @if (failed.problem.detail) {
+    <span data-part="detail">{{ failed.problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="failed.binding.pausedForMs &gt; 0" (click)="failed.binding.refresh()">{{ failed.binding.pausedForMs &gt; 0 ? __messages.retryIn(failed.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

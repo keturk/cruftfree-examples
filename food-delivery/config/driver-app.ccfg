@@ -1,0 +1,34 @@
+config app fooddelivery.Driver {
+  base {
+    targets = ["angular", "flutter"];
+    clients {
+      angular {
+        scope = "@saltbox";
+      }
+    }
+    appId = "com.example.saltbox.driver";
+    strings = ["config/strings/driver.en-US.ccfg"];
+    map {
+      tiles = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+      attribution = "Map data from OpenStreetMap contributors";
+    }
+  }
+  profile test as "test" extends base {
+    web { port = 4400; }
+  }
+  profile azure as "azure" extends base {
+    android {
+      keystore = "android_keystore";
+      keyAlias = "android_key_alias";
+      storePassword = "android_store_password";
+      keyPassword = "android_key_password";
+    }
+    ios { teamId = "ABCDE12345"; }
+    web { domain { name = "driver.saltbox.example.com"; } }
+  }
+  profile development as "dev" extends azure {
+  }
+  profile production as "prod" extends base {
+    web { port = 4400; }
+  }
+}

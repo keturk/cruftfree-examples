@@ -1,0 +1,49 @@
+// The people who use Quillon Bank. The generated stack hosts the sign-in: nothing here or in a
+// service ever handles a password. Anyone may register as a customer; the teller, officer and
+// operator roles are granted, never self-assigned.
+config identity identity {
+  base {
+    audience = "workforce";
+    mode = "platformManaged";
+    jwksCacheTtlSeconds = 3600;
+    signUp {
+      allowed = true;
+    }
+    publicClient {
+      flows = ["authorization_code"];
+    }
+    identityFields {
+      email {
+        claimPath = "email";
+        guarantee = "required";
+        syncPolicy = "syncOnAuth";
+      }
+      fullName {
+        claimPath = "name";
+        guarantee = "optional";
+        syncPolicy = "syncOnAuth";
+      }
+    }
+    roleSource {
+      claimPath = "urn:zitadel:iam:org:project:roles";
+      guarantee = "optional";
+    }
+  }
+
+  profile test as "test" extends base {
+  }
+
+  profile aws as "aws" extends base {
+    // Cognito carries a person's groups in the `cognito:groups` claim; Zitadel uses its own project-roles claim.
+    roleSource {
+      claimPath = "cognito:groups";
+      guarantee = "optional";
+    }
+  }
+
+  profile development as "dev" extends aws {
+  }
+
+  profile production as "prod" extends base {
+  }
+}

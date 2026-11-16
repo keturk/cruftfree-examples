@@ -1,0 +1,180 @@
+@if (__loaded()) {
+@if (__stale(); as staleFailure) {
+<div data-kind="callout" role="status" data-state="stale">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(staleFailure.problem, staleFailure.binding.site) ?? __messages.problemTitle(staleFailure.problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="staleFailure.binding.isLoading || staleFailure.binding.pausedForMs &gt; 0" (click)="staleFailure.binding.refresh()">{{ staleFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(staleFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+
+<header data-kind="pageHeader">
+<a data-part="back" [routerLink]="&quot;/&quot;" [attr.aria-label]="__messages.key('framework.back').text"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span></a>
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+<div data-part="actions">
+<span data-kind="badge" [attr.data-tone]="__mod0()">
+{{ __arg2() }}
+</span>
+<button data-kind="button" type="button" (click)="this.startNote()">
+<span class="material-symbols-outlined" aria-hidden="true">sticky_note_2</span>
+{{ __arg3() }}
+</button>
+@if (__when0()) {
+<button data-kind="button" type="button" data-variant="primary" (click)="(((this.detail.value.stay.status === StayStatus.CheckedIn)) ? (this.__ui.settle(this.checkOutNow())) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">logout</span>
+{{ __arg4() }}
+</button>
+}
+@if (__when1()) {
+<button data-kind="button" type="button" data-tone="danger" (click)="((((this.detail.value.stay.status === StayStatus.Confirmed) || (this.detail.value.stay.status === StayStatus.Held))) ? (this.__ui.settle(this.cancelNow())) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">event_busy</span>
+{{ __arg5() }}
+</button>
+}
+
+</div>
+</header>
+
+<div data-kind="grid" class="style-statRow">
+<div data-kind="stat">
+<span class="material-symbols-outlined" aria-hidden="true">king_bed</span>
+<span data-part="label">{{ __arg6() }}</span>
+<span data-part="value">{{ __arg7() }}</span>
+</div>
+<div data-kind="stat">
+<span class="material-symbols-outlined" aria-hidden="true">door_front</span>
+<span data-part="label">{{ __arg8() }}</span>
+<span data-part="value">{{ __arg9() }}</span>
+</div>
+<div data-kind="stat">
+<span class="material-symbols-outlined" aria-hidden="true">mail</span>
+<span data-part="label">{{ __arg10() }}</span>
+<span data-part="value">{{ __arg11() }}</span>
+</div>
+<div data-kind="stat">
+<span class="material-symbols-outlined" aria-hidden="true">payments</span>
+<span data-part="label">{{ __arg12() }}</span>
+<span data-part="value">{{ __arg13() }}</span>
+</div>
+</div>
+<div data-kind="card">
+<span data-kind="text">
+{{ __arg14() }}
+</span>
+<span data-kind="text">
+{{ __arg15() }}
+</span>
+</div>
+
+@if (__when2()) {
+<div data-kind="callout" role="status" data-tone="info">
+<span data-part="text">{{ __arg16() }}</span>
+</div>
+
+}
+@if (__when3()) {
+@if (__region0Loaded()) {
+<section data-kind="section" [attr.aria-label]="__aname1()">
+<div data-part="header">
+<h2 data-part="title">{{ __arg17() }}</h2>
+</div>
+@if (__region0Stale(); as staleFailure) {
+<div data-kind="callout" role="status" data-state="stale" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(staleFailure.problem, staleFailure.binding.site) ?? __messages.problemTitle(staleFailure.problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="staleFailure.binding.isLoading || staleFailure.binding.pausedForMs &gt; 0" (click)="staleFailure.binding.refresh()">{{ staleFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(staleFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+
+@if (__when4()) {
+<div data-kind="callout" role="status" data-tone="warning" [attr.aria-label]="__aname0()">
+<span data-part="text">{{ __arg18() }}</span>
+</div>
+
+}
+@for (room of __foreach0(); track $index) {
+<div data-kind="card">
+<div data-part="header">
+<h3 data-part="title">{{ (((this.detail.value.stay.status === StayStatus.Confirmed)) ? (this.__textOf(this.__messages.key(&quot;roomLine&quot;, &#123; &quot;number&quot;: room.number &#125;))) : this.__outsideWhen()) }}</h3>
+</div>
+<span data-kind="text">
+{{ (((this.detail.value.stay.status === StayStatus.Confirmed)) ? (this.__textOf(this.__messages.key(&quot;floorLine&quot;, &#123; &quot;floor&quot;: this.__format.number(room.floor) &#125;))) : this.__outsideWhen()) }}
+</span>
+<button data-kind="button" type="button" data-variant="primary" (click)="(((this.detail.value.stay.status === StayStatus.Confirmed)) ? (this.__ui.settle(this.checkInto(room.number))) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">login</span>
+{{ __arg19() }}
+</button>
+</div>
+
+}
+</section>
+
+
+} @else if (__region0Failed(); as regionFailure) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(regionFailure.problem, regionFailure.binding.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(regionFailure.problem) }}</span>
+    @if (regionFailure.problem.detail) {
+    <span data-part="detail">{{ regionFailure.problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="regionFailure.binding.pausedForMs &gt; 0" (click)="regionFailure.binding.refresh()">{{ regionFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(regionFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}
+
+}
+@if (__when5()) {
+<dialog data-kind="dialog" #__elRef0 aria-modal="true" [attr.aria-label]="__aname2()" (close)="((this.__app.noting()) ? (this.__ui.settle(this.stopNote())) : this.__outsideWhen())">
+{{ __arg20() }}
+<app-desk-note-form-form data-kind="form">
+</app-desk-note-form-form>
+</dialog>
+}
+
+} @else if (__failed(); as failed) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(failed.problem, failed.binding.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(failed.problem) }}</span>
+    @if (failed.problem.detail) {
+    <span data-part="detail">{{ failed.problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="failed.binding.pausedForMs &gt; 0" (click)="failed.binding.refresh()">{{ failed.binding.pausedForMs &gt; 0 ? __messages.retryIn(failed.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

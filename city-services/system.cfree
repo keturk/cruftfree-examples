@@ -1,0 +1,18 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/sms-provider.cfree';
+include 'providers/geocoder-provider.cfree';
+include 'district-service.cfree';
+include 'facility-service.cfree';
+include 'request-service.cfree';
+include 'mocks/sms-mock.cfree';
+include 'mocks/geocoder-mock.cfree';
+include 'citizen-app.cfree';
+include 'operations-app.cfree';
+
+/// Port Alder 311: residents report a problem from a street address, and the city routes it to the
+/// district that address falls in, using PostGIS for the spatial answers. Sending texts and looking
+/// up addresses belong to outside vendors, played here by mocks in the same stack.
+system cityservices.System('config/system.ccfg') : version('2.0.0') {
+    use extension postgis;
+}

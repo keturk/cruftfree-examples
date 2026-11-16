@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "mortgage_db_database": "realestate_mortgage_mock",
+    "mortgage_db_host": "realestate-system-postgresql",
+    "mortgage_db_port": 5432,
+    "mortgage_db_user": "realestate_mortgage_mock_mortgage_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

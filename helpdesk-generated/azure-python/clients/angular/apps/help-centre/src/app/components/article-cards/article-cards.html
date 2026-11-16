@@ -1,0 +1,21 @@
+<div data-kind="grid" class="style-cardGrid">
+@for (article of __foreach0(); track $index) {
+<div data-kind="card">
+<div data-part="header">
+<h3 data-part="title">{{ this.__textOf(article.title) }}</h3>
+</div>
+<span data-kind="badge" [attr.data-tone]="this.__enumTone(this.__enumTones0, article.topic)">
+{{ this.__textOf(this.__enumText(this.__messages, this.__enumLabels0, article.topic)) }}
+</span>
+<span data-kind="text">
+{{ this.__textOf(article.summary) }}
+</span>
+<a data-kind="link" [routerLink]="this.__nav.url(&quot;/articles/:id&quot;, &#123; &quot;id&quot;: article.id &#125;)">
+<span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+{{ __arg0() }}
+</a>
+</div>
+
+}
+</div>
+

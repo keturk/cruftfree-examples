@@ -1,0 +1,810 @@
+{
+  "block": {
+    "name": "dealDb"
+  },
+  "container": {
+    "kind": "service",
+    "name": "realestate.DealService"
+  },
+  "cqrs_views": {},
+  "entities": {
+    "Contract": {
+      "checks": [
+        {
+          "name": "chk_contracts_buyer_name_20c2bccd",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "buyer_name"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_contracts_envelope_id_f51afe7b",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "envelope_id"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 40
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_contracts_listing_title_3dd2881f",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "listing_title"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        }
+      ],
+      "fields": {
+        "agentEmail": {
+          "column_name": "agent_email",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Email",
+            "values": []
+          }
+        },
+        "buyerEmail": {
+          "column_name": "buyer_email",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Email",
+            "values": []
+          }
+        },
+        "buyerName": {
+          "column_name": "buyer_name",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "createdAt": {
+          "column_name": "created_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "envelopeId": {
+          "column_name": "envelope_id",
+          "default": null,
+          "nullable": true,
+          "primary_key": false,
+          "storage": {
+            "max_length": 40,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 40
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "id": {
+          "column_name": "id",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": "uuid",
+              "kind": "BuiltinCall"
+            },
+            "value": "uuid()"
+          },
+          "nullable": false,
+          "primary_key": true,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "listingId": {
+          "column_name": "listing_id",
+          "comment": "One home, one contract: the unique key is what the database itself refuses to break.",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          },
+          "unique": true
+        },
+        "listingTitle": {
+          "column_name": "listing_title",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "offerId": {
+          "column_name": "offer_id",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "price": {
+          "column_name": "price",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Money",
+            "values": []
+          }
+        },
+        "signedAt": {
+          "column_name": "signed_at",
+          "default": null,
+          "nullable": true,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "status": {
+          "column_name": "status",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "tree": {
+              "kind": "Literal",
+              "type": "text",
+              "value": "awaiting_signature"
+            },
+            "value": "ContractStatus.AwaitingSignature"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "enum",
+            "name": "ContractStatus",
+            "values": [
+              "AwaitingSignature",
+              "Signed",
+              "Declined"
+            ]
+          }
+        },
+        "updatedAt": {
+          "column_name": "updated_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        }
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "columns": [
+            "buyer_email"
+          ],
+          "fulltext": false,
+          "name": "ix_contracts_buyer_email",
+          "unique": false
+        },
+        {
+          "columns": [
+            "agent_email"
+          ],
+          "fulltext": false,
+          "name": "ix_contracts_agent_email",
+          "unique": false
+        }
+      ],
+      "table_name": "contracts",
+      "table_options": {}
+    },
+    "Offer": {
+      "checks": [
+        {
+          "name": "chk_offers_buyer_name_20c2bccd",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "buyer_name"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_offers_lender_reference_d709ae72",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "lender_reference"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 40
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_offers_listing_title_3dd2881f",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "listing_title"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        }
+      ],
+      "fields": {
+        "agentEmail": {
+          "column_name": "agent_email",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Email",
+            "values": []
+          }
+        },
+        "amount": {
+          "column_name": "amount",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Money",
+            "values": []
+          }
+        },
+        "buyerEmail": {
+          "column_name": "buyer_email",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Email",
+            "values": []
+          }
+        },
+        "buyerName": {
+          "column_name": "buyer_name",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "createdAt": {
+          "column_name": "created_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "financing": {
+          "column_name": "financing",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "enum",
+            "name": "Financing",
+            "values": [
+              "Cash",
+              "Mortgage"
+            ]
+          }
+        },
+        "id": {
+          "column_name": "id",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": "uuid",
+              "kind": "BuiltinCall"
+            },
+            "value": "uuid()"
+          },
+          "nullable": false,
+          "primary_key": true,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "lenderReference": {
+          "column_name": "lender_reference",
+          "default": null,
+          "nullable": true,
+          "primary_key": false,
+          "storage": {
+            "max_length": 40,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 40
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "listingId": {
+          "column_name": "listing_id",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "listingTitle": {
+          "column_name": "listing_title",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "status": {
+          "column_name": "status",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "tree": {
+              "kind": "Literal",
+              "type": "text",
+              "value": "submitted"
+            },
+            "value": "OfferStatus.Submitted"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "enum",
+            "name": "OfferStatus",
+            "values": [
+              "Submitted",
+              "Accepted",
+              "Rejected",
+              "Withdrawn"
+            ]
+          }
+        },
+        "updatedAt": {
+          "column_name": "updated_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        }
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "columns": [
+            "listing_id"
+          ],
+          "fulltext": false,
+          "name": "ix_offers_listing_id",
+          "unique": false
+        },
+        {
+          "columns": [
+            "buyer_email"
+          ],
+          "fulltext": false,
+          "name": "ix_offers_buyer_email",
+          "unique": false
+        },
+        {
+          "columns": [
+            "agent_email"
+          ],
+          "fulltext": false,
+          "name": "ix_offers_agent_email",
+          "unique": false
+        }
+      ],
+      "table_name": "offers",
+      "table_options": {}
+    }
+  },
+  "enums": [
+    {
+      "database_name": "contract_status",
+      "member_values": [
+        null,
+        null,
+        null
+      ],
+      "name": "ContractStatus",
+      "values": [
+        "AwaitingSignature",
+        "Signed",
+        "Declined"
+      ]
+    },
+    {
+      "database_name": "financing",
+      "member_values": [
+        null,
+        null
+      ],
+      "name": "Financing",
+      "values": [
+        "Cash",
+        "Mortgage"
+      ]
+    },
+    {
+      "database_name": "offer_status",
+      "member_values": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "name": "OfferStatus",
+      "values": [
+        "Submitted",
+        "Accepted",
+        "Rejected",
+        "Withdrawn"
+      ]
+    }
+  ],
+  "format": "cruftfree.rdbms.schema",
+  "rdbms_id": "5d578862-333d-48ca-b15c-e6d249dd8afb",
+  "service": {
+    "name": "realestate.DealService",
+    "version": "2.0.0"
+  },
+  "version": 9
+}

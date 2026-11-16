@@ -1,0 +1,42 @@
+config strings ecommerce.Site locale "en-US" {
+  messages {
+    siteName          = "Wrenwood";
+    logoAlt           = "The Wrenwood logo";
+    heroAlt           = "A green banner with leaves";
+    coverAlt          = "Article illustration";
+    homeHeading       = "Things for a slower house";
+    homeTagline       = "Candles, stoneware, linen and light, made by people who care how it turns out.";
+    homeDescription   = "Wrenwood sells candles, stoneware, linen and lamps from small workshops, with live stock and tracking to your door.";
+    readMore          = "Read the article";
+    aboutHeading      = "About Wrenwood";
+    aboutBody         = "Wrenwood is a small shop with a short list of makers. We sell what we would keep in our own houses, and when something runs out we say so.";
+    aboutDescription  = "Who we are and how we choose what we sell.";
+    articleDescription = "News and guides from Wrenwood.";
+    notFoundHeading   = "Page not found";
+    notFoundBody      = "The page you were looking for does not exist or has moved.";
+    footerExplore     = "Explore";
+    footerHome        = "Home";
+    footerAbout       = "About us";
+    footerContact     = "Contact us";
+    footerShop        = "Visit the shop";
+    footerTerms       = "Terms of sale";
+    footerPrivacy     = "Privacy";
+    keywordCandles    = "candles";
+    keywordStoneware  = "stoneware";
+    keywordLinen      = "linen";
+    contactHeading    = "Write to us";
+    contactIntro      = "A question about an order, a maker or a product? We answer every message within two working days.";
+    contactDescription = "Write to Wrenwood: questions about orders, makers and products.";
+    contactSent       = "Thank you. Your message is with us.";
+  }
+  labels {
+    page.Home          = "Home";
+    page.About         = "About";
+    page.Contact       = "Contact";
+    page.ArticleDetail = "Article";
+    page.Missing       = "Not found";
+    field.ContactMessage.name = "Your name";
+    field.ContactMessage.email = "Your email address";
+    field.ContactMessage.message = "Your message";
+  }
+}

@@ -1,0 +1,20 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/payment-provider.cfree';
+include 'providers/route-provider.cfree';
+include 'providers/sms-provider.cfree';
+include 'restaurant-service.cfree';
+include 'order-service.cfree';
+include 'delivery-service.cfree';
+include 'mocks/payment-mock.cfree';
+include 'mocks/route-mock.cfree';
+include 'mocks/sms-mock.cfree';
+include 'customer-app.cfree';
+include 'kitchen-app.cfree';
+include 'driver-app.cfree';
+
+/// Saltbox: three audiences around one order. A customer orders from a phone, a kitchen moves it
+/// across a board, and a driver takes it to the door. Card payments, routes and texts belong to
+/// outside vendors, played here by mocks in the same stack.
+system fooddelivery.System('config/system.ccfg') : version('2.0.0') {
+}

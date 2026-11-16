@@ -1,0 +1,19 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/mortgage-provider.cfree';
+include 'providers/signature-provider.cfree';
+include 'providers/email-provider.cfree';
+include 'listing-service.cfree';
+include 'viewing-service.cfree';
+include 'deal-service.cfree';
+include 'mocks/mortgage-mock.cfree';
+include 'mocks/signature-mock.cfree';
+include 'mocks/email-mock.cfree';
+include 'homes-app.cfree';
+include 'console-app.cfree';
+
+/// Cobblestone Homes: anyone can search the homes for sale; a buyer books a viewing and makes an offer, with
+/// a lender's pre-approval if they need one; an agent accepts one offer, and the contract goes out for
+/// signature. The lender, the e-signature vendor and the email vendor run as mocks in the same stack.
+system realestate.System('config/system.ccfg') : version('2.0.0') {
+}

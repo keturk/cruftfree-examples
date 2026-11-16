@@ -1,0 +1,10 @@
+{
+  "connections": {
+    "email_provider_base_url": "http://realestate-email-mock:8092",
+    "viewing_db_database": "realestate_viewing",
+    "viewing_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

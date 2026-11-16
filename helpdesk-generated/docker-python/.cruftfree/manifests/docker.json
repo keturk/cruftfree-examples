@@ -1,0 +1,283 @@
+{
+  "target": "docker",
+  "generated_at": "2026-11-16T02:07:59Z",
+  "files": [
+    ".cruftfree/runtime-requirements.json",
+    ".env.example",
+    ".env.validation",
+    "ENV.md",
+    "config/alertmanager/alertmanager.yml",
+    "config/client-contract/write_client_contract.py",
+    "config/engine-api-proxy/engine_api_proxy.py",
+    "config/grafana/dashboards/cruftfree-system-overview.json",
+    "config/grafana/dashboards/helpdesk-email-mock.json",
+    "config/grafana/dashboards/helpdesk-knowledge-service.json",
+    "config/grafana/dashboards/helpdesk-notice-service.json",
+    "config/grafana/dashboards/helpdesk-ticket-service.json",
+    "config/grafana/provisioning/dashboards/cruftfree-dashboards.yml",
+    "config/grafana/provisioning/datasources/datasources.yml",
+    "config/grafana/provisioning/datasources/prometheus.yml",
+    "config/identity/identity-providers.json",
+    "config/identity/identity-providers.template.json",
+    "config/identity/zitadel-provisioning.json",
+    "config/jaeger/sampling_strategies.json",
+    "config/nginx/nginx.conf",
+    "config/nginx/web-console-angular.conf",
+    "config/nginx/web-help-centre-angular.conf",
+    "config/prometheus/prometheus.yml",
+    "config/prometheus/rules/baseline_infra_alerts.yml",
+    "config/prometheus/rules/helpdesk-email-mock_alerts.yml",
+    "config/prometheus/rules/helpdesk-knowledge-service_alerts.yml",
+    "config/prometheus/rules/helpdesk-notice-service_alerts.yml",
+    "config/prometheus/rules/helpdesk-ticket-service_alerts.yml",
+    "config/promtail/promtail-config.yaml",
+    "config/services/helpdesk-email-mock/config-store.json",
+    "config/services/helpdesk-knowledge-service/config-store.json",
+    "config/services/helpdesk-notice-service/config-store.json",
+    "config/services/helpdesk-ticket-service/config-store.json",
+    "config/web-static-site/console-angular.dockerfile",
+    "config/web-static-site/help-centre-angular.dockerfile",
+    "docker-compose.clients.yml",
+    "docker-compose.yml",
+    "helpdesk_email_mock/.dockerignore",
+    "helpdesk_email_mock/Dockerfile",
+    "helpdesk_knowledge_service/.dockerignore",
+    "helpdesk_knowledge_service/Dockerfile",
+    "helpdesk_notice_service/.dockerignore",
+    "helpdesk_notice_service/Dockerfile",
+    "helpdesk_ticket_service/.dockerignore",
+    "helpdesk_ticket_service/Dockerfile",
+    "python-base/Dockerfile",
+    "python-base/requirements.txt",
+    "scripts/db-access/helpdesk-email-mock-email-db.sql",
+    "scripts/db-access/helpdesk-knowledge-service-knowledge-db.sql",
+    "scripts/db-access/helpdesk-notice-service-notice-db.sql",
+    "scripts/db-access/helpdesk-ticket-service-ticket-db.sql",
+    "scripts/deploy.ps1",
+    "scripts/deploy.py",
+    "scripts/deploy.sh",
+    "scripts/init-db/helpdesk-system-postgresql.sql",
+    "scripts/init-topics/helpdesk-system-kafka-broker-config.sh",
+    "scripts/init-topics/helpdesk-ticket-service-mq.sh",
+    "scripts/test_jwks_server.py",
+    "scripts/zitadel/apply_provisioning.py",
+    "secrets/helpdesk-email-mock/email_db_password",
+    "secrets/helpdesk-knowledge-service/knowledge_db_password",
+    "secrets/helpdesk-notice-service/email_provider_api_key",
+    "secrets/helpdesk-notice-service/notice_db_password",
+    "secrets/helpdesk-ticket-service/ticket_db_password"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    ".cruftfree/runtime-requirements.json": "f45d61a3a6609cb1997cc405fa075a64be3473a43fd653e9ab9000236b044195",
+    ".env.example": "06b0fbdfd76e06c927782489e13f661ca41a6aff862f60dadf738e20366be5c5",
+    ".env.validation": "bba021ac510cdf454f1a041b43405d07788c21cbc158c4e5180e35a253843124",
+    "ENV.md": "5e2b96b8e7e636b17000f34e28db996a165ffc131b713ce3fa3049255767757f",
+    "config/alertmanager/alertmanager.yml": "c13683f93e56b441efdd7eda65f00c316ed674191b784ee651834b901d1fdb0f",
+    "config/client-contract/write_client_contract.py": "116765e1d09c854a1be9d02e3ba11490d5d3b53196fe5710f39869adf5f1482a",
+    "config/engine-api-proxy/engine_api_proxy.py": "fef744e16b38c5bd09ba48f7ed7a1ad00bf6275d1861006b7ef5508d359fc222",
+    "config/grafana/dashboards/cruftfree-system-overview.json": "084a209b4aa9469268a5700fa05dc7db3c63ce7b669d9665645e7d79ebff289b",
+    "config/grafana/dashboards/helpdesk-email-mock.json": "92c6a53cb285516d5f97c708615350df945362422bfa50c2375da985326dbcf7",
+    "config/grafana/dashboards/helpdesk-knowledge-service.json": "0eb8a1739e6cc5ac73808b1c3a220e249f00101da792751980e08b0ceb552192",
+    "config/grafana/dashboards/helpdesk-notice-service.json": "4b6c4e39eceb42d633a018d23701dbc42049b3efd2c4fa0c7f722d87acc5f28a",
+    "config/grafana/dashboards/helpdesk-ticket-service.json": "1511ff7797ae590adf21885698bf789ba310b6f91cf17f697546c2cbbaf92343",
+    "config/grafana/provisioning/dashboards/cruftfree-dashboards.yml": "9c78889be9f7b846c396d6e9f192e76c9c46b7ad1ebc764813a1ca77c68130bc",
+    "config/grafana/provisioning/datasources/datasources.yml": "ada5e349495546fb09a8d0143559e74f3b5822a5780323c63a391a02e9f0d1ad",
+    "config/grafana/provisioning/datasources/prometheus.yml": "b7335afa79a8da28e4376c16db00b0a1a82e29f36d62564976867466ecc6d099",
+    "config/identity/identity-providers.json": "15b1d91a0e787fd6069351fc9a791561ea28f88940b059ed779525a7de140613",
+    "config/identity/identity-providers.template.json": "15b1d91a0e787fd6069351fc9a791561ea28f88940b059ed779525a7de140613",
+    "config/identity/zitadel-provisioning.json": "bb4613f86caeae7e33447c79cd7d87c6173be71acb6b33a4cf36267429761fe6",
+    "config/jaeger/sampling_strategies.json": "36b912d65e56c13d1ed38b9e5b8f69e4cc26f6ae6234eecaa14430d80b2f725d",
+    "config/nginx/nginx.conf": "11c5e616559e0b64f4b426e2b502c04c6911c48f1ac92ef1f22d46b1a50c2f7e",
+    "config/nginx/web-console-angular.conf": "56db9a9c3020ae9d0f81111a80727074aa311830b47b5eff04655e78e12f12e9",
+    "config/nginx/web-help-centre-angular.conf": "549b0212c945fe181bcbecb3996514b099273c80c351458a101601581876b68a",
+    "config/prometheus/prometheus.yml": "f1a1ebf8c22a03c30c0c66c8a42e09c625e42d4c06fe9a62b024f7b71d13d47b",
+    "config/prometheus/rules/baseline_infra_alerts.yml": "5d680433188625378f2a5a25813a143e57109fc9556683e56382221398dd76ef",
+    "config/prometheus/rules/helpdesk-email-mock_alerts.yml": "73ab577a1a9749d04a9f94eb2b5e4068ad9226a5a82efd5b8db6c9d217989f2b",
+    "config/prometheus/rules/helpdesk-knowledge-service_alerts.yml": "b01cc8cb1619728af0effcb29b2b689448ea8441aef1bd75fcfc733b7df21273",
+    "config/prometheus/rules/helpdesk-notice-service_alerts.yml": "f8d84ef0405a9c267864ac649e363214b727141d49fb15c18757246969fd6a90",
+    "config/prometheus/rules/helpdesk-ticket-service_alerts.yml": "4c96c13af6d315ad2cf9af3cfa39ddf82ce1b68bc82a9781b6840755892e212a",
+    "config/promtail/promtail-config.yaml": "ebfe06d4e9597ef09df22c8064646f067d839f53f81fe19f5e7de8bdd532cb1b",
+    "config/services/helpdesk-email-mock/config-store.json": "ee4a90b43a5a7ee2d63ca04a80ec10bdcba6f20613ac34d04e3728f5c260aaef",
+    "config/services/helpdesk-knowledge-service/config-store.json": "19072d0ceccb755da6eefa1a7db0e6edfd0d1a912ad78a61c72676396195eca0",
+    "config/services/helpdesk-notice-service/config-store.json": "d8be846d9fdf04ec3611cd24fdcdc2726420680a8b94603a79717065cd8a68f4",
+    "config/services/helpdesk-ticket-service/config-store.json": "8f860ed60a2097be278231ee29f5a8a5451a24f0b4fa8460e01b38393689bf25",
+    "config/web-static-site/console-angular.dockerfile": "d41b7aaa0eb071873ece207f251522b5d5d90ce6f3848e908c28ba1e29175de8",
+    "config/web-static-site/help-centre-angular.dockerfile": "6eda71a0093464cf269d3bb5386b9fdb1548cf716dc8eeb9f89256ca238b6515",
+    "docker-compose.clients.yml": "9e28cea6b6051b677ffd96483c1feb38447dee632e9bde7a55650a4b6501ec68",
+    "docker-compose.yml": "2a24e696c7e90ccccd6b2b9b4f71e2bc0896bec7c71928ca98a7e91de3fbc511",
+    "helpdesk_email_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_email_mock/Dockerfile": "ffc041dbc5aca2dc8e3c4e0d1d2ade0e83c7bcfcd100958ee41a0b0412f5fabd",
+    "helpdesk_knowledge_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_knowledge_service/Dockerfile": "da1d825e33aadae62284a2743bf2c47751bcbd60db4dd91dde3203b534bd9279",
+    "helpdesk_notice_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_notice_service/Dockerfile": "8cbc206e1271046cc571b8442e75d856582478d78fec743449ac26ce4c103bc9",
+    "helpdesk_ticket_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_ticket_service/Dockerfile": "d6535cb70603f183a03f6c23942e68e0b7a803f33ab15a50186f0040dac574a7",
+    "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
+    "python-base/requirements.txt": "883ff327f4abfda2ad6e15291c3a9ac32e1cd91e9a9be95e5d9ed852f4beebba",
+    "scripts/db-access/helpdesk-email-mock-email-db.sql": "c31d3b7bdcbb30c5804e34308ce675e4f3028ed91db55a896e91360d2a68bcad",
+    "scripts/db-access/helpdesk-knowledge-service-knowledge-db.sql": "7ca794a4b6094909b4175677aa21d16f18d3e26faf5f6ea4067d05283104983f",
+    "scripts/db-access/helpdesk-notice-service-notice-db.sql": "64b3f582e396b7c620b839e969cda92a832834f239c1efa1f1ca9a80a179b894",
+    "scripts/db-access/helpdesk-ticket-service-ticket-db.sql": "348a58ec7a24842d8ed3f2dc8245642d5176be6ce526a51e1e893634e73d02f1",
+    "scripts/deploy.ps1": "aaf83acbb6a4db17b3550a475a9db4f8aefb31b4f4459d33278317892d921dc9",
+    "scripts/deploy.py": "53ea50a8ea81bf08bd459a0e5ca2cb3d5a8acf2da1ef664d85f7e4f0335046c2",
+    "scripts/deploy.sh": "ff8a704f16b174c7eaa0da832d64b6f7e5de540a24e8102d684f23d2cdb94740",
+    "scripts/init-db/helpdesk-system-postgresql.sql": "0837ee1b1f58a960cacc86ac52e6856a2005de668281348acab3ac71ef912ebf",
+    "scripts/init-topics/helpdesk-system-kafka-broker-config.sh": "dd320c991b89a916bbbd3fdb40adcc0b085282b930ff4420e7f15680e94b73b8",
+    "scripts/init-topics/helpdesk-ticket-service-mq.sh": "8d497410fad1d919a10921b8058ad2376be22011e69acd227ea7c6eb7acd5861",
+    "scripts/test_jwks_server.py": "c134cada7d062835608aa9aee983f390f128b2293ea758d7986767f6f7b83784",
+    "scripts/zitadel/apply_provisioning.py": "2f4a0d7e56f952969b92ef2e6d6e7ec688e9a0af1950a64b8311a8c0aa563af7",
+    "secrets/helpdesk-email-mock/email_db_password": "b0b46f8e72814c07a0f412c8391d29c668d7961d601a92198b3ed7ee22620162",
+    "secrets/helpdesk-knowledge-service/knowledge_db_password": "785f3b673e8242f877665c59142800830dda2c1394c751fea952e41093b9591e",
+    "secrets/helpdesk-notice-service/email_provider_api_key": "8ebb0f49fb77982872cbe7909a416457f2e847b42cfc3cbb84abdeede8163761",
+    "secrets/helpdesk-notice-service/notice_db_password": "7a1a72a35b5829cab9790846b752f9ba05843274ad4adf4b749e3a6ac8a10807",
+    "secrets/helpdesk-ticket-service/ticket_db_password": "3735254351d9f5f998e40f2e7ce09ab17723331e9b9bff5537c7469444f91832"
+  },
+  "output_hashes": {
+    ".cruftfree/runtime-requirements.json": "8605f48a2468806fd9f147eeb1743ee2267e91baa116e45a011984f9e45930e7",
+    ".env.example": "06b0fbdfd76e06c927782489e13f661ca41a6aff862f60dadf738e20366be5c5",
+    ".env.validation": "bba021ac510cdf454f1a041b43405d07788c21cbc158c4e5180e35a253843124",
+    "ENV.md": "5e2b96b8e7e636b17000f34e28db996a165ffc131b713ce3fa3049255767757f",
+    "config/alertmanager/alertmanager.yml": "c13683f93e56b441efdd7eda65f00c316ed674191b784ee651834b901d1fdb0f",
+    "config/client-contract/write_client_contract.py": "36e2b328e0a2a5b60b6080635fec3130532a8859912c6374d04de88032ef7e5a",
+    "config/engine-api-proxy/engine_api_proxy.py": "9d032c9b51dfe7f0dd6f794269fede232d68c60043e1773a942c4045e8746fd6",
+    "config/grafana/dashboards/cruftfree-system-overview.json": "f3fd35c8c0a28862fca94455c57709ab7aabaf34427c827ced8f6c0284c40a0d",
+    "config/grafana/dashboards/helpdesk-email-mock.json": "53b996d4c2a840e55febc88b3222235859ceb3ef69b52e8322793737e8ad2eb0",
+    "config/grafana/dashboards/helpdesk-knowledge-service.json": "cb777cac6c4956a734b863bc5656a71b484592aadd3a3c543ddd3004dd990e09",
+    "config/grafana/dashboards/helpdesk-notice-service.json": "5f2ff38b4f637a47915e89b240eabe38309ee1d5fd1dba7e28946c9f15b86b95",
+    "config/grafana/dashboards/helpdesk-ticket-service.json": "8e23ee6302c6c73aa8355842016409246d40b226d516fd3db3ecf820f1096bfa",
+    "config/grafana/provisioning/dashboards/cruftfree-dashboards.yml": "9c78889be9f7b846c396d6e9f192e76c9c46b7ad1ebc764813a1ca77c68130bc",
+    "config/grafana/provisioning/datasources/datasources.yml": "ada5e349495546fb09a8d0143559e74f3b5822a5780323c63a391a02e9f0d1ad",
+    "config/grafana/provisioning/datasources/prometheus.yml": "b7335afa79a8da28e4376c16db00b0a1a82e29f36d62564976867466ecc6d099",
+    "config/identity/identity-providers.json": "b9111f020fb39d486bcd68bc2c9c00719fd95beb872a9362a4d156d97183e25d",
+    "config/identity/identity-providers.template.json": "b9111f020fb39d486bcd68bc2c9c00719fd95beb872a9362a4d156d97183e25d",
+    "config/identity/zitadel-provisioning.json": "b7300eca579009f0032b2f2682b619436994080522a36f2cc40d8e00691e0ed1",
+    "config/jaeger/sampling_strategies.json": "d457741a91aa2d385df8fdba7f2ee6fdf6a187438e6d2e93ed860d443fa769d5",
+    "config/nginx/nginx.conf": "11c5e616559e0b64f4b426e2b502c04c6911c48f1ac92ef1f22d46b1a50c2f7e",
+    "config/nginx/web-console-angular.conf": "56db9a9c3020ae9d0f81111a80727074aa311830b47b5eff04655e78e12f12e9",
+    "config/nginx/web-help-centre-angular.conf": "549b0212c945fe181bcbecb3996514b099273c80c351458a101601581876b68a",
+    "config/prometheus/prometheus.yml": "f1a1ebf8c22a03c30c0c66c8a42e09c625e42d4c06fe9a62b024f7b71d13d47b",
+    "config/prometheus/rules/baseline_infra_alerts.yml": "5d680433188625378f2a5a25813a143e57109fc9556683e56382221398dd76ef",
+    "config/prometheus/rules/helpdesk-email-mock_alerts.yml": "73ab577a1a9749d04a9f94eb2b5e4068ad9226a5a82efd5b8db6c9d217989f2b",
+    "config/prometheus/rules/helpdesk-knowledge-service_alerts.yml": "b01cc8cb1619728af0effcb29b2b689448ea8441aef1bd75fcfc733b7df21273",
+    "config/prometheus/rules/helpdesk-notice-service_alerts.yml": "f8d84ef0405a9c267864ac649e363214b727141d49fb15c18757246969fd6a90",
+    "config/prometheus/rules/helpdesk-ticket-service_alerts.yml": "4c96c13af6d315ad2cf9af3cfa39ddf82ce1b68bc82a9781b6840755892e212a",
+    "config/promtail/promtail-config.yaml": "ebfe06d4e9597ef09df22c8064646f067d839f53f81fe19f5e7de8bdd532cb1b",
+    "config/services/helpdesk-email-mock/config-store.json": "ee4a90b43a5a7ee2d63ca04a80ec10bdcba6f20613ac34d04e3728f5c260aaef",
+    "config/services/helpdesk-knowledge-service/config-store.json": "19072d0ceccb755da6eefa1a7db0e6edfd0d1a912ad78a61c72676396195eca0",
+    "config/services/helpdesk-notice-service/config-store.json": "d8be846d9fdf04ec3611cd24fdcdc2726420680a8b94603a79717065cd8a68f4",
+    "config/services/helpdesk-ticket-service/config-store.json": "8f860ed60a2097be278231ee29f5a8a5451a24f0b4fa8460e01b38393689bf25",
+    "config/web-static-site/console-angular.dockerfile": "d41b7aaa0eb071873ece207f251522b5d5d90ce6f3848e908c28ba1e29175de8",
+    "config/web-static-site/help-centre-angular.dockerfile": "6eda71a0093464cf269d3bb5386b9fdb1548cf716dc8eeb9f89256ca238b6515",
+    "docker-compose.clients.yml": "9e28cea6b6051b677ffd96483c1feb38447dee632e9bde7a55650a4b6501ec68",
+    "docker-compose.yml": "2a24e696c7e90ccccd6b2b9b4f71e2bc0896bec7c71928ca98a7e91de3fbc511",
+    "helpdesk_email_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_email_mock/Dockerfile": "ffc041dbc5aca2dc8e3c4e0d1d2ade0e83c7bcfcd100958ee41a0b0412f5fabd",
+    "helpdesk_knowledge_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_knowledge_service/Dockerfile": "da1d825e33aadae62284a2743bf2c47751bcbd60db4dd91dde3203b534bd9279",
+    "helpdesk_notice_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_notice_service/Dockerfile": "8cbc206e1271046cc571b8442e75d856582478d78fec743449ac26ce4c103bc9",
+    "helpdesk_ticket_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_ticket_service/Dockerfile": "d6535cb70603f183a03f6c23942e68e0b7a803f33ab15a50186f0040dac574a7",
+    "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
+    "python-base/requirements.txt": "883ff327f4abfda2ad6e15291c3a9ac32e1cd91e9a9be95e5d9ed852f4beebba",
+    "scripts/db-access/helpdesk-email-mock-email-db.sql": "c31d3b7bdcbb30c5804e34308ce675e4f3028ed91db55a896e91360d2a68bcad",
+    "scripts/db-access/helpdesk-knowledge-service-knowledge-db.sql": "7ca794a4b6094909b4175677aa21d16f18d3e26faf5f6ea4067d05283104983f",
+    "scripts/db-access/helpdesk-notice-service-notice-db.sql": "64b3f582e396b7c620b839e969cda92a832834f239c1efa1f1ca9a80a179b894",
+    "scripts/db-access/helpdesk-ticket-service-ticket-db.sql": "348a58ec7a24842d8ed3f2dc8245642d5176be6ce526a51e1e893634e73d02f1",
+    "scripts/deploy.ps1": "aaf83acbb6a4db17b3550a475a9db4f8aefb31b4f4459d33278317892d921dc9",
+    "scripts/deploy.py": "55db04ebbf79698cc51d14f4ef4a8ac973fb8a828f40383abe37188755d19d99",
+    "scripts/deploy.sh": "ff8a704f16b174c7eaa0da832d64b6f7e5de540a24e8102d684f23d2cdb94740",
+    "scripts/init-db/helpdesk-system-postgresql.sql": "0837ee1b1f58a960cacc86ac52e6856a2005de668281348acab3ac71ef912ebf",
+    "scripts/init-topics/helpdesk-system-kafka-broker-config.sh": "dd320c991b89a916bbbd3fdb40adcc0b085282b930ff4420e7f15680e94b73b8",
+    "scripts/init-topics/helpdesk-ticket-service-mq.sh": "8d497410fad1d919a10921b8058ad2376be22011e69acd227ea7c6eb7acd5861",
+    "scripts/test_jwks_server.py": "760d55f884da91538fe7fe835b31a54bd43f5dc61a256f2d4ca3da5bb9c4198f",
+    "scripts/zitadel/apply_provisioning.py": "25d74460b1b429f34e548fcb0045b694a99dd5a27789cc04a92355d0120aa25e",
+    "secrets/helpdesk-email-mock/email_db_password": "b0b46f8e72814c07a0f412c8391d29c668d7961d601a92198b3ed7ee22620162",
+    "secrets/helpdesk-knowledge-service/knowledge_db_password": "785f3b673e8242f877665c59142800830dda2c1394c751fea952e41093b9591e",
+    "secrets/helpdesk-notice-service/email_provider_api_key": "8ebb0f49fb77982872cbe7909a416457f2e847b42cfc3cbb84abdeede8163761",
+    "secrets/helpdesk-notice-service/notice_db_password": "7a1a72a35b5829cab9790846b752f9ba05843274ad4adf4b749e3a6ac8a10807",
+    "secrets/helpdesk-ticket-service/ticket_db_password": "3735254351d9f5f998e40f2e7ce09ab17723331e9b9bff5537c7469444f91832"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "config/prometheus/rules/helpdesk-email-mock_alerts.yml": [
+      "helpdesk.EmailMock"
+    ],
+    "config/prometheus/rules/helpdesk-knowledge-service_alerts.yml": [
+      "helpdesk.KnowledgeService"
+    ],
+    "config/prometheus/rules/helpdesk-notice-service_alerts.yml": [
+      "helpdesk.NoticeService"
+    ],
+    "config/prometheus/rules/helpdesk-ticket-service_alerts.yml": [
+      "helpdesk.TicketService"
+    ],
+    "config/services/helpdesk-email-mock/config-store.json": [
+      "helpdesk.EmailMock"
+    ],
+    "config/services/helpdesk-knowledge-service/config-store.json": [
+      "helpdesk.KnowledgeService"
+    ],
+    "config/services/helpdesk-notice-service/config-store.json": [
+      "helpdesk.NoticeService"
+    ],
+    "config/services/helpdesk-ticket-service/config-store.json": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_email_mock/.dockerignore": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/Dockerfile": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_knowledge_service/.dockerignore": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/Dockerfile": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_notice_service/.dockerignore": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/Dockerfile": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_ticket_service/.dockerignore": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/Dockerfile": [
+      "helpdesk.TicketService"
+    ],
+    "scripts/db-access/helpdesk-email-mock-email-db.sql": [
+      "helpdesk.EmailMock"
+    ],
+    "scripts/db-access/helpdesk-knowledge-service-knowledge-db.sql": [
+      "helpdesk.KnowledgeService"
+    ],
+    "scripts/db-access/helpdesk-notice-service-notice-db.sql": [
+      "helpdesk.NoticeService"
+    ],
+    "scripts/db-access/helpdesk-ticket-service-ticket-db.sql": [
+      "helpdesk.TicketService"
+    ],
+    "secrets/helpdesk-email-mock/email_db_password": [
+      "helpdesk.EmailMock"
+    ],
+    "secrets/helpdesk-knowledge-service/knowledge_db_password": [
+      "helpdesk.KnowledgeService"
+    ],
+    "secrets/helpdesk-notice-service/email_provider_api_key": [
+      "helpdesk.NoticeService"
+    ],
+    "secrets/helpdesk-notice-service/notice_db_password": [
+      "helpdesk.NoticeService"
+    ],
+    "secrets/helpdesk-ticket-service/ticket_db_password": [
+      "helpdesk.TicketService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

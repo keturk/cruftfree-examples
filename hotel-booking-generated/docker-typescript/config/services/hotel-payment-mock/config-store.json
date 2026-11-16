@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "payment_db_database": "hotel_payment_mock",
+    "payment_db_host": "hotel-system-postgresql",
+    "payment_db_port": 5432,
+    "payment_db_user": "hotel_payment_mock_payment_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

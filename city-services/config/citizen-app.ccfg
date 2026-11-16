@@ -1,0 +1,37 @@
+config app cityservices.Citizen {
+  base {
+    targets = ["angular", "flutter"];
+    clients {
+      angular {
+        scope = "@portalder";
+      }
+    }
+    appId = "com.example.portalder";
+    strings = ["config/strings/citizen.en-US.ccfg"];
+    map {
+      tiles = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+      attribution = "Map data from OpenStreetMap contributors";
+    }
+  }
+  profile test as "test" extends base {
+    web { port = 4200; }
+  }
+  // The deployed profile also ships the mobile app, so it declares how the release is signed. Each
+  // Android value names a logical secret handle the operator supplies at build time, never the secret
+  // itself. The iOS team id is a public Apple Developer identifier.
+  profile aws as "aws" extends base {
+    android {
+      keystore = "android_keystore";
+      keyAlias = "android_key_alias";
+      storePassword = "android_store_password";
+      keyPassword = "android_key_password";
+    }
+    ios { teamId = "ABCDE12345"; }
+    web { domain { name = "portalder.example.com"; } }
+  }
+  profile development as "dev" extends aws {
+  }
+  profile production as "prod" extends base {
+    web { port = 4200; }
+  }
+}

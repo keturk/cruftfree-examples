@@ -1,0 +1,472 @@
+{
+  "geojson": {
+    "bboxLengths": [
+      4,
+      6
+    ],
+    "coordinates": {
+      "LineString": "line",
+      "MultiLineString": "lines",
+      "MultiPoint": "positions",
+      "MultiPolygon": "polygons",
+      "Point": "position",
+      "Polygon": "polygon"
+    },
+    "feature": "Feature",
+    "featureCollection": "FeatureCollection",
+    "geometryCollection": "GeometryCollection",
+    "latitudeBound": 90.0,
+    "lineMinPositions": 2,
+    "longitudeBound": 180.0,
+    "members": {
+      "bbox": "bbox",
+      "coordinates": "coordinates",
+      "features": "features",
+      "geometries": "geometries",
+      "geometry": "geometry",
+      "id": "id",
+      "properties": "properties",
+      "type": "type"
+    },
+    "positionLengths": [
+      2,
+      3
+    ],
+    "ringMinPositions": 4
+  },
+  "identity": {
+    "algorithm": "RS256",
+    "issuer": "http://cruftfree-test-jwks:8080",
+    "keyId": "cruftfree-test-key-1",
+    "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDYdlPhKmFsrAXa\nlmNWHP9Dh7DH+wWWI9MvIp/ZdtXj+oLus9TrqvWAoSB9Rjqn4JlQGxv/4mp3dIU+\n/VgWVHqW/h/GpTPMOr37ILVDsANdv9YkZcqBUB1pFly14L1Ipbzeal/BHwVYO3+z\njToq0z7nmiW4WqDZ5QvcpBB1al6kjtXnLZBuzAdI3a0BDFxeo8Sl2HDR38vNvvS3\nOmYDyRYzFCC77+K6bRbMTgf6xFCAjlsAmWuRRZvFtwgUOYZgshNfvpxNsSklbvVE\nTARBvgOIwNwPeH0bK8SctN37z86w8QjTsbLqe1oNDSwjvg+p+lXgPD6HCdtmQC50\nTpo7g3cpAgMBAAECggEAE4qDF1WjG+i0/T8MUq7QIIGJulP1SiY2dLqJzFudAuAP\nnTWg0sbz3hvYT1bdXrW47BwLvWBBlO0bm6HKp6FoEQ95643oYix/ZWyreyPS+fii\ngACsdQYNfE9808fTw/t/qbiCp8WBea34C6Euj2/TQvHjK9m1TFZlaWgU5Z9SUe/k\ncN5enaxvlj4XWOZWDQ7DA8GikOWI6mQ2DpKiSEOPdIuV1azwfYpiGzJVfgCkTfoO\ni/qMmEhsJZkPwOPfc/yw9Qc1i1o693JueVS4ZidROw8ro4xH6DARvQfcz3XaLC3G\nOVdgAQITPoCFNBazb0AV+Vy2Bm2D7msfYEdVDUEIXQKBgQD/vrYmaByt0+j0EXwi\n56astQnaZRAlreJxb0upkHoXRj5C5pRJTI5ybvZu9IeAxtQC4dlxmXHMN4i7N+gM\nHcXSSXbnMKiaPBh64+EN/Io8GitUpUQoHCWNRzYMfauGHLFCyYUE5L+VczxB+fZR\nGmPamClwM8otl7IYH/Xt4H154wKBgQDYrZZ2CfTx+7Z5fOWkRF7siGWogNrvpLlJ\nONDbc1vQ3efOomU9ypLy/XN91hJ647LZq0lvWkBmZNWjnoBldF/RB55pCOh+6l+c\nhufDtSATFJ9sCX/VPiRSJIQ75Ow0/ahA2Xv24xIcEWGjC07PkXC52FXBvfVIPZG3\nZF5xVrUIgwKBgQCiuNKm/0l4JMQtP07P2rsHWq1pQzKR9uCEsn7e5el5E52b7aBe\nPxLHpuiv0nDBNEFDkDZNfIeWm6MpFDpWMz9iPJImKaStdh1RW9sfjhbahQAa/Iiw\nSLBwAuZV7kQLsgfradN0OKPZ0Jd/ly7tjbAJLxX2qU0z0zhi9zsAXv0XZwKBgDnC\nXD9u/AqdbNEJyDV3vE4VNfQrFTGYmYO5T4OQRsNww+BDTfWg0HdRtL2wmRCFLiH0\nFQlH567j5kdNczCYSwpvm3yoUUGzvHT/STzURY6QisbD6X2wqQH0lgNZTNX7YCSZ\nVQBFG4i74WkTFJkkTgZccs/IkWAGeZeHe91+nZd9AoGBAO/Xsuj4pUR0CeT3UAJ8\nG/O5AfrKRyFsw3uQibrWZYLebDXaWhqZ0jraPZ130ym6Go0+s1wjANuB+KZ6n2Ps\nKrG2ITUUjq9BkhjkTlNDpahgbhRBCOh5110Ir2a/DoP5OGsaCtm3dhfP9Mxpkq6q\nyfJQn2d9wRvjMLHz7X+tFyOW\n-----END PRIVATE KEY-----",
+    "rolesClaim": "roles",
+    "tokenLifetimeSeconds": 3600
+  },
+  "page": {
+    "counts": [
+      "total",
+      "offset",
+      "limit",
+      "maxLimit"
+    ],
+    "defaultSize": 20,
+    "items": "items",
+    "maxSize": 100,
+    "members": {
+      "maxSize": "maxLimit",
+      "position": "offset",
+      "size": "limit",
+      "total": "total"
+    },
+    "query": {
+      "position": "skip",
+      "size": "limit"
+    }
+  },
+  "problem": {
+    "conflict": [
+      {
+        "status": 409,
+        "title": "Conflict",
+        "type": "urn:cruftfree:error:conflict"
+      },
+      {
+        "status": 409,
+        "title": "Conflict",
+        "type": "urn:cruftfree:error:cascade-restriction"
+      }
+    ],
+    "fieldErrors": {
+      "body": "body",
+      "codes": [
+        "required",
+        "unknown_field",
+        "repeated",
+        "invalid"
+      ],
+      "invalid": "invalid",
+      "locations": [
+        "path",
+        "query",
+        "body"
+      ],
+      "member": "errors",
+      "query": "query"
+    },
+    "mediaType": "application/problem+json",
+    "notFound": [
+      {
+        "status": 404,
+        "title": "Not Found",
+        "type": "urn:cruftfree:error:not-found"
+      },
+      {
+        "status": 404,
+        "title": "Entity Not Found",
+        "type": "urn:cruftfree:error:entity-not-found"
+      }
+    ],
+    "refusals": {
+      "401": {
+        "title": "Unauthorized",
+        "type": "urn:cruftfree:error:unauthorized"
+      },
+      "403": {
+        "title": "Forbidden",
+        "type": "urn:cruftfree:error:forbidden"
+      }
+    },
+    "requestValidation": [
+      {
+        "status": 422,
+        "title": "Validation Error",
+        "type": "urn:cruftfree:error:request-validation"
+      }
+    ]
+  },
+  "resources": {
+    "cityservices.GeocoderMock.geocoderDb.KnownAddress": {
+      "create": "GeocoderDeskAPI.create_known_address",
+      "key": "id"
+    }
+  },
+  "routes": {
+    "GeocoderAPI.post_geocode": {
+      "auth": "required",
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        }
+      },
+      "method": "POST",
+      "path": "/v1/geocode",
+      "providers": [
+        "geocoderKeys"
+      ],
+      "refusalPathParams": {},
+      "roles": []
+    },
+    "GeocoderDeskAPI.create_known_address": {
+      "auth": "required",
+      "body": {
+        "encoding": "json",
+        "value": {
+          "object": {
+            "address": {
+              "unique": {
+                "hexLength": 8,
+                "prefix": "test_",
+                "suffix": "",
+                "uppercase": false
+              }
+            },
+            "formattedAddress": {
+              "literal": "hello"
+            },
+            "latitude": {
+              "literal": 2.718
+            },
+            "longitude": {
+              "literal": 3.14
+            }
+          }
+        }
+      },
+      "cases": {
+        "invalidBody": {
+          "kind": "invalidBody"
+        },
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {},
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "exact",
+      "kind": "create",
+      "method": "POST",
+      "path": "/api/v1/desk/geocoder/known_addresses",
+      "pathParams": {},
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {},
+      "roles": [
+        "operator"
+      ],
+      "success": {
+        "echo": [
+          "address",
+          "formattedAddress",
+          "latitude",
+          "longitude"
+        ],
+        "mediaType": null,
+        "shape": {
+          "object": "entity:cityservices.GeocoderMock.geocoderDb.KnownAddress"
+        },
+        "status": 201
+      },
+      "tenantClaim": false
+    },
+    "GeocoderDeskAPI.delete_known_address": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "deleteTwice": {
+          "kind": "deleteTwice"
+        },
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {
+            "id": {
+              "literal": "550e8400-e29b-41d4-a716-446655440000"
+            }
+          },
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "exact",
+      "kind": "delete",
+      "method": "DELETE",
+      "path": "/api/v1/desk/geocoder/known_addresses/{id}",
+      "pathParams": {
+        "id": {
+          "ref": "cityservices.GeocoderMock.geocoderDb.KnownAddress"
+        }
+      },
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {
+        "id": {
+          "literal": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      },
+      "roles": [
+        "operator"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": null,
+        "status": 204
+      },
+      "tenantClaim": false
+    },
+    "GeocoderDeskAPI.list_known_addresses": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "pageDefaultWindow": {
+          "kind": "pageDefaultWindow",
+          "position": 0
+        },
+        "pageNegativePosition": {
+          "kind": "pageNegativePosition",
+          "position": -1
+        },
+        "pageOversize": {
+          "kind": "pageOversize",
+          "size": 101
+        },
+        "pageWindow": {
+          "kind": "pageWindow",
+          "position": 0,
+          "size": 10
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {},
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "exact",
+      "kind": "list",
+      "method": "GET",
+      "path": "/api/v1/desk/geocoder/known_addresses",
+      "pathParams": {},
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {},
+      "roles": [
+        "operator"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "page": {
+            "object": "entity:cityservices.GeocoderMock.geocoderDb.KnownAddress"
+          }
+        },
+        "status": 200
+      },
+      "tenantClaim": false
+    },
+    "GeocoderDeskAPI.list_lookups": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "pageDefaultWindow": {
+          "kind": "pageDefaultWindow",
+          "position": 0
+        },
+        "pageNegativePosition": {
+          "kind": "pageNegativePosition",
+          "position": -1
+        },
+        "pageOversize": {
+          "kind": "pageOversize",
+          "size": 101
+        },
+        "pageWindow": {
+          "kind": "pageWindow",
+          "position": 0,
+          "size": 10
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {},
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "exact",
+      "kind": "list",
+      "method": "GET",
+      "path": "/api/v1/desk/geocoder/lookups",
+      "pathParams": {},
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {},
+      "roles": [
+        "operator"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "page": {
+            "object": "entity:cityservices.GeocoderMock.geocoderDb.Lookup"
+          }
+        },
+        "status": 200
+      },
+      "tenantClaim": false
+    },
+    "_api_key_verify.post_geocoder_keys_verify": {
+      "auth": "service",
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        }
+      },
+      "method": "POST",
+      "path": "/internal/identity/api-keys/geocoderKeys/verify",
+      "providers": [
+        "machine"
+      ],
+      "refusalPathParams": {},
+      "roles": []
+    }
+  },
+  "service": "cityservices.GeocoderMock",
+  "shapes": {
+    "entity:cityservices.GeocoderMock.geocoderDb.KnownAddress": {
+      "fields": {
+        "address": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "createdAt": {
+          "required": true,
+          "shape": {
+            "scalar": "date-time"
+          }
+        },
+        "formattedAddress": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "id": {
+          "required": true,
+          "shape": {
+            "scalar": "uuid"
+          }
+        },
+        "latitude": {
+          "required": true,
+          "shape": {
+            "scalar": "number"
+          }
+        },
+        "longitude": {
+          "required": true,
+          "shape": {
+            "scalar": "number"
+          }
+        },
+        "updatedAt": {
+          "required": true,
+          "shape": {
+            "scalar": "date-time"
+          }
+        }
+      }
+    },
+    "entity:cityservices.GeocoderMock.geocoderDb.Lookup": {
+      "fields": {
+        "createdAt": {
+          "required": true,
+          "shape": {
+            "scalar": "date-time"
+          }
+        },
+        "id": {
+          "required": true,
+          "shape": {
+            "scalar": "uuid"
+          }
+        },
+        "matched": {
+          "required": true,
+          "shape": {
+            "scalar": "boolean"
+          }
+        },
+        "query": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "updatedAt": {
+          "required": true,
+          "shape": {
+            "scalar": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "tenant": null
+}

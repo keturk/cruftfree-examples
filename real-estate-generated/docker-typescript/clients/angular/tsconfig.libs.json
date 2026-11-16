@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "files": [],
+  "include": [
+    "./libs/system-api-common/src/**/*.ts",
+    "./libs/listing-service-api/src/**/*.ts",
+    "./libs/viewing-service-api/src/**/*.ts",
+    "./libs/deal-service-api/src/**/*.ts",
+    "./libs/mortgage-mock-api/src/**/*.ts",
+    "./libs/signature-mock-api/src/**/*.ts",
+    "./libs/email-mock-api/src/**/*.ts",
+    "./libs/system-api-state-common/src/**/*.ts",
+    "./libs/listing-service-api-state/src/**/*.ts",
+    "./libs/viewing-service-api-state/src/**/*.ts",
+    "./libs/deal-service-api-state/src/**/*.ts",
+    "./libs/mortgage-mock-api-state/src/**/*.ts",
+    "./libs/signature-mock-api-state/src/**/*.ts",
+    "./libs/email-mock-api-state/src/**/*.ts",
+    "./libs/ui-core/src/**/*.ts"
+  ],
+  "exclude": ["./libs/**/*.spec.ts"]
+}

@@ -1,0 +1,350 @@
+// Quillon Bank runs two ways. `test` and `production` are one docker-compose stack on a developer
+// machine: nginx in front, one Kafka, RabbitMQ, PostgreSQL, a self-hosted Zitadel for sign-in and the
+// observability stack. `development` is the AWS deployment: ECS Fargate services behind API Gateway, RDS
+// for PostgreSQL, SNS and SQS, CloudWatch and Cognito. The mocks run in either; where a contract points
+// is a choice that lives in config/providers/.
+config system finance.System {
+  // `base` holds only what is true on every deployment target. Anything that names a target-native
+  // mechanism (the nginx rate limiter, the docker observability stack, the self-hosted Zitadel, the
+  // AWS services) lives in the profile of the target that realizes it: a profile can override a value
+  // it inherits, but it cannot un-declare one.
+  base {
+    schemaConvergence {
+      enabled = true;
+    }
+    defaultTimeout = 30000;
+    maxPageSize = 100;
+    defaultLocale = "en-US";
+    gateway {
+      auth {
+        jwt {
+          algorithm = "RS256";
+          issuer = "quillon";
+          expiresIn = 3600;
+        }
+      }
+    }
+    observability {
+      metrics {
+        endpoint = "/metrics";
+        includeDefault = true;
+      }
+      tracing {
+        samplingRate = 0.1;
+      }
+      logging {
+        level = "info";
+        format = "json";
+      }
+    }
+    configStore {
+      applicationName = "quillon";
+      environment = "local";
+      profiles {
+        settings {
+          kind = "freeform";
+          keys {
+            Boolean debugMode : description("Enable debug mode.") = false;
+          }
+        }
+      }
+    }
+  }
+
+  // Everything the docker-compose realization needs: the nginx gateway, Prometheus / Jaeger / Loki /
+  // Grafana / Alertmanager, a file-backed config store and a self-hosted Zitadel.
+  profile compose as "compose" extends base {
+    alias env = "COMPOSE";
+    alias resource = "compose";
+
+    deployment {
+      runtime = "docker-compose";
+      provider = "local";
+    }
+    platforms {
+      docker {
+        kafka_default_retention_ms = 604800000;
+        infra {
+          defaultHealthcheck {
+            interval = "10s";
+            timeout = "10s";
+            retries = 10;
+            startPeriod = "30s";
+          }
+          rabbitmqHealthcheck {
+            interval = "10s";
+            timeout = "15s";
+            retries = 20;
+            startPeriod = "60s";
+          }
+          kafkaHealthcheck {
+            interval = "10s";
+            timeout = "15s";
+            retries = 20;
+            startPeriod = "60s";
+          }
+          jobWorkerHealthcheck {
+            interval = "30s";
+            timeout = "10s";
+            retries = 3;
+            startPeriod = "40s";
+          }
+          observabilityHealthcheck {
+            interval = "15s";
+            timeout = "10s";
+            retries = 5;
+            startPeriod = "30s";
+          }
+          pgbouncer {
+            maxClientConn = 200;
+            defaultPoolSize = 20;
+          }
+          initScript {
+            maxRetries = 30;
+            retryDelaySeconds = 2;
+          }
+          multiRdbmsStartPeriodSeconds = 120;
+          // Desktop Docker hosts mount `/` privately, which the container-metrics collector's
+          // host binds need, so this example declares the host most people run it on.
+          sharedMountPropagation = false;
+        }
+      }
+    }
+    gateway {
+      rateLimit {
+        default {
+          requests = 300;
+          window = "1m";
+          key = "ip";
+        }
+      }
+    }
+    observability {
+      metrics {
+        provider = "prometheus";
+      }
+      tracing {
+        provider = "jaeger";
+      }
+      logging {
+        provider = "loki";
+      }
+      visualization {
+        provider = "grafana";
+      }
+      alerting {
+        provider = "alertmanager";
+      }
+    }
+    zitadelIdentity {
+      host = "zitadel";
+      port = 8080;
+      externalDomain = "localhost";
+      externalSecure = false;
+      adminUser = "admin";
+      adminPassword = "identity_zitadel_admin_password";
+      masterKey = "identity_zitadel_master_key";
+      publicOrigins {
+        test = "http://localhost:8085";
+        production = "http://localhost:8085";
+      }
+      providers {
+        identity {
+          project = "quillon-identity";
+          clientId = "quillon-identity-app";
+        }
+        machine {
+          project = "quillon-machine";
+          clientId = "quillon-machine-app";
+        }
+      }
+    }
+    configStore {
+      engine = "file";
+      flavor = "container";
+    }
+  }
+
+  profile test as "test" extends compose {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile production as "prod" extends compose {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+
+  // AWS target: ECS Fargate services behind the managed API Gateway, RDS for PostgreSQL, SNS and SQS,
+  // CloudWatch / X-Ray telemetry, AppConfig as the config store and a Cognito User Pool for the
+  // customers and staff who sign in.
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    deployment {
+      runtime = "ecs-fargate";
+      provider = "aws";
+    }
+    gateway {
+      type = "managed";
+      throttle {
+        steadyState = 100;
+        burst = 200;
+      }
+      auth {
+        jwt {
+          // The API Gateway JWT authorizer validates against the Cognito User Pool declared under
+          // awsIdentity below.
+          issuer = "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_QuillonIdentity";
+          audience = "quillon-identity-app";
+        }
+      }
+      domain {
+        name = "api.quillon.example.com";
+      }
+    }
+    // The Banking app's mobile release signing material: the app's android { } block names these
+    // handles, the operator supplies their values.
+    secrets {
+      secret android_keystore {
+        required = true;
+        purpose = "Android upload keystore for the Banking mobile release.";
+      }
+      secret android_key_alias {
+        required = true;
+        purpose = "Alias of the upload key inside the Android keystore.";
+      }
+      secret android_store_password {
+        required = true;
+        purpose = "Password of the Android upload keystore.";
+      }
+      secret android_key_password {
+        required = true;
+        purpose = "Password of the Android upload key.";
+      }
+    }
+    observability {
+      metrics {
+        provider = "cloudwatch";
+      }
+      tracing {
+        provider = "xray";
+      }
+      logging {
+        provider = "cloudwatch-logs";
+      }
+      visualization {
+        provider = "cloudwatch";
+      }
+      alerting {
+        provider = "cloudwatch-alarms";
+      }
+    }
+    configStore {
+      engine = "aws-managed";
+      flavor = "managed";
+    }
+    awsIdentity {
+      region = "us-east-1";
+      providers {
+        identity {
+          userPoolId = "us-east-1_QuillonIdentity";
+          clientId = "quillon-identity-app";
+        }
+      }
+    }
+    region = "us-east-1";
+    platforms {
+      aws {
+        vpcCidr = "10.0.0.0/16";
+        elasticacheNodeType = "cache.t3.small";
+        dlqMaxReceiveCount = 5;
+        sqsVisibilityTimeoutSeconds = 30;
+        sqsRetentionDays = 4;
+        sqsDlqRetentionDays = 14;
+        diagnostics {
+          retentionDays = 30;
+        }
+        serviceDiscovery {
+          dnsTtlSeconds = 10;
+        }
+        alarms {
+          rdsCpuUtilizationPercent = 80;
+          rdsFreeStorageBytes = 2147483648;
+          rdsConnectionCount = 80;
+          elasticacheCpuPercent = 75;
+          elasticacheMemoryPercent = 80;
+          elasticacheEvictionsPerMin = 100;
+          dynamodbThrottledRequests = 0;
+          dynamodbConsumedCapacityUnits = 240000;
+          sqsVisibleMessages = 1000;
+          sqsOldestMessageAgeSeconds = 300;
+          sqsDlqDepth = 0;
+          mskBrokerCpuPercent = 75;
+          mskOfflinePartitions = 0;
+          mskUnderReplicatedPartitions = 0;
+          amazonMqQueueDepth = 1000;
+          amazonMqConsumerCount = 1;
+          amazonMqBrokerCpuPercent = 75;
+          documentdbCpuPercent = 80;
+          documentdbConnectionCount = 80;
+          documentdbFreeStorageBytes = 2147483648;
+          opensearchClusterRed = 1;
+          opensearchCpuPercent = 80;
+          opensearchJvmMemoryPressurePercent = 85;
+          opensearchFreeStorageMegabytes = 2048;
+        }
+        lambda {
+          consumerMemoryMb = 512;
+          consumerTimeoutSeconds = 300;
+          consumerBatchSize = 10;
+        }
+        scheduledTask {
+          retryAttempts = 2;
+          maxEventAgeSeconds = 3600;
+          dlqRetentionDays = 14;
+        }
+        sorLifecycle {
+          transitionDays = 90;
+        }
+        consumerLambdaTriggers {
+          retentionDays = 14;
+          maxReceiveCount = 3;
+          visibilityTimeoutMultiplier = 6;
+        }
+        ecsHealthCheck {
+          intervalSeconds = 30;
+          timeoutSeconds = 5;
+          retries = 3;
+          startPeriodSeconds = 60;
+        }
+        appRunnerHealthCheck {
+          intervalSeconds = 10;
+          timeoutSeconds = 5;
+          healthyThreshold = 1;
+          unhealthyThreshold = 5;
+        }
+        ecsScaling {
+          cpuTargetPercent = 70;
+          scaleInCooldownSeconds = 60;
+          scaleOutCooldownSeconds = 60;
+        }
+        cloudFront {
+          connectionAttempts = 3;
+          connectionTimeoutSeconds = 10;
+        }
+        appConfig {
+          growthFactor = 100.0;
+          finalBakeTimeMinutes = 0;
+          replicateTo = "NONE";
+        }
+      }
+    }
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+}

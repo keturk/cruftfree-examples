@@ -1,0 +1,15 @@
+{
+  "connections": {
+    "email_provider_base_url": "http://realestate-email-mock:8092",
+    "mq_brokers": "realestate-system-kafka:9092",
+    "mq_port": 9092,
+    "realestate_listing_service_base_url": "http://realestate-listing-service:8001",
+    "viewing_db_database": "realestate_viewing",
+    "viewing_db_host": "realestate-system-postgresql",
+    "viewing_db_port": 5432,
+    "viewing_db_user": "realestate_viewing_service_viewing_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

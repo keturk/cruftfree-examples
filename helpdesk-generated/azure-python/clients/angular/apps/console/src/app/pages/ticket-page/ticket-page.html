@@ -1,0 +1,175 @@
+@if (__loaded()) {
+@if (__stale(); as staleFailure) {
+<div data-kind="callout" role="status" data-state="stale">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(staleFailure.problem, staleFailure.binding.site) ?? __messages.problemTitle(staleFailure.problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="staleFailure.binding.isLoading || staleFailure.binding.pausedForMs &gt; 0" (click)="staleFailure.binding.refresh()">{{ staleFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(staleFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+
+<header data-kind="pageHeader">
+<a data-part="back" [routerLink]="&quot;/queue&quot;" [attr.aria-label]="__messages.key('framework.back').text"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span></a>
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+<div data-part="actions">
+<span data-kind="badge" [attr.data-tone]="__mod0()">
+{{ __arg2() }}
+</span>
+<span data-kind="badge" [attr.data-tone]="__mod1()">
+{{ __arg3() }}
+</span>
+@if (__when0()) {
+<button data-kind="button" type="button" (click)="(((!this.thread.value.mine)) ? (this.__ui.settle(this.claimIt())) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">pan_tool</span>
+{{ __arg4() }}
+</button>
+}
+<button data-kind="button" type="button" (click)="this.startNote()">
+<span class="material-symbols-outlined" aria-hidden="true">sticky_note_2</span>
+{{ __arg5() }}
+</button>
+<button data-kind="button" type="button" (click)="this.startSaved()">
+<span class="material-symbols-outlined" aria-hidden="true">quickreply</span>
+{{ __arg6() }}
+</button>
+<button data-kind="button" type="button" data-variant="primary" (click)="this.startReply()">
+<span class="material-symbols-outlined" aria-hidden="true">reply</span>
+{{ __arg7() }}
+</button>
+@if (__when1()) {
+<button data-kind="button" type="button" (click)="((((this.thread.value.ticket.status !== TicketStatus.Resolved) &amp;&amp; (this.thread.value.ticket.status !== TicketStatus.Closed))) ? (this.__ui.settle(this.resolveIt())) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">task_alt</span>
+{{ __arg8() }}
+</button>
+}
+
+</div>
+</header>
+
+@if (__when2()) {
+<div data-kind="callout" role="alert" data-tone="danger" [attr.aria-label]="__aname0()">
+<span data-part="text">{{ __arg9() }}</span>
+</div>
+
+}
+<div data-kind="grid" class="style-statRow">
+<div data-kind="stat">
+<span class="material-symbols-outlined" aria-hidden="true">person</span>
+<span data-part="label">{{ __arg10() }}</span>
+<span data-part="value">{{ __arg11() }}</span>
+</div>
+<div data-kind="stat">
+<span class="material-symbols-outlined" aria-hidden="true">mail</span>
+<span data-part="label">{{ __arg12() }}</span>
+<span data-part="value">{{ __arg13() }}</span>
+</div>
+<div data-kind="stat">
+<span class="material-symbols-outlined" aria-hidden="true">support_agent</span>
+<span data-part="label">{{ __arg14() }}</span>
+<span data-part="value">{{ __arg15() }}</span>
+</div>
+<div data-kind="stat">
+<span class="material-symbols-outlined" aria-hidden="true">alarm</span>
+<span data-part="label">{{ __arg16() }}</span>
+<span data-part="value">{{ __arg17() }}</span>
+</div>
+</div>
+<div data-kind="card">
+<ol data-kind="timeline" class="ui-timeline">
+@for (entry of __data.timeline(__items0(), ["createdAt"]); track $index) {
+@let item = entry.item;
+<li>
+<time [attr.datetime]="entry.at">{{ __format.dateTime(__data.date(entry.at)) }}</time>
+<div><div data-kind="row">
+<h2 data-kind="heading">
+{{ this.__textOf(item.authorName) }}
+</h2>
+@if (item.internal) {
+<span data-kind="badge" data-tone="warning">
+{{ __arg18() }}
+</span>
+}
+@if (item.fromCustomer) {
+<span data-kind="badge" data-tone="info">
+{{ __arg19() }}
+</span>
+}
+</div>
+<ui-markdown data-kind="markdown" [source]="this.__textOf(item.body)">
+</ui-markdown>
+</div>
+</li>
+}
+</ol>
+
+
+</div>
+
+@if (__when3()) {
+<dialog data-kind="dialog" #__elRef0 aria-modal="true" [attr.aria-label]="__aname1()" (close)="((this.__app.replying()) ? (this.__ui.settle(this.stopReply())) : this.__outsideWhen())">
+{{ __arg20() }}
+<app-agent-reply-form-form data-kind="form">
+</app-agent-reply-form-form>
+</dialog>
+}
+@if (__when4()) {
+<dialog data-kind="dialog" #__elRef1 aria-modal="true" [attr.aria-label]="__aname3()" (close)="((this.__app.noting()) ? (this.__ui.settle(this.stopNote())) : this.__outsideWhen())">
+{{ __arg21() }}
+<div data-kind="callout" role="status" data-tone="warning" [attr.aria-label]="__aname2()">
+<span data-part="text">{{ __arg22() }}</span>
+</div>
+
+<app-agent-note-form-form data-kind="form">
+</app-agent-note-form-form>
+</dialog>
+}
+@if (__when5()) {
+<dialog data-kind="dialog" #__elRef2 aria-modal="true" [attr.aria-label]="__aname4()" (close)="((this.__app.pickingSaved()) ? (this.stopSaved()) : this.__outsideWhen())">
+{{ __arg23() }}
+@for (reply of __foreach0(); track $index) {
+<div data-kind="card">
+<div data-part="header">
+<h3 data-part="title">{{ ((this.__app.pickingSaved()) ? (this.__textOf(reply.title)) : this.__outsideWhen()) }}</h3>
+</div>
+<ui-markdown data-kind="markdown" [source]="((this.__app.pickingSaved()) ? (this.__textOf(reply.body)) : this.__outsideWhen())">
+</ui-markdown>
+<button data-kind="button" type="button" data-variant="primary" (click)="((this.__app.pickingSaved()) ? (this.__ui.settle(this.sendSaved(reply.body))) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">send</span>
+{{ __arg24() }}
+</button>
+</div>
+
+}
+</dialog>
+}
+
+} @else if (__failed(); as failed) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(failed.problem, failed.binding.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(failed.problem) }}</span>
+    @if (failed.problem.detail) {
+    <span data-part="detail">{{ failed.problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="failed.binding.pausedForMs &gt; 0" (click)="failed.binding.refresh()">{{ failed.binding.pausedForMs &gt; 0 ? __messages.retryIn(failed.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

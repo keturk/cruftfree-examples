@@ -1,0 +1,28 @@
+// Service-to-service callers. Issues the tokens that let a service reach a peer; never a browser.
+config identity machine {
+  base {
+    audience = "machine";
+    mode = "platformManaged";
+    jwksCacheTtlSeconds = 3600;
+    tokens {
+      accessToken = "15m";
+    }
+  }
+
+  profile test as "test" extends base {
+  }
+
+  profile aws as "aws" extends base {
+    mode = "external";
+    provider = "external";
+    issuer = "https://machine-auth.quayline.example.com";
+    clientId = "quayline-service-clients";
+    clientSecret = "machine_identity_client_secret";
+  }
+
+  profile development as "dev" extends aws {
+  }
+
+  profile production as "prod" extends base {
+  }
+}

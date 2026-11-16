@@ -1,0 +1,10 @@
+{
+  "connections": {
+    "email_provider_base_url": "http://helpdesk-email-mock:8091",
+    "notice_db_database": "helpdesk_notice",
+    "notice_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

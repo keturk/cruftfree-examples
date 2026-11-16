@@ -1,0 +1,172 @@
+<form data-kind="filters" (submit)="__applyFilters(); $event.preventDefault()">
+  <label data-filter="search">
+    <span>{{ __messages.key(&#39;filter.AllTickets.subject&#39;).text }}</span>
+    <input #filter_subject type="search" [value]="__filterDraft().subject" (input)="__setFilter('subject', filter_subject.value)" />
+
+  </label>
+  <label data-filter="select">
+    <span>{{ __messages.key(&#39;filter.AllTickets.topic&#39;).text }}</span>
+    <select #filter_topic (change)="__setFilter('topic', filter_topic.value)">
+      <option value="" [selected]="__filterDraft().topic === ''">{{ __messages.key(&#39;framework.all&#39;).text }}</option>
+      <option [value]="'Billing'" [selected]="__filterDraft().topic === 'Billing'">{{ __messages.key(&#39;enum.TicketTopic.Billing&#39;).text }}</option>
+      <option [value]="'Domains'" [selected]="__filterDraft().topic === 'Domains'">{{ __messages.key(&#39;enum.TicketTopic.Domains&#39;).text }}</option>
+      <option [value]="'Email'" [selected]="__filterDraft().topic === 'Email'">{{ __messages.key(&#39;enum.TicketTopic.Email&#39;).text }}</option>
+      <option [value]="'Websites'" [selected]="__filterDraft().topic === 'Websites'">{{ __messages.key(&#39;enum.TicketTopic.Websites&#39;).text }}</option>
+    </select>
+
+  </label>
+  <label data-filter="select">
+    <span>{{ __messages.key(&#39;filter.AllTickets.priority&#39;).text }}</span>
+    <select #filter_priority (change)="__setFilter('priority', filter_priority.value)">
+      <option value="" [selected]="__filterDraft().priority === ''">{{ __messages.key(&#39;framework.all&#39;).text }}</option>
+      <option [value]="'Low'" [selected]="__filterDraft().priority === 'Low'">{{ __messages.key(&#39;enum.Priority.Low&#39;).text }}</option>
+      <option [value]="'Normal'" [selected]="__filterDraft().priority === 'Normal'">{{ __messages.key(&#39;enum.Priority.Normal&#39;).text }}</option>
+      <option [value]="'High'" [selected]="__filterDraft().priority === 'High'">{{ __messages.key(&#39;enum.Priority.High&#39;).text }}</option>
+      <option [value]="'Urgent'" [selected]="__filterDraft().priority === 'Urgent'">{{ __messages.key(&#39;enum.Priority.Urgent&#39;).text }}</option>
+    </select>
+
+  </label>
+  <label data-filter="select">
+    <span>{{ __messages.key(&#39;filter.AllTickets.status&#39;).text }}</span>
+    <select #filter_status (change)="__setFilter('status', filter_status.value)">
+      <option value="" [selected]="__filterDraft().status === ''">{{ __messages.key(&#39;framework.all&#39;).text }}</option>
+      <option [value]="'New'" [selected]="__filterDraft().status === 'New'">{{ __messages.key(&#39;enum.TicketStatus.New&#39;).text }}</option>
+      <option [value]="'Open'" [selected]="__filterDraft().status === 'Open'">{{ __messages.key(&#39;enum.TicketStatus.Open&#39;).text }}</option>
+      <option [value]="'Waiting'" [selected]="__filterDraft().status === 'Waiting'">{{ __messages.key(&#39;enum.TicketStatus.Waiting&#39;).text }}</option>
+      <option [value]="'Resolved'" [selected]="__filterDraft().status === 'Resolved'">{{ __messages.key(&#39;enum.TicketStatus.Resolved&#39;).text }}</option>
+      <option [value]="'Closed'" [selected]="__filterDraft().status === 'Closed'">{{ __messages.key(&#39;enum.TicketStatus.Closed&#39;).text }}</option>
+    </select>
+
+  </label>
+  <label data-filter="booleanSelect">
+    <span>{{ __messages.key(&#39;filter.AllTickets.breached&#39;).text }}</span>
+    <select #filter_breached (change)="__setFilter('breached', filter_breached.value)">
+      <option value="" [selected]="__filterDraft().breached === ''">{{ __messages.key(&#39;framework.all&#39;).text }}</option>
+      <option [value]="'true'" [selected]="__filterDraft().breached === 'true'">{{ __messages.key(&#39;framework.yes&#39;).text }}</option>
+      <option [value]="'false'" [selected]="__filterDraft().breached === 'false'">{{ __messages.key(&#39;framework.no&#39;).text }}</option>
+    </select>
+
+  </label>
+  <button type="submit">{{ __messages.key(&#39;framework.search&#39;).text }}</button>
+  <button type="button" (click)="__clearFilters()">{{ __messages.key(&#39;framework.clear&#39;).text }}</button>
+</form>
+@if (__source.isLoaded) {
+@if (__source.error; as problem) {
+<div data-kind="callout" role="status" data-state="stale" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(problem, __source.site) ?? __messages.problemTitle(problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.isLoading || __source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+@if (__rows().length === 0) {
+@if (__hasFilters()) {
+<div data-state="filtered-empty">
+  <p>{{ __messages.key(&#39;empty.AllTickets.filtered&#39;).text }}</p>
+  <button type="button" (click)="__clearFilters()">{{ __messages.key(&#39;framework.clearFilters&#39;).text }}</button>
+</div>
+} @else {
+<div data-kind="emptyState" data-state="empty" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">inbox</span>
+  <p data-part="title">{{ __messages.key(&#39;empty.AllTickets&#39;).text }}</p>
+  @if (__messages.has('emptyDescription.AllTickets')) {
+  <p data-part="description">{{ __messages.key(&#39;emptyDescription.AllTickets&#39;).text }}</p>
+  }
+</div>
+
+}
+} @else {
+<div data-kind="table-scroll">
+<table data-kind="table">
+  <thead>
+    <tr>
+      <th scope="col">{{ __messages.key(&#39;field.Ticket.number&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Ticket.subject&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Ticket.customerName&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Ticket.topic&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Ticket.priority&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Ticket.status&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Ticket.assigneeName&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Ticket.createdAt&#39;).text }}</th>
+      <th scope="col">
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (row of __rows(); track $index) {
+    <tr>
+
+      <td>{{ __textOf(row.number) }}
+</td>
+      <td>{{ __textOf(row.subject) }}
+</td>
+      <td>{{ __textOf(row.customerName) }}
+</td>
+      <td><span data-kind="badge" [attr.data-tone]="__enumTone(__topicTones, row.topic)">{{ __textOf(__messages.key(__topicLabels[row.topic])) }}</span></td>
+      <td><span data-kind="badge" [attr.data-tone]="__enumTone(__priorityTones, row.priority)">{{ __textOf(__messages.key(__priorityLabels[row.priority])) }}</span></td>
+      <td><span data-kind="badge" [attr.data-tone]="__enumTone(__statusTones, row.status)">{{ __textOf(__messages.key(__statusLabels[row.status])) }}</span></td>
+      <td>{{ __textOf(row.assigneeName) }}
+</td>
+      <td>{{ __textOf(__format.relative(row.createdAt)) }}
+</td>
+      <td>
+        <button type="button" (click)="this.__nav.to(&quot;/tickets/:id&quot;, &#123; &quot;id&quot;: row.id &#125;)">{{ __messages.key(&#39;action.AllTickets.open&#39;).text }}</button>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
+</div>
+}
+<nav data-kind="pagination" [attr.aria-label]="__messages.key('framework.pagination').text">
+  @if (__source.range(); as range) {
+  <span data-kind="range">{{ __messages.key(&#39;framework.showingRangeOfTotal&#39;, &#123; from: range.from, to: range.to, total: range.total &#125;).text }}</span>
+  }
+  @if (__source.pageSizes().length > 0) {
+  <label data-part="page-size">
+    <span>{{ __messages.key(&#39;framework.pageSize&#39;).text }}</span>
+    <select (change)="__source.setPageSize(+$any($event.target).value)">
+      @for (size of __source.pageSizes(); track size) {
+      <option [value]="size" [selected]="size === __source.pageSize()">{{ size }}</option>
+      }
+    </select>
+  </label>
+  }
+  <button type="button" (click)="__source.previous()" [disabled]="!__source.hasPrevious()">{{ __messages.key(&#39;framework.previous&#39;).text }}</button>
+  @for (entry of __source.window(); track $index) {
+  @if (entry === null) {
+  <span data-part="ellipsis" aria-hidden="true">…</span>
+  } @else {
+  <button type="button" [attr.aria-label]="__messages.key('framework.pageNumber', { number: entry }).text" [attr.aria-current]="entry === __source.pageIndex() + 1 ? 'page' : null" (click)="__source.goTo(entry - 1)">{{ entry }}</button>
+  }
+  }
+  <button type="button" (click)="__source.next()" [disabled]="!__source.hasNext()">{{ __messages.key(&#39;framework.next&#39;).text }}</button>
+</nav>
+
+} @else if (__source.error; as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __source.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

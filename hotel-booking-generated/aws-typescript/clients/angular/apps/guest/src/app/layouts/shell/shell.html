@@ -1,0 +1,62 @@
+<a class="ui-skip-link" href="#" (click)="$event.preventDefault(); $any($event.currentTarget).ownerDocument.querySelector('[data-skip-target]')?.focus()">{{ __messages.key(&#39;framework.skipToContent&#39;).text }}</a>
+
+<div data-kind="stack">
+<header data-kind="topBar">
+<div data-kind="brand">
+<div data-part="tile">
+{{ __format.initials(__arg0()) }}
+</div>
+<span data-part="label">{{ __arg0() }}</span>
+</div>
+<div data-kind="spacer" aria-hidden="true">
+</div>
+<nav class="ui-nav">
+  <button type="button" class="ui-nav-toggle" [attr.popovertarget]="__navLinks.id" [attr.aria-label]="__messages.key('framework.menu').text">
+    <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+  </button>
+  <ul cruftfreePopover #__navLinks="cruftfreePopover" class="ui-nav-links" popover (click)="__navLinks.hide()">
+    <li>
+      <a routerLink="/" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-symbols-outlined" aria-hidden="true">hotel</span>
+        {{ __navLabel0() }}
+      </a>
+    </li>
+    @if (__navVisible1()) {
+    <li>
+      <a routerLink="/stays" routerLinkActive="ui-active" ariaCurrentWhenActive="page">
+        <span class="material-symbols-outlined" aria-hidden="true">luggage</span>
+        {{ __navLabel1() }}
+      </a>
+    </li>
+    }
+  </ul>
+</nav>
+
+@if (__when0()) {
+<button data-kind="menuTrigger" data-part="menu-trigger" [attr.popovertarget]="__elRef0.id" aria-haspopup="menu" [attr.aria-expanded]="__elRef0.open()" type="button" [attr.aria-label]="__arg1()">
+<span data-kind="avatar" role="img">
+{{ __arg2() }}
+</span>
+</button>
+<div data-kind="menu" cruftfreeMenuKeys cruftfreePopover #__elRef0="cruftfreePopover" popover="" role="menu" data-part="menu-panel" [attr.aria-label]="__arg1()">
+<span data-kind="text">
+{{ __arg3() }}
+</span>
+<hr data-kind="divider" />
+<button data-kind="menuItem" type="button" role="menuitem" (click)="((this.__session.isAuthenticated) ? (this.__session.logout()) : this.__outsideWhen()); __elRef0.hide()">
+{{ __arg4() }}
+</button>
+</div>
+
+
+} @else {
+<button data-kind="button" type="button" (click)="((!(this.__session.isAuthenticated)) ? (this.__session.login()) : this.__outsideWhen())">
+{{ __arg5() }}
+</button>
+}
+</header>
+<main class="ui-content" data-skip-target tabindex="-1">
+<router-outlet />
+</main>
+</div>
+

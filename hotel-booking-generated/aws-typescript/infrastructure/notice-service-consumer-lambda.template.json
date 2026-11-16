@@ -1,0 +1,294 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "NoticeServiceConsumersImageTag": {
+      "AllowedPattern": "[0-9a-f]{64}",
+      "ConstraintDescription": "a lowercase SHA-256 hex content hash computed by the deploy script; never a floating tag such as 'latest'",
+      "Description": "Resolved content-hash tag of the 'notice_service_consumers' image, pushed by the deploy script.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "ConsumeStayEventsEventSourceMapping": {
+      "Properties": {
+        "BatchSize": 10,
+        "EventSourceArn": {
+          "Fn::ImportValue": "hotel-system-hotel-notice-service-StayEventsQueueArn"
+        },
+        "FunctionName": {
+          "Ref": "ConsumeStayEventsFn"
+        }
+      },
+      "Type": "AWS::Lambda::EventSourceMapping"
+    },
+    "ConsumeStayEventsFn": {
+      "DependsOn": [
+        "ConsumeStayEventsRoleDefaultPolicy",
+        "ConsumeStayEventsRole"
+      ],
+      "Properties": {
+        "Code": {
+          "ImageUri": {
+            "Fn::Sub": [
+              "${Repository}:${Tag}",
+              {
+                "Repository": {
+                  "Fn::ImportValue": "hotel-system-bootstrap-NoticeServiceConsumersRepositoryUri"
+                },
+                "Tag": {
+                  "Ref": "NoticeServiceConsumersImageTag"
+                }
+              }
+            ]
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "CRUFTFREE_CALLER_AUDIENCE": "urn:cruftfree:trusted-caller:hotel-system",
+            "CRUFTFREE_CALLER_EXPECTED_ISSUER": {
+              "Fn::ImportValue": "hotel-system-trusted-caller-Issuer"
+            },
+            "CRUFTFREE_CALLER_TRUSTED_PRINCIPAL_IDS": {
+              "Fn::Join": [
+                ",",
+                [
+                  {
+                    "Fn::Sub": [
+                      "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${RoleName}",
+                      {
+                        "RoleName": "hotel-system-gateway-minter"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            "NOTICEDB_DATABASE_HOST": {
+              "Fn::ImportValue": "hotel-system-hotel-notice-service-data-NoticeDbDbHost"
+            },
+            "NOTICEDB_DATABASE_NAME": "hotel_notice",
+            "NOTICEDB_DATABASE_PORT": "5432",
+            "SERVICE_NAME": "notice_service"
+          }
+        },
+        "FunctionName": "notice_service-consume_stay_events",
+        "ImageConfig": {
+          "Command": [
+            "consumers/lambda_adapters/consume_stay_events.handler"
+          ]
+        },
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "ConsumeStayEventsLogGroup"
+          }
+        },
+        "MemorySize": 512,
+        "PackageType": "Image",
+        "Role": {
+          "Fn::GetAtt": [
+            "ConsumeStayEventsRole",
+            "Arn"
+          ]
+        },
+        "Timeout": 300,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "hotel-system-hotel-notice-service-ServiceSecurityGroupId"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "hotel-system-vpc-PrivateSubnet1Id"
+            },
+            {
+              "Fn::ImportValue": "hotel-system-vpc-PrivateSubnet2Id"
+            }
+          ]
+        }
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "ConsumeStayEventsLogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/notice_service-consume_stay_events",
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "ConsumeStayEventsRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::ImportValue": "hotel-system-trusted-caller-MintPolicyArn"
+          }
+        ],
+        "RoleName": "hotel-system-notice_service-consume_stay_events-fn-caller"
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "ConsumeStayEventsRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ConsumeStayEventsLogGroup",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${ConsumeStayEventsLogGroup.Arn}:*"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "appconfig:StartConfigurationSession",
+                "appconfig:GetLatestConfiguration"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${Application}/environment/${Environment}/configuration/*",
+                    {
+                      "Application": {
+                        "Fn::ImportValue": "hotel-system-hotel-notice-service-AppConfigApplicationId"
+                      },
+                      "Environment": {
+                        "Fn::ImportValue": "hotel-system-hotel-notice-service-AppConfigEnvironmentId"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}-??????",
+                    {
+                      "SecretName": "hotel-notice-service/email_provider_api_key"
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}-??????",
+                    {
+                      "SecretName": "hotel-notice-service/hotel_notice_service_notice_db_rw_password"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+                "ec2:AssignPrivateIpAddresses",
+                "ec2:UnassignPrivateIpAddresses"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:network-interface/*"
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:security-group/${Group}",
+                    {
+                      "Group": {
+                        "Fn::ImportValue": "hotel-system-hotel-notice-service-ServiceSecurityGroupId"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:subnet/${Subnet}",
+                    {
+                      "Subnet": {
+                        "Fn::ImportValue": "hotel-system-vpc-PrivateSubnet1Id"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:subnet/${Subnet}",
+                    {
+                      "Subnet": {
+                        "Fn::ImportValue": "hotel-system-vpc-PrivateSubnet2Id"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeSubnets"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::ImportValue": "hotel-system-hotel-notice-service-StayEventsQueueArn"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "ConsumeStayEventsRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "ConsumeStayEventsRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    }
+  }
+}

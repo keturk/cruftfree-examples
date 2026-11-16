@@ -1,0 +1,353 @@
+{
+  "block": {
+    "name": "noticeDb"
+  },
+  "container": {
+    "kind": "service",
+    "name": "hotel.NoticeService"
+  },
+  "cqrs_views": {},
+  "entities": {
+    "Notice": {
+      "checks": [
+        {
+          "name": "chk_notices_body_5154484f",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "body"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 2000
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_notices_notice_key_74b0648a",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "notice_key"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 120
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_notices_recipient_118cdbab",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "recipient"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_notices_subject_6afca0bc",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "subject"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        }
+      ],
+      "fields": {
+        "attempts": {
+          "column_name": "attempts",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "tree": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 0
+            },
+            "value": "0"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Integer",
+            "values": []
+          }
+        },
+        "body": {
+          "column_name": "body",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 2000,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 2000
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "createdAt": {
+          "column_name": "created_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "delivered": {
+          "column_name": "delivered",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "tree": {
+              "kind": "Literal",
+              "type": "boolean",
+              "value": false
+            },
+            "value": "false"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Boolean",
+            "values": []
+          }
+        },
+        "id": {
+          "column_name": "id",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": "uuid",
+              "kind": "BuiltinCall"
+            },
+            "value": "uuid()"
+          },
+          "nullable": false,
+          "primary_key": true,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "noticeKey": {
+          "column_name": "notice_key",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 120,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 120
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          },
+          "unique": true
+        },
+        "recipient": {
+          "column_name": "recipient",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "subject": {
+          "column_name": "subject",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "updatedAt": {
+          "column_name": "updated_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        }
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "columns": [
+            "delivered"
+          ],
+          "fulltext": false,
+          "name": "ix_notices_delivered",
+          "unique": false
+        }
+      ],
+      "table_name": "notices",
+      "table_options": {}
+    }
+  },
+  "enums": [],
+  "format": "cruftfree.rdbms.schema",
+  "rdbms_id": "9f3b6c42-1a57-4e80-b7d3-8c2e5f1a6d03",
+  "service": {
+    "name": "hotel.NoticeService",
+    "version": "1.0.0"
+  },
+  "version": 9
+}

@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "files": [],
+  "include": [
+    "./libs/system-api-common/src/**/*.ts",
+    "./libs/ticket-service-api/src/**/*.ts",
+    "./libs/knowledge-service-api/src/**/*.ts",
+    "./libs/notice-service-api/src/**/*.ts",
+    "./libs/email-mock-api/src/**/*.ts",
+    "./libs/system-api-state-common/src/**/*.ts",
+    "./libs/ticket-service-api-state/src/**/*.ts",
+    "./libs/knowledge-service-api-state/src/**/*.ts",
+    "./libs/notice-service-api-state/src/**/*.ts",
+    "./libs/email-mock-api-state/src/**/*.ts",
+    "./libs/ui-core/src/**/*.ts"
+  ],
+  "exclude": ["./libs/**/*.spec.ts"]
+}

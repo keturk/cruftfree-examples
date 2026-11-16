@@ -1,0 +1,294 @@
+﻿config service ecommerce.UserService {
+  template standardCachePolicy() {
+    availability = "required";
+    health = "ready";
+    operations {
+      read       { onFailure = "raise"; }
+      write      { onFailure = "raise"; }
+    }
+  }
+
+  base {
+    port = 8006;
+    flavor = "compose";
+    replicas = 1;
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms userDb {
+      id = "7b1b4bfd-288a-4152-afb4-1272464aa557";
+      engine = "postgres";
+      flavor = "container";
+      host = "localhost";
+      port = 5432;
+      database = "user_db";
+      poolSize = 20;
+      maxOverflow = 20;
+      ssl = false;
+      healthCheckSql = "SELECT 1";
+      dockerImage = "postgres:17-alpine";
+      volumePath = "/var/lib/postgresql/data";
+      defaultUser = "postgres";
+    }
+    cache redis {
+      engine = "redis";
+      flavor = "container";
+      host = "localhost";
+      port = 6379;
+      dockerImage = "redis:7";
+      volumePath = "/data";
+      healthCheckCmd = "redis-cli ping";
+    }
+    pubsub mq {
+      engine = "kafka";
+      flavor = "container";
+      brokers = ["localhost:9092"];
+      partitions = 3;
+      replicationFactor = 1;
+      port = 9092;
+      dockerImage = "confluentinc/cp-kafka:7.6.0";
+      volumePath = "/var/lib/kafka/data";
+      retention = "7d";
+      controllerPort = 9093;
+    }
+    registration {
+      tags = ["api", "shop", "v1"];
+      meta = {};
+      healthCheck {
+        type = "http";
+        path = "/health";
+        interval = "10s";
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+        retry {
+          maxAttempts = 2;
+          backoff {
+            type = "exponential";
+            initial = "100ms";
+            multiplier = 2;
+          }
+        }
+      }
+      dependencyPolicy {
+        defaults {
+          cache from standardCachePolicy();
+        }
+      }
+    }
+    httpSecurity {
+      allowedHosts = ["ecommerce-user-service", "localhost"];
+      corsOrigins = ["http://localhost:4200", "http://localhost:4300", "http://localhost:4500"];
+      corsMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
+      corsHeaders = ["Authorization", "Content-Type"];
+    }
+    cacheOps {
+      ttlSeconds = 300;
+      keyMaxLength = 100;
+      redisPoolSize = 10;
+    }
+    queueOps {
+      sqsPollWaitSeconds = 20;
+      sqsMaxMessagesPerPoll = 10;
+      servicebusMaxWaitSeconds = 5;
+    }
+    kafkaOps {
+      consumerPollTimeoutMs = 1000;
+      keepalivePollTimeoutMs = 1000;
+      maxPollIntervalMs = 600000;
+    }
+    messagingOps {
+      rabbitmqPrefetchCount = 10;
+    }
+    downloadOps {
+      timeoutSeconds = 300;
+      chunkSizeBytes = 65536;
+      maxRetries = 3;
+      retryDelaySeconds = 1.0;
+      retryableStatusCodes = [429, 500, 502, 503, 504];
+    }
+    remoteConfigOps {
+      consulTimeoutSeconds = 5.0;
+      appconfigMinPollSeconds = 15;
+    }
+    rateLimitOps {
+      windowSeconds = 60;
+    }
+    microserviceClientOps {
+      timeoutSeconds = 300;
+      circuitBreakerFailMax = 5;
+      circuitBreakerResetSeconds = 30;
+      bulkheadMaxConcurrent = 10;
+      integrationConnectTimeoutMs = 1000;
+      integrationReadTimeoutMs = 30000;
+      mailgunTimeoutSeconds = 30;
+    }
+    retryBudgetOps {
+      window = 100;
+      ratio = 0.1;
+    }
+    outboxOps {
+      flushBatchSize = 500;
+    }
+    serviceCredentialOps {
+      tokenExpirySkewSeconds = 30;
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile development as "dev" extends azure {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+
+    replicas = 2;
+    strategy {
+      rolling {
+        maxUnavailable = "25%";
+      }
+    }
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    // Consumers run as SQS-triggered Lambdas: the `mq` topics cross service
+    // boundaries, which on AWS means SNS/SQS, and no language target runs an
+    // SQS pubsub consumer inside the service process.
+    runtime { consumers = "decoupled"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms userDb {
+      id = "7b1b4bfd-288a-4152-afb4-1272464aa557";
+      engine = "postgres";
+      flavor = "rds";
+      port = 5432;
+      database = "user_db";
+      poolSize = 40;
+      maxOverflow = 20;
+      ssl = true;
+      instanceClass = "db.t3.medium";
+      healthCheckSql = "SELECT 1";
+    }
+    replace cache redis {
+      engine = "redis";
+      flavor = "elasticache";
+      port = 6379;
+      nodeType = "cache.t3.small";
+    }
+    replace pubsub mq {
+      engine = "sns-sqs";
+      flavor = "managed";
+      partitions = 3;
+      replicationFactor = 3;
+      retention = "7d";
+    }
+    strategy {
+      rolling {
+        maxUnavailable = "25%";
+      }
+    }
+    // The machine provider validates against an operator-managed OIDC issuer
+    // on this target (config/identity/platform.ccfg, profile aws), so its
+    // client secret is an operator-provisioned handle here: the value lives in
+    // the platform vault under this name, never in a generated artifact.
+    secrets {
+      secret platform_identity_client_secret {
+        required = true;
+        purpose = "OIDC client secret for the platform machine identity provider (external issuer on AWS).";
+      }
+    }
+  }
+
+  profile azure as "azure" extends base {
+    alias env = "AZURE";
+    alias resource = "azure";
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms userDb {
+      id = "7b1b4bfd-288a-4152-afb4-1272464aa557";
+      engine = "postgres";
+      flavor = "flexible-server";
+      port = 5432;
+      database = "user_db";
+      poolSize = 40;
+      maxOverflow = 20;
+      ssl = true;
+      sku = "Standard_B1ms";
+      tier = "Burstable";
+      storageGb = 32;
+      healthCheckSql = "SELECT 1";
+    }
+    replace cache redis {
+      engine = "redis";
+      flavor = "cache-for-redis";
+      sku = "Balanced_B0";
+    }
+    replace pubsub mq {
+      engine = "kafka";
+      flavor = "event-hubs";
+      namespaceGroup = "ecommerce-events";
+      partitions = 3;
+      replicationFactor = 3;
+      retention = "7d";
+    }
+    strategy {
+      rolling {
+        maxUnavailable = "25%";
+      }
+    }
+  }
+
+  profile azureVm as "azvm" extends base {
+    alias env = "AZVM";
+    alias resource = "azvm";
+
+    replace rdbms userDb {
+      id = "7b1b4bfd-288a-4152-afb4-1272464aa557";
+      engine = "postgres";
+      flavor = "flexible-server";
+      port = 5432;
+      database = "user_db";
+      poolSize = 20;
+      maxOverflow = 20;
+      ssl = true;
+      healthCheckSql = "SELECT 1";
+    }
+  }
+}

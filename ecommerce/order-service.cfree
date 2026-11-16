@@ -1,0 +1,599 @@
+from ecommerce.common import OrderLineInput, TestCard, generateOrderNumber;
+
+// The order, from the cart to the doorstep. Placing one reserves the stock over a direct call, because the
+// customer is waiting on the answer. Everything after that happens by queue and event: payment, then shipping,
+// then delivery, each moved on by the service that owns it.
+service ecommerce.OrderService('config/order-service.ccfg') : version('2.0.0'), description('Orders and their lifecycle') {
+
+    discovery {
+        ProductService { loadBalance: roundRobin, healthyOnly: true }
+        // Holds the customers' API keys, and says whose a key is.
+        UserService { loadBalance: roundRobin, healthyOnly: true }
+    }
+
+    exceptions {
+        NotYourOrderError : status(404), message("There is no such order");
+        NotEnoughStockError : status(409), message("Some of these are no longer in stock");
+        CannotCancelError : status(409), message("This order has already left us");
+        EmptyOrderError : status(422), message("An order needs at least one item");
+    }
+
+    enum OrderStatus {
+        Pending : tone(neutral),
+        PaymentPending : tone(info),
+        Confirmed : tone(info),
+        Processing : tone(info),
+        Shipped : tone(info),
+        Delivered : tone(success),
+        Cancelled : tone(danger),
+        Refunded : tone(warning),
+        DeliveryProblem : tone(danger)
+    }
+
+    struct CreateOrderRequest {
+        Array<OrderLineInput> items;
+        Address shippingAddress;
+        Address? billingAddress;
+        /// Which token the card vendor's hosted form would have handed back.
+        TestCard card;
+        /// Sent again with a retry, so a dropped response never places a second order.
+        String(100)? idempotencyKey;
+    }
+
+    struct CancelOrderRequest {
+        String(300)? reason;
+    }
+
+    /// One line of an order, as a person reads it.
+    struct OrderLineView {
+        String productName;
+        Int quantity;
+        Money unitPrice;
+        Money total;
+    }
+
+    struct OrderView {
+        UUID id;
+        String orderNumber;
+        OrderStatus status;
+        DateTime placedAt;
+        Money subtotal;
+        Money tax;
+        Money shippingCost;
+        Money total;
+        Address shippingAddress;
+        String? cancellationReason;
+        Boolean canCancel;
+        String customerName;
+        String customerEmail;
+        Array<OrderLineView> lines;
+    }
+
+    struct StatusCount {
+        OrderStatus status;
+        Int orders;
+    }
+
+    struct OrderSummary {
+        Int placedToday;
+        Int waitingToShip;
+        Int shippedNow;
+        Int deliveryProblems;
+        Array<StatusCount> byStatus;
+    }
+
+    rdbms orderDb {
+        // Duration alerts use avg/max: a percentile over a scraped histogram is not computable on every platform.
+        alert queryDuration(avg) over(5m) > 200ms @severity(warning);
+        alert connectionPool(utilization) over(1m) > 80% @severity(critical);
+
+        // ': audit' records every change to an order.
+        entity Order extends BaseEntity : audit {
+            String(64) customerId : index;
+            Email customerEmail;
+            String(200) customerName : filterable;
+
+            String(30) orderNumber : unique, filterable;
+            OrderStatus status : filterable = OrderStatus.Pending;
+
+            Money subtotal;
+            Money tax;
+            Money shippingCost;
+            Money discount;
+            Money total;
+
+            Address shippingAddress;
+            Address billingAddress;
+
+            UUID inventoryReservationId;
+            UUID? paymentId;
+            UUID? shipmentId;
+            String(300)? cancellationReason;
+
+            // Cancelling stays open until the carrier picks the parcel up. A paid order is refunded by PaymentService,
+            // and ShippingService calls the carrier off.
+            Boolean canCancel := status == OrderStatus.Pending || status == OrderStatus.PaymentPending || status == OrderStatus.Confirmed || status == OrderStatus.Processing;
+            // What the carrier says only moves an order still on its way: a cancelled one stays cancelled.
+            Boolean isOnItsWay := status == OrderStatus.Confirmed || status == OrderStatus.Processing || status == OrderStatus.Shipped;
+            Boolean isCompleted := status == OrderStatus.Delivered;
+
+            hasMany OrderItem as items;
+
+            index(customerId, status);
+            index(status, createdAt);
+
+            validate {
+                if (items.length() > 50)
+                ValidationError("Order cannot have more than 50 items");
+            }
+
+            afterUpdate {
+                if (isChanged(status)) {
+                    dispatch OrderStatusChanged(id, oldValue(status), status);
+
+                    if (status == OrderStatus.Confirmed) {
+                        let Array<JSON> orderItems = items.map(i => { productId: i.productId.toString(), quantity: i.quantity });
+                        let Float estimatedWeight = items.length() * 1.5;
+                        dispatch OrderConfirmed(id, customerId, customerName, paymentId, inventoryReservationId, shippingAddress, orderItems, estimatedWeight);
+                        dispatch SendOrderUpdate(id, customerEmail, orderNumber, #"Your order {orderNumber} is paid", "We have your payment and are packing your parcel.");
+                    } else if (status == OrderStatus.Shipped) {
+                        dispatch SendOrderUpdate(id, customerEmail, orderNumber, #"Your order {orderNumber} is on its way", "Your parcel has left us. The order page shows where it has got to.");
+                    } else if (status == OrderStatus.Delivered) {
+                        dispatch SendOrderUpdate(id, customerEmail, orderNumber, #"Your order {orderNumber} has arrived", "We hope you like it. You can leave a review on the product's page.");
+                    } else if (status == OrderStatus.DeliveryProblem) {
+                        dispatch SendOrderUpdate(id, customerEmail, orderNumber, #"A problem with your order {orderNumber}", "The carrier has lost track of your parcel. We are looking into it and will write again.");
+                    } else if (status == OrderStatus.Cancelled) {
+                        dispatch OrderCancelled(id, cancellationReason ?? "Cancelled", inventoryReservationId);
+                        dispatch SendOrderUpdate(id, customerEmail, orderNumber, #"Your order {orderNumber} is cancelled", cancellationReason ?? "Your order has been cancelled.");
+                    } else if (status == OrderStatus.Refunded) {
+                        dispatch SendOrderUpdate(id, customerEmail, orderNumber, #"Your refund for {orderNumber}", "Your money is on its way back to your card.");
+                    }
+                }
+            }
+
+            fn priceAt(Money itemsTotal) {
+                subtotal = itemsTotal;
+                tax = subtotal * 0.08;
+                shippingCost = subtotal >= 50.00 ? Money.of(0) : Money.of(5.99);
+                discount = Money.of(0);
+                total = subtotal.add(tax).add(shippingCost).subtract(discount);
+            }
+        }
+
+        entity OrderItem extends BaseEntity {
+            UUID productId : index;
+            String(200) productName : trim;
+            Int quantity : min(1);
+            Money unitPrice : positive;
+            Money total := unitPrice.multiply(quantity);
+
+            belongsTo Order : index;
+
+            validate {
+                if (quantity > 100)
+                ValidationError("Quantity cannot exceed 100 per item");
+            }
+        }
+
+        /// A retried request finds the order its first attempt placed.
+        entity IdempotencyKey extends BaseEntity {
+            String(100) key : unique;
+            String(50) operation : index;
+            UUID resourceId;
+            DateTime expiresAt : index;
+        }
+    }
+
+    cache redis {
+        alert hitRatio(ratio) over(5m) < 70% @severity(warning);
+
+        hash OrderCache : prefix('order:'), ttl(3600) {
+            UUID orderId : key;
+            String orderNumber;
+            OrderStatus status;
+            Money total;
+        }
+
+        counter OrdersPlacedToday : prefix('orders:placed:'), ttl(86400);
+    }
+
+    pubsub mq {
+        topic OrderEvents {
+            publish OrderConfirmed(UUID orderId, String customerId, String customerName, UUID? paymentId, UUID reservationId, Address shippingAddress, Array<JSON> items, Decimal estimatedWeight) {
+                ensure items.length() > 0;
+                ensure estimatedWeight > 0;
+            }
+
+            publish OrderCancelled(UUID orderId, String reason, UUID reservationId) {
+                ensure reason.length > 0;
+            }
+
+            publish OrderStatusChanged(UUID orderId, OrderStatus oldStatus, OrderStatus newStatus) {
+                ensure oldStatus != newStatus;
+            }
+        }
+    }
+
+    // A customer's status check reads this cache, so the order's own events keep it right.
+    subscribe OrderEvents {
+        on OrderStatusChanged(UUID orderId, OrderStatus oldStatus, OrderStatus newStatus) {
+            let Order order = orderDb.Order.findOrFail(orderId);
+            redis.OrderCache.set(orderId, {
+                orderId: orderId,
+                orderNumber: order.orderNumber,
+                status: newStatus,
+                total: order.total
+            });
+        }
+    }
+
+    subscribe PaymentEvents {
+        on PaymentProcessed(UUID paymentId, UUID orderId, Money amount) {
+            let Order order = orderDb.Order.findOrFail(orderId);
+            // A customer may have cancelled while the charge was out; PaymentService refunds that one.
+            if (order.status == OrderStatus.PaymentPending) {
+                transaction(orderDb) {
+                    order.paymentId = paymentId;
+                    order.status = OrderStatus.Confirmed;
+                    order.save();
+                }
+                dispatch SettlePayment(paymentId, "WRENWOOD-MAIN", amount);
+            }
+        }
+
+        on PaymentFailed(UUID paymentId, UUID orderId, String reason) {
+            let Order order = orderDb.Order.findOrFail(orderId);
+            if (order.status == OrderStatus.PaymentPending) {
+                transaction(orderDb) {
+                    order.status = OrderStatus.Cancelled;
+                    order.cancellationReason = #"The payment did not go through: {reason}";
+                    order.save();
+                }
+            }
+        }
+
+        on PaymentRefunded(UUID paymentId, UUID orderId, Money amount) {
+            let Order order = orderDb.Order.findOrFail(orderId);
+            transaction(orderDb) {
+                order.status = OrderStatus.Refunded;
+                order.save();
+            }
+        }
+    }
+
+    subscribe ShipmentEvents {
+        on ShipmentCreated(UUID shipmentId, UUID orderId) {
+            let Order order = orderDb.Order.findOrFail(orderId);
+            if (order.isOnItsWay) {
+                transaction(orderDb) {
+                    order.shipmentId = shipmentId;
+                    order.status = OrderStatus.Processing;
+                    order.save();
+                }
+            }
+        }
+
+        on ShipmentDispatched(UUID shipmentId, UUID orderId, String trackingNumber) {
+            let Order order = orderDb.Order.findOrFail(orderId);
+            if (order.isOnItsWay) {
+                transaction(orderDb) {
+                    order.status = OrderStatus.Shipped;
+                    order.save();
+                }
+            }
+        }
+
+        on ShipmentDelivered(UUID shipmentId, UUID orderId, DateTime deliveredAt) {
+            let Order order = orderDb.Order.findOrFail(orderId);
+            if (order.isOnItsWay) {
+                transaction(orderDb) {
+                    order.status = OrderStatus.Delivered;
+                    order.save();
+                }
+            }
+        }
+
+        on ShipmentFailed(UUID shipmentId, UUID orderId, String reason) {
+            let Order order = orderDb.Order.findOrFail(orderId);
+            if (order.isOnItsWay) {
+                transaction(orderDb) {
+                    order.status = OrderStatus.DeliveryProblem;
+                    order.save();
+                }
+            }
+        }
+    }
+
+    queues {
+        queue ProcessPayment(UUID orderId, String orderNumber, String customerId, Money amount, String currency, String cardToken) {
+            ensure amount > 0;
+            ensure currency.length == 3;
+        }
+
+        queue SendOrderConfirmation(UUID orderId, Email customerEmail, String orderNumber) {
+            ensure customerEmail.length > 0;
+        }
+
+        queue SendOrderUpdate(UUID orderId, Email customerEmail, String orderNumber, String subject, String body) {
+            ensure subject.length > 0;
+        }
+
+        queue SettlePayment(UUID paymentId, String merchantId, Decimal amount) : fifo(merchantId) {
+            ensure amount > 0;
+            ensure merchantId.length > 0;
+        }
+    }
+
+    fn viewOf(orderDb.Order order) -> OrderView {
+        let Array<OrderLineView> lines = [];
+        foreach item in orderDb.OrderItem.where(orderId: order.id).orderBy(productName: asc).all() {
+            lines.push(OrderLineView {
+                productName: item.productName,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                total: item.total
+            });
+        }
+        return OrderView {
+            id: order.id,
+            orderNumber: order.orderNumber,
+            status: order.status,
+            placedAt: order.createdAt,
+            subtotal: order.subtotal,
+            tax: order.tax,
+            shippingCost: order.shippingCost,
+            total: order.total,
+            shippingAddress: order.shippingAddress,
+            cancellationReason: order.cancellationReason,
+            canCancel: order.canCancel,
+            customerName: order.customerName,
+            customerEmail: order.customerEmail.toString(),
+            lines: lines
+        };
+    }
+
+    fn cancel(orderDb.Order order, String reason) {
+        if (!order.canCancel) {
+            throw CannotCancelError();
+        }
+        transaction(orderDb) {
+            order.status = OrderStatus.Cancelled;
+            order.cancellationReason = reason;
+            order.save();
+        }
+    }
+
+    rest_api OrderAPI : basePath('/api/v1/orders'), rdbms(orderDb) {
+        alert responseTime(avg) over(5m) > 500ms @severity(warning);
+        alert errorRate(ratio) over(5m) > 5% @severity(critical);
+
+        // A customer's own orders, newest first.
+        get orders(PageRequest page, OrderStatus? status) : auth(required, providers: [identity]) -> Page<orderDb.Order> {
+            let String customerId = Auth.userId();
+            if (status != null) {
+                return orderDb.Order.where(customerId: customerId, status: status).orderBy(createdAt: desc).page(page);
+            }
+            return orderDb.Order.where(customerId: customerId).orderBy(createdAt: desc).page(page);
+        }
+
+        // The same orders, for a script holding the customer's API key. A key names its owner's customer row,
+        // and UserService says whose sign-in that is.
+        @path('/by-key')
+        get ordersByKey(PageRequest page) : auth(required, providers: [customerKeys]) -> Page<orderDb.Order> {
+            let CustomerFacts facts = UserService.UserInternalAPI.get.customerFacts(id: UUID.parse(Auth.userId()));
+            return orderDb.Order.where(customerId: facts.subject).orderBy(createdAt: desc).page(page);
+        }
+
+        @path('/:id')
+        get orderById(UUID id) : auth(required, providers: [identity]) -> OrderView {
+            let Order order = orderDb.Order.findOrFail(id);
+            if (order.customerId != Auth.userId()) {
+                throw NotYourOrderError();
+            }
+            return viewOf(order);
+        }
+
+        post createOrder(CreateOrderRequest request) : auth(required, providers: [identity]) -> OrderView {
+            if (request.items.length() == 0) {
+                throw EmptyOrderError();
+            }
+            if (request.idempotencyKey != null) {
+                let IdempotencyKey? seen = orderDb.IdempotencyKey
+                    .where(key: request.idempotencyKey, operation: "create_order")
+                    .where(expiresAt: gt(DateTime.now()))
+                    .first();
+                if (seen != null) {
+                    let Order earlier = orderDb.Order.findOrFail(seen.resourceId);
+                    return viewOf(earlier);
+                }
+            }
+
+            let UUID reservationId = uuid();
+            let ReservationResponse reservation = ProductService.ProductInternalAPI.post.reserveInventory({
+                reservationId: reservationId,
+                items: request.items,
+                ttlSeconds: 600
+            });
+            if (!reservation.success) {
+                throw NotEnoughStockError();
+            }
+
+            let Order order = orderDb.Order.create({
+                orderNumber: generateOrderNumber(),
+                customerId: Auth.userId(),
+                customerEmail: Auth.identity.email,
+                customerName: Auth.identity.fullName ?? Auth.identity.email.toString(),
+                shippingAddress: request.shippingAddress,
+                billingAddress: request.billingAddress ?? request.shippingAddress,
+                status: OrderStatus.PaymentPending,
+                inventoryReservationId: reservationId,
+                subtotal: Money.of(0),
+                tax: Money.of(0),
+                shippingCost: Money.of(0),
+                discount: Money.of(0),
+                total: Money.of(0)
+            });
+
+            // The server prices the order; a client only ever says what and how many.
+            let Money itemsTotal = Money.of(0);
+            foreach line in request.items {
+                let ProductFacts product = ProductService.ProductInternalAPI.get.productFacts(id: line.productId);
+                orderDb.OrderItem.create({
+                    order: order,
+                    productId: line.productId,
+                    productName: product.name,
+                    quantity: line.quantity,
+                    unitPrice: product.price
+                });
+                itemsTotal = itemsTotal.add(product.price.multiply(line.quantity));
+            }
+            order.priceAt(itemsTotal);
+            order.save();
+
+            if (request.idempotencyKey != null) {
+                orderDb.IdempotencyKey.create({
+                    key: request.idempotencyKey,
+                    operation: "create_order",
+                    resourceId: order.id,
+                    expiresAt: DateTime.now().addHours(24)
+                });
+            }
+
+            redis.OrdersPlacedToday.incr(DateTime.now().format('YYYY-MM-DD'));
+            dispatch ProcessPayment(order.id, order.orderNumber, order.customerId, order.total, "USD", request.card == TestCard.CardThatPays ? "tok_pays" : "tok_declined");
+            dispatch SendOrderConfirmation(order.id, order.customerEmail, order.orderNumber);
+            return viewOf(order);
+        }
+
+        @path('/:id/cancel')
+        post cancelOrder(UUID id, CancelOrderRequest request) : auth(required, providers: [identity]) -> OrderView {
+            let Order order = orderDb.Order.findOrFail(id);
+            if (order.customerId != Auth.userId()) {
+                throw NotYourOrderError();
+            }
+            cancel(order, request.reason ?? "You cancelled this order.");
+            return viewOf(order);
+        }
+    }
+
+    // What the Admin app shows and does.
+    rest_api OrderAdminAPI : basePath('/api/v1/admin/orders'), rdbms(orderDb) {
+        resource orderDb.Order : only(list), auth(required, providers: [identity], roles: [admin]);
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [admin]) -> OrderSummary {
+            let Array<StatusCount> byStatus = [];
+            foreach status in [OrderStatus.PaymentPending, OrderStatus.Confirmed, OrderStatus.Processing, OrderStatus.Shipped, OrderStatus.Delivered, OrderStatus.Cancelled, OrderStatus.Refunded, OrderStatus.DeliveryProblem] {
+                byStatus.push(StatusCount { status: status, orders: orderDb.Order.where(status: status).count() });
+            }
+            return OrderSummary {
+                placedToday: orderDb.Order.where(createdAt: gte(DateTime.now().startOfDay())).count(),
+                waitingToShip: orderDb.Order.whereIn(status: [OrderStatus.Confirmed, OrderStatus.Processing]).count(),
+                shippedNow: orderDb.Order.where(status: OrderStatus.Shipped).count(),
+                deliveryProblems: orderDb.Order.where(status: OrderStatus.DeliveryProblem).count(),
+                byStatus: byStatus
+            };
+        }
+
+        @path('/:id/view')
+        get orderView(UUID id) : auth(required, providers: [identity], roles: [admin]) -> OrderView {
+            let Order order = orderDb.Order.findOrFail(id);
+            return viewOf(order);
+        }
+
+        @path('/:id/cancel')
+        post cancelFor(UUID id, CancelOrderRequest request) : auth(required, providers: [identity], roles: [admin]) -> OrderView {
+            let Order order = orderDb.Order.findOrFail(id);
+            cancel(order, request.reason ?? "We cancelled this order.");
+            return viewOf(order);
+        }
+    }
+
+    jobs {
+        job CleanupExpiredIdempotencyKeys {
+            foreach key in orderDb.IdempotencyKey.where(expiresAt: lt(DateTime.now().addDays(-1))).all() {
+                key.delete();
+            }
+        }
+    }
+
+    test("a new order can be cancelled") {
+        let orderDb.Order order = orderDb.Order.create({
+            customerId: "spec-customer",
+            customerEmail: "ana@example.com",
+            customerName: "Ana Reed",
+            orderNumber: "WW-260101-000001",
+            subtotal: Money.of(100.00),
+            tax: Money.of(8.00),
+            shippingCost: Money.of(0.00),
+            discount: Money.of(0.00),
+            total: Money.of(100.00),
+            shippingAddress: { street: "4 Mill Lane", city: "York", state: "North Yorkshire", zipCode: "YO1 7HH", country: "GB" },
+            billingAddress: { street: "4 Mill Lane", city: "York", state: "North Yorkshire", zipCode: "YO1 7HH", country: "GB" },
+            inventoryReservationId: uuid()
+        });
+        assert order.canCancel == true;
+        assert order.isCompleted == false;
+    }
+
+    test("cancelling an order announces it") {
+        let orderDb.Order order = orderDb.Order.create({
+            customerId: "spec-customer",
+            customerEmail: "ana@example.com",
+            customerName: "Ana Reed",
+            orderNumber: "WW-260101-000002",
+            subtotal: Money.of(75.00),
+            tax: Money.of(6.00),
+            shippingCost: Money.of(0.00),
+            discount: Money.of(0.00),
+            total: Money.of(100.00),
+            shippingAddress: { street: "4 Mill Lane", city: "York", state: "North Yorkshire", zipCode: "YO1 7HH", country: "GB" },
+            billingAddress: { street: "4 Mill Lane", city: "York", state: "North Yorkshire", zipCode: "YO1 7HH", country: "GB" },
+            inventoryReservationId: uuid(),
+            cancellationReason: "Changed my mind"
+        });
+        order.status = OrderStatus.Cancelled;
+        order.save();
+        assert emitted(OrderCancelled(order.id, order.cancellationReason, order.inventoryReservationId));
+    }
+
+    test("a delivered order is complete and cannot be cancelled") {
+        let orderDb.Order order = orderDb.Order.create({
+            customerId: "spec-customer",
+            customerEmail: "ana@example.com",
+            customerName: "Ana Reed",
+            orderNumber: "WW-260101-000003",
+            subtotal: Money.of(150.00),
+            tax: Money.of(12.00),
+            shippingCost: Money.of(0.00),
+            discount: Money.of(0.00),
+            total: Money.of(162.00),
+            status: OrderStatus.Delivered,
+            shippingAddress: { street: "4 Mill Lane", city: "York", state: "North Yorkshire", zipCode: "YO1 7HH", country: "GB" },
+            billingAddress: { street: "4 Mill Lane", city: "York", state: "North Yorkshire", zipCode: "YO1 7HH", country: "GB" },
+            inventoryReservationId: uuid()
+        });
+        assert order.isCompleted == true;
+        assert order.canCancel == false;
+    }
+
+    test("a status change is announced") {
+        let orderDb.Order order = orderDb.Order.create({
+            customerId: "spec-customer",
+            customerEmail: "ana@example.com",
+            customerName: "Ana Reed",
+            orderNumber: "WW-260101-000004",
+            subtotal: Money.of(60.00),
+            tax: Money.of(4.80),
+            shippingCost: Money.of(0.00),
+            discount: Money.of(0.00),
+            total: Money.of(100.00),
+            shippingAddress: { street: "4 Mill Lane", city: "York", state: "North Yorkshire", zipCode: "YO1 7HH", country: "GB" },
+            billingAddress: { street: "4 Mill Lane", city: "York", state: "North Yorkshire", zipCode: "YO1 7HH", country: "GB" },
+            inventoryReservationId: uuid()
+        });
+        order.status = OrderStatus.Processing;
+        order.save();
+        assert emitted(OrderStatusChanged(order.id, OrderStatus.Pending, OrderStatus.Processing));
+    }
+}

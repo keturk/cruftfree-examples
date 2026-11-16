@@ -1,0 +1,334 @@
+{
+  "target": "docker",
+  "generated_at": "2026-11-16T02:10:03Z",
+  "files": [
+    ".cruftfree/runtime-requirements.json",
+    ".env.example",
+    ".env.validation",
+    "ENV.md",
+    "config/alertmanager/alertmanager.yml",
+    "config/client-contract/write_client_contract.py",
+    "config/engine-api-proxy/engine_api_proxy.py",
+    "config/grafana/dashboards/cruftfree-system-overview.json",
+    "config/grafana/dashboards/hotel-channel-mock.json",
+    "config/grafana/dashboards/hotel-email-mock.json",
+    "config/grafana/dashboards/hotel-notice-service.json",
+    "config/grafana/dashboards/hotel-payment-mock.json",
+    "config/grafana/dashboards/hotel-stay-service.json",
+    "config/grafana/provisioning/dashboards/cruftfree-dashboards.yml",
+    "config/grafana/provisioning/datasources/datasources.yml",
+    "config/grafana/provisioning/datasources/prometheus.yml",
+    "config/identity/identity-providers.json",
+    "config/identity/identity-providers.template.json",
+    "config/identity/zitadel-provisioning.json",
+    "config/jaeger/sampling_strategies.json",
+    "config/nginx/nginx.conf",
+    "config/nginx/web-front-desk-angular.conf",
+    "config/nginx/web-guest-angular.conf",
+    "config/prometheus/prometheus.yml",
+    "config/prometheus/rules/baseline_infra_alerts.yml",
+    "config/prometheus/rules/hotel-channel-mock_alerts.yml",
+    "config/prometheus/rules/hotel-email-mock_alerts.yml",
+    "config/prometheus/rules/hotel-notice-service_alerts.yml",
+    "config/prometheus/rules/hotel-payment-mock_alerts.yml",
+    "config/prometheus/rules/hotel-stay-service_alerts.yml",
+    "config/promtail/promtail-config.yaml",
+    "config/services/hotel-channel-mock/config-store.json",
+    "config/services/hotel-email-mock/config-store.json",
+    "config/services/hotel-notice-service/config-store.json",
+    "config/services/hotel-payment-mock/config-store.json",
+    "config/services/hotel-stay-service/config-store.json",
+    "config/web-static-site/front-desk-angular.dockerfile",
+    "config/web-static-site/guest-angular.dockerfile",
+    "docker-compose.clients.yml",
+    "docker-compose.yml",
+    "hotel_channel_mock/.dockerignore",
+    "hotel_channel_mock/Dockerfile",
+    "hotel_email_mock/.dockerignore",
+    "hotel_email_mock/Dockerfile",
+    "hotel_notice_service/.dockerignore",
+    "hotel_notice_service/Dockerfile",
+    "hotel_payment_mock/.dockerignore",
+    "hotel_payment_mock/Dockerfile",
+    "hotel_stay_service/.dockerignore",
+    "hotel_stay_service/Dockerfile",
+    "scripts/db-access/hotel-channel-mock-channel-db.sql",
+    "scripts/db-access/hotel-email-mock-email-db.sql",
+    "scripts/db-access/hotel-notice-service-notice-db.sql",
+    "scripts/db-access/hotel-payment-mock-payment-db.sql",
+    "scripts/db-access/hotel-stay-service-stay-db.sql",
+    "scripts/deploy.ps1",
+    "scripts/deploy.py",
+    "scripts/deploy.sh",
+    "scripts/init-db/hotel-system-postgresql.sql",
+    "scripts/init-topics/hotel-stay-service-mq.sh",
+    "scripts/init-topics/hotel-system-kafka-broker-config.sh",
+    "scripts/test_jwks_server.py",
+    "scripts/zitadel/apply_provisioning.py",
+    "secrets/hotel-channel-mock/channel_db_password",
+    "secrets/hotel-email-mock/email_db_password",
+    "secrets/hotel-notice-service/email_provider_api_key",
+    "secrets/hotel-notice-service/notice_db_password",
+    "secrets/hotel-payment-mock/payment_db_password",
+    "secrets/hotel-stay-service/channel_provider_api_key",
+    "secrets/hotel-stay-service/payment_provider_api_key",
+    "secrets/hotel-stay-service/stay_db_password",
+    "typescript-base/Dockerfile",
+    "typescript-base/package.json"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    ".cruftfree/runtime-requirements.json": "a37528a3b9865a6c4f4ce23bb864508f864f5ccb16eefa22a01d51a3c8f63983",
+    ".env.example": "2fd9fab25b47bf2c66676eef69f05861df39119a83bfa64cb31a0f379e969b78",
+    ".env.validation": "5773c06c2ea724c1ce76d7cc2fde3516d0edccde4d475be976f0cc019a1ed26b",
+    "ENV.md": "1670292037357e5aa301641a75718fc7090e14dd04a2fc5d1e633d07a5c6fe0b",
+    "config/alertmanager/alertmanager.yml": "c13683f93e56b441efdd7eda65f00c316ed674191b784ee651834b901d1fdb0f",
+    "config/client-contract/write_client_contract.py": "73df2725e12d3fce52984e0a3b2e3c566b534532eb0fc40afaaa45ee421327a5",
+    "config/engine-api-proxy/engine_api_proxy.py": "fef744e16b38c5bd09ba48f7ed7a1ad00bf6275d1861006b7ef5508d359fc222",
+    "config/grafana/dashboards/cruftfree-system-overview.json": "8b374190cbc1708cbcd049d4a3121c4e4180d1e808dfc437a97011a45eacd400",
+    "config/grafana/dashboards/hotel-channel-mock.json": "c9052e2780dc6fe5b234595282f546c57621ede7f5c97b9721d2cbbb6de3ee1e",
+    "config/grafana/dashboards/hotel-email-mock.json": "ac86e90e8ef4ae17caf6a7754f771578be3c08b592cc36ce0c3b9f9e2e7a5fb2",
+    "config/grafana/dashboards/hotel-notice-service.json": "d1984f47383439c4f84acc8999c2dc2bd4579df99a62262e3159a131ada96535",
+    "config/grafana/dashboards/hotel-payment-mock.json": "145ad99f98e8e1ef11f314a3c5a9fa6e8ee18aa7242ef5873a9404533acf0d06",
+    "config/grafana/dashboards/hotel-stay-service.json": "a63198e9841d303370fe0193ac8aaa2db43b503c9be5ecba88a8aeef0655bc95",
+    "config/grafana/provisioning/dashboards/cruftfree-dashboards.yml": "9c78889be9f7b846c396d6e9f192e76c9c46b7ad1ebc764813a1ca77c68130bc",
+    "config/grafana/provisioning/datasources/datasources.yml": "cf46ce4cb4909a31682bcc7b3c380868d86f9f5390f34c4f4ec8251b06e94cde",
+    "config/grafana/provisioning/datasources/prometheus.yml": "e003251336ee15a386667161cf5152a63c1ce779a30797114abc02a7cc3e8966",
+    "config/identity/identity-providers.json": "bf9ac1f6b06c157316383e75c5c6aa26ad5d5e35636a8a09acfd92d5d0a4c0f4",
+    "config/identity/identity-providers.template.json": "bf9ac1f6b06c157316383e75c5c6aa26ad5d5e35636a8a09acfd92d5d0a4c0f4",
+    "config/identity/zitadel-provisioning.json": "9f5229cda21b6d4316e003e5e2de426897accb15771074518639c59605616edc",
+    "config/jaeger/sampling_strategies.json": "36b912d65e56c13d1ed38b9e5b8f69e4cc26f6ae6234eecaa14430d80b2f725d",
+    "config/nginx/nginx.conf": "c3b3f5501dc22fcea8ef0f2bb10d9487e859dc7ec4dbabbed7fc1238f8d2c089",
+    "config/nginx/web-front-desk-angular.conf": "84b7cf64991f02866d0aa1d2e95e7d48000fadf412e83cbcc3b5213d9f8cc964",
+    "config/nginx/web-guest-angular.conf": "2b861ce37409c903892244a34fc51cba9e930c5f4c528debc70e5e6f295c4037",
+    "config/prometheus/prometheus.yml": "eecb00f81cb09f3384dbb84c6a720b6fbf05072a29387b26a6a7daa2da0d3f87",
+    "config/prometheus/rules/baseline_infra_alerts.yml": "5306e63bf608bdb037d37289f47e5ecfe85c8c9e2b26b20c341f265f8e5feb4a",
+    "config/prometheus/rules/hotel-channel-mock_alerts.yml": "1b2cf21dcde85c7f7215a98389d89c55594e72124427b027c69bd9e01db6b354",
+    "config/prometheus/rules/hotel-email-mock_alerts.yml": "a1dad2daa88660a9f757935138023cf38d5f45123f7fdac5674d73b1c5bce573",
+    "config/prometheus/rules/hotel-notice-service_alerts.yml": "0e48d0b36cf4974e1ee3a33f2b9fe4c5ad136272efbda1e99967b96247d04033",
+    "config/prometheus/rules/hotel-payment-mock_alerts.yml": "c2ab5509d016d6abbe614f7308567c3e4e8aa004f4275c9798d054d4d08f08b2",
+    "config/prometheus/rules/hotel-stay-service_alerts.yml": "1a3bd1dac37fe5165b6107a214a954320ade6b6033b271a14704384c56c46497",
+    "config/promtail/promtail-config.yaml": "4a95fb4a2fdcf3412bdde47514d78028a61a1f7c44c22decd8af766f14c4a77f",
+    "config/services/hotel-channel-mock/config-store.json": "c50b43f8257bee420898dcf02db80153bd07c7c8ffb6f8443941244c5934aba6",
+    "config/services/hotel-email-mock/config-store.json": "1e60c1215f4a5f8bd0186aff32300bfe437ce59bd74358b80162dc472994a1fd",
+    "config/services/hotel-notice-service/config-store.json": "9a3be676c1976706d88a1962f5c827716f067f3fb3da7e051c9924d6bdf16ffd",
+    "config/services/hotel-payment-mock/config-store.json": "cb5139bb09c1bf4b7c3d22add5e3f6421551107d320bf04191319ba0543bc2d2",
+    "config/services/hotel-stay-service/config-store.json": "fa8021e330c46c919ca0b960666b72a176d934a023680a667f3b894aae53d051",
+    "config/web-static-site/front-desk-angular.dockerfile": "abdf66761384ff04b8ec558608b363edf4a965f63162cb1ebfb29e2c6eddfdd2",
+    "config/web-static-site/guest-angular.dockerfile": "1cdc3351264531626e66d2ffff32a402b1ece744b1a01cdf6858fb22c3e63b14",
+    "docker-compose.clients.yml": "6572b457cbee786d09ea2f18d3cab638f78a4b8fc3a4f7cc2cef4defe7536f7b",
+    "docker-compose.yml": "6bd34af578ae40753a359b918ecd87e435878f23945cdbbc6d4b962e025bb3f9",
+    "hotel_channel_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_channel_mock/Dockerfile": "103b0fcc159b449457abaf265a1bc1253352ea75d425b0d988f741eef9eecb57",
+    "hotel_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_email_mock/Dockerfile": "6cc54accdb217c6f9eef0e2d80a4b225a0cb1caedba183941358edcfaed1b050",
+    "hotel_notice_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_notice_service/Dockerfile": "46b2eb2b391fee7db373ed8d3c034c77910511ab2d911d70f69cc0b64a3bf10c",
+    "hotel_payment_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_payment_mock/Dockerfile": "d890bf96fa479d2ac38380a1a97657ee2ffb462447a7b8607b92854a8282526b",
+    "hotel_stay_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_stay_service/Dockerfile": "290281fdfedd443c3e4bb1ccf7894c1e64bcba5c649b51d72c270406029b87a8",
+    "scripts/db-access/hotel-channel-mock-channel-db.sql": "a367cd28044939944a37f323f77865e152c1eea494e77164ff46e5146a8682cf",
+    "scripts/db-access/hotel-email-mock-email-db.sql": "567f3592be559b0af75ada798c97034e74cb593995ae5c62f2a6d926b0a00db2",
+    "scripts/db-access/hotel-notice-service-notice-db.sql": "3f93e10ac44ebda02d99897e9dc1b2d94d1df08b3a79b5d623688f5e187a6830",
+    "scripts/db-access/hotel-payment-mock-payment-db.sql": "40665ae252fcd26c66cf907d057bb79f4397c8b42bf461c4ae6f1dcc5891ad80",
+    "scripts/db-access/hotel-stay-service-stay-db.sql": "c0ff320318beb1927c5e72a006655cf48f26cd25264c23c7efd774e3183d71b0",
+    "scripts/deploy.ps1": "aaf83acbb6a4db17b3550a475a9db4f8aefb31b4f4459d33278317892d921dc9",
+    "scripts/deploy.py": "5673c51a2c911a3cd188166448fbc9d7abf0e23b1f762b75f3308e713620c2e3",
+    "scripts/deploy.sh": "ff8a704f16b174c7eaa0da832d64b6f7e5de540a24e8102d684f23d2cdb94740",
+    "scripts/init-db/hotel-system-postgresql.sql": "00e95865fddbd79c77acc27f6e30af73bf09fa05f4abddad07f924107e4ea2ce",
+    "scripts/init-topics/hotel-stay-service-mq.sh": "552173a3e4465c7a8b58f289231ac8863132c6f0700ac31cb31d2139db6b482e",
+    "scripts/init-topics/hotel-system-kafka-broker-config.sh": "980d97a1450e1d69920f0d79dfb7e0b329e556d242f2d5786f6e6f62ef718617",
+    "scripts/test_jwks_server.py": "c134cada7d062835608aa9aee983f390f128b2293ea758d7986767f6f7b83784",
+    "scripts/zitadel/apply_provisioning.py": "2f4a0d7e56f952969b92ef2e6d6e7ec688e9a0af1950a64b8311a8c0aa563af7",
+    "secrets/hotel-channel-mock/channel_db_password": "517ff4cf2a0f3533e8713a45a084a9b1eb1455c5796b98040278f57fd19c9b1a",
+    "secrets/hotel-email-mock/email_db_password": "d9d4e981a336068deb0e3ef8144ae7c974290b53a3e336d0c1ce0f8e4a95737e",
+    "secrets/hotel-notice-service/email_provider_api_key": "8ebb0f49fb77982872cbe7909a416457f2e847b42cfc3cbb84abdeede8163761",
+    "secrets/hotel-notice-service/notice_db_password": "658f2f5a9cc2363686d331c5e90aa2983fedfb7510793764d957f3f83cc3cbfc",
+    "secrets/hotel-payment-mock/payment_db_password": "ee04e90ff879874a9e7b1a67a36697a40d86fe53a54d50889af1d76a6c121f0a",
+    "secrets/hotel-stay-service/channel_provider_api_key": "eb92b0a9de839f47eafe24621be4bb35be86d62434756120104239806ab2a000",
+    "secrets/hotel-stay-service/payment_provider_api_key": "4b161ab8b88281159d9ab5eff0d811af8802be84b6856312c90756e2b743d8f2",
+    "secrets/hotel-stay-service/stay_db_password": "78457360a0e844f1f4caabc984ba87e3d24e390f64a8b39358e7927cb461607f",
+    "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
+    "typescript-base/package.json": "f8999e42dfbb4c6e4c3315ce7478f7ffb8d1dcc5991f267104273ad86908e0d1"
+  },
+  "output_hashes": {
+    ".cruftfree/runtime-requirements.json": "c79a2539acba91c25476b69b2663da3cb65cef0103fee5037cbefcbc9e362026",
+    ".env.example": "2fd9fab25b47bf2c66676eef69f05861df39119a83bfa64cb31a0f379e969b78",
+    ".env.validation": "5773c06c2ea724c1ce76d7cc2fde3516d0edccde4d475be976f0cc019a1ed26b",
+    "ENV.md": "1670292037357e5aa301641a75718fc7090e14dd04a2fc5d1e633d07a5c6fe0b",
+    "config/alertmanager/alertmanager.yml": "c13683f93e56b441efdd7eda65f00c316ed674191b784ee651834b901d1fdb0f",
+    "config/client-contract/write_client_contract.py": "73df2725e12d3fce52984e0a3b2e3c566b534532eb0fc40afaaa45ee421327a5",
+    "config/engine-api-proxy/engine_api_proxy.py": "fef744e16b38c5bd09ba48f7ed7a1ad00bf6275d1861006b7ef5508d359fc222",
+    "config/grafana/dashboards/cruftfree-system-overview.json": "dff0030a8880a9570604407945ed77f49ff855f12d68f91adf8795b409ae9274",
+    "config/grafana/dashboards/hotel-channel-mock.json": "279a0281a39fd375716e91070a670f774db3228a7bcdcfdaa307102f44c72ff8",
+    "config/grafana/dashboards/hotel-email-mock.json": "83abef943cb5b2a7b9a41093723da934cf338d984351a18249d8fe2fb9be2867",
+    "config/grafana/dashboards/hotel-notice-service.json": "e64a12ce4e3c2a04b3e6f018f647346b38f2917e645d06da7d4611e37f0e65a9",
+    "config/grafana/dashboards/hotel-payment-mock.json": "c43038a2d9090861d9e87b03aafd2cc608ebf5054b5be5d8bbfc3e38fc5f626c",
+    "config/grafana/dashboards/hotel-stay-service.json": "9459fdcc8b5f890ccb10b52b919b614a33b9189d1702dec9effa8b72003e2f5f",
+    "config/grafana/provisioning/dashboards/cruftfree-dashboards.yml": "9c78889be9f7b846c396d6e9f192e76c9c46b7ad1ebc764813a1ca77c68130bc",
+    "config/grafana/provisioning/datasources/datasources.yml": "cf46ce4cb4909a31682bcc7b3c380868d86f9f5390f34c4f4ec8251b06e94cde",
+    "config/grafana/provisioning/datasources/prometheus.yml": "e003251336ee15a386667161cf5152a63c1ce779a30797114abc02a7cc3e8966",
+    "config/identity/identity-providers.json": "84379cbae44f0d376edd3dc55c773183b32d66ed189df3133a813ac04332fbb1",
+    "config/identity/identity-providers.template.json": "84379cbae44f0d376edd3dc55c773183b32d66ed189df3133a813ac04332fbb1",
+    "config/identity/zitadel-provisioning.json": "5a5675e001a5f1893e0d44523d755e26f1dae7008d403920cf71ec9c404b8538",
+    "config/jaeger/sampling_strategies.json": "d457741a91aa2d385df8fdba7f2ee6fdf6a187438e6d2e93ed860d443fa769d5",
+    "config/nginx/nginx.conf": "c3b3f5501dc22fcea8ef0f2bb10d9487e859dc7ec4dbabbed7fc1238f8d2c089",
+    "config/nginx/web-front-desk-angular.conf": "84b7cf64991f02866d0aa1d2e95e7d48000fadf412e83cbcc3b5213d9f8cc964",
+    "config/nginx/web-guest-angular.conf": "2b861ce37409c903892244a34fc51cba9e930c5f4c528debc70e5e6f295c4037",
+    "config/prometheus/prometheus.yml": "eecb00f81cb09f3384dbb84c6a720b6fbf05072a29387b26a6a7daa2da0d3f87",
+    "config/prometheus/rules/baseline_infra_alerts.yml": "5306e63bf608bdb037d37289f47e5ecfe85c8c9e2b26b20c341f265f8e5feb4a",
+    "config/prometheus/rules/hotel-channel-mock_alerts.yml": "1b2cf21dcde85c7f7215a98389d89c55594e72124427b027c69bd9e01db6b354",
+    "config/prometheus/rules/hotel-email-mock_alerts.yml": "a1dad2daa88660a9f757935138023cf38d5f45123f7fdac5674d73b1c5bce573",
+    "config/prometheus/rules/hotel-notice-service_alerts.yml": "0e48d0b36cf4974e1ee3a33f2b9fe4c5ad136272efbda1e99967b96247d04033",
+    "config/prometheus/rules/hotel-payment-mock_alerts.yml": "c2ab5509d016d6abbe614f7308567c3e4e8aa004f4275c9798d054d4d08f08b2",
+    "config/prometheus/rules/hotel-stay-service_alerts.yml": "1a3bd1dac37fe5165b6107a214a954320ade6b6033b271a14704384c56c46497",
+    "config/promtail/promtail-config.yaml": "4a95fb4a2fdcf3412bdde47514d78028a61a1f7c44c22decd8af766f14c4a77f",
+    "config/services/hotel-channel-mock/config-store.json": "c50b43f8257bee420898dcf02db80153bd07c7c8ffb6f8443941244c5934aba6",
+    "config/services/hotel-email-mock/config-store.json": "1e60c1215f4a5f8bd0186aff32300bfe437ce59bd74358b80162dc472994a1fd",
+    "config/services/hotel-notice-service/config-store.json": "9a3be676c1976706d88a1962f5c827716f067f3fb3da7e051c9924d6bdf16ffd",
+    "config/services/hotel-payment-mock/config-store.json": "cb5139bb09c1bf4b7c3d22add5e3f6421551107d320bf04191319ba0543bc2d2",
+    "config/services/hotel-stay-service/config-store.json": "fa8021e330c46c919ca0b960666b72a176d934a023680a667f3b894aae53d051",
+    "config/web-static-site/front-desk-angular.dockerfile": "abdf66761384ff04b8ec558608b363edf4a965f63162cb1ebfb29e2c6eddfdd2",
+    "config/web-static-site/guest-angular.dockerfile": "1cdc3351264531626e66d2ffff32a402b1ece744b1a01cdf6858fb22c3e63b14",
+    "docker-compose.clients.yml": "6572b457cbee786d09ea2f18d3cab638f78a4b8fc3a4f7cc2cef4defe7536f7b",
+    "docker-compose.yml": "6bd34af578ae40753a359b918ecd87e435878f23945cdbbc6d4b962e025bb3f9",
+    "hotel_channel_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_channel_mock/Dockerfile": "103b0fcc159b449457abaf265a1bc1253352ea75d425b0d988f741eef9eecb57",
+    "hotel_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_email_mock/Dockerfile": "6cc54accdb217c6f9eef0e2d80a4b225a0cb1caedba183941358edcfaed1b050",
+    "hotel_notice_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_notice_service/Dockerfile": "46b2eb2b391fee7db373ed8d3c034c77910511ab2d911d70f69cc0b64a3bf10c",
+    "hotel_payment_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_payment_mock/Dockerfile": "d890bf96fa479d2ac38380a1a97657ee2ffb462447a7b8607b92854a8282526b",
+    "hotel_stay_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_stay_service/Dockerfile": "290281fdfedd443c3e4bb1ccf7894c1e64bcba5c649b51d72c270406029b87a8",
+    "scripts/db-access/hotel-channel-mock-channel-db.sql": "a367cd28044939944a37f323f77865e152c1eea494e77164ff46e5146a8682cf",
+    "scripts/db-access/hotel-email-mock-email-db.sql": "567f3592be559b0af75ada798c97034e74cb593995ae5c62f2a6d926b0a00db2",
+    "scripts/db-access/hotel-notice-service-notice-db.sql": "3f93e10ac44ebda02d99897e9dc1b2d94d1df08b3a79b5d623688f5e187a6830",
+    "scripts/db-access/hotel-payment-mock-payment-db.sql": "40665ae252fcd26c66cf907d057bb79f4397c8b42bf461c4ae6f1dcc5891ad80",
+    "scripts/db-access/hotel-stay-service-stay-db.sql": "c0ff320318beb1927c5e72a006655cf48f26cd25264c23c7efd774e3183d71b0",
+    "scripts/deploy.ps1": "aaf83acbb6a4db17b3550a475a9db4f8aefb31b4f4459d33278317892d921dc9",
+    "scripts/deploy.py": "5673c51a2c911a3cd188166448fbc9d7abf0e23b1f762b75f3308e713620c2e3",
+    "scripts/deploy.sh": "ff8a704f16b174c7eaa0da832d64b6f7e5de540a24e8102d684f23d2cdb94740",
+    "scripts/init-db/hotel-system-postgresql.sql": "00e95865fddbd79c77acc27f6e30af73bf09fa05f4abddad07f924107e4ea2ce",
+    "scripts/init-topics/hotel-stay-service-mq.sh": "552173a3e4465c7a8b58f289231ac8863132c6f0700ac31cb31d2139db6b482e",
+    "scripts/init-topics/hotel-system-kafka-broker-config.sh": "980d97a1450e1d69920f0d79dfb7e0b329e556d242f2d5786f6e6f62ef718617",
+    "scripts/test_jwks_server.py": "c134cada7d062835608aa9aee983f390f128b2293ea758d7986767f6f7b83784",
+    "scripts/zitadel/apply_provisioning.py": "2f4a0d7e56f952969b92ef2e6d6e7ec688e9a0af1950a64b8311a8c0aa563af7",
+    "secrets/hotel-channel-mock/channel_db_password": "517ff4cf2a0f3533e8713a45a084a9b1eb1455c5796b98040278f57fd19c9b1a",
+    "secrets/hotel-email-mock/email_db_password": "d9d4e981a336068deb0e3ef8144ae7c974290b53a3e336d0c1ce0f8e4a95737e",
+    "secrets/hotel-notice-service/email_provider_api_key": "8ebb0f49fb77982872cbe7909a416457f2e847b42cfc3cbb84abdeede8163761",
+    "secrets/hotel-notice-service/notice_db_password": "658f2f5a9cc2363686d331c5e90aa2983fedfb7510793764d957f3f83cc3cbfc",
+    "secrets/hotel-payment-mock/payment_db_password": "ee04e90ff879874a9e7b1a67a36697a40d86fe53a54d50889af1d76a6c121f0a",
+    "secrets/hotel-stay-service/channel_provider_api_key": "eb92b0a9de839f47eafe24621be4bb35be86d62434756120104239806ab2a000",
+    "secrets/hotel-stay-service/payment_provider_api_key": "4b161ab8b88281159d9ab5eff0d811af8802be84b6856312c90756e2b743d8f2",
+    "secrets/hotel-stay-service/stay_db_password": "78457360a0e844f1f4caabc984ba87e3d24e390f64a8b39358e7927cb461607f",
+    "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
+    "typescript-base/package.json": "3bc4b17db9184d1b21f587ae2d90fd69ba5f602bbbb08d7dab3ada3b62e73c55"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "config/prometheus/rules/hotel-channel-mock_alerts.yml": [
+      "hotel.ChannelMock"
+    ],
+    "config/prometheus/rules/hotel-email-mock_alerts.yml": [
+      "hotel.EmailMock"
+    ],
+    "config/prometheus/rules/hotel-notice-service_alerts.yml": [
+      "hotel.NoticeService"
+    ],
+    "config/prometheus/rules/hotel-payment-mock_alerts.yml": [
+      "hotel.PaymentMock"
+    ],
+    "config/prometheus/rules/hotel-stay-service_alerts.yml": [
+      "hotel.StayService"
+    ],
+    "config/services/hotel-channel-mock/config-store.json": [
+      "hotel.ChannelMock"
+    ],
+    "config/services/hotel-email-mock/config-store.json": [
+      "hotel.EmailMock"
+    ],
+    "config/services/hotel-notice-service/config-store.json": [
+      "hotel.NoticeService"
+    ],
+    "config/services/hotel-payment-mock/config-store.json": [
+      "hotel.PaymentMock"
+    ],
+    "config/services/hotel-stay-service/config-store.json": [
+      "hotel.StayService"
+    ],
+    "hotel_channel_mock/.dockerignore": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/Dockerfile": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_email_mock/.dockerignore": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/Dockerfile": [
+      "hotel.EmailMock"
+    ],
+    "hotel_notice_service/.dockerignore": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/Dockerfile": [
+      "hotel.NoticeService"
+    ],
+    "hotel_payment_mock/.dockerignore": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/Dockerfile": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_stay_service/.dockerignore": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/Dockerfile": [
+      "hotel.StayService"
+    ],
+    "scripts/db-access/hotel-channel-mock-channel-db.sql": [
+      "hotel.ChannelMock"
+    ],
+    "scripts/db-access/hotel-email-mock-email-db.sql": [
+      "hotel.EmailMock"
+    ],
+    "scripts/db-access/hotel-notice-service-notice-db.sql": [
+      "hotel.NoticeService"
+    ],
+    "scripts/db-access/hotel-payment-mock-payment-db.sql": [
+      "hotel.PaymentMock"
+    ],
+    "scripts/db-access/hotel-stay-service-stay-db.sql": [
+      "hotel.StayService"
+    ],
+    "secrets/hotel-channel-mock/channel_db_password": [
+      "hotel.ChannelMock"
+    ],
+    "secrets/hotel-email-mock/email_db_password": [
+      "hotel.EmailMock"
+    ],
+    "secrets/hotel-notice-service/email_provider_api_key": [
+      "hotel.NoticeService"
+    ],
+    "secrets/hotel-notice-service/notice_db_password": [
+      "hotel.NoticeService"
+    ],
+    "secrets/hotel-payment-mock/payment_db_password": [
+      "hotel.PaymentMock"
+    ],
+    "secrets/hotel-stay-service/channel_provider_api_key": [
+      "hotel.StayService"
+    ],
+    "secrets/hotel-stay-service/payment_provider_api_key": [
+      "hotel.StayService"
+    ],
+    "secrets/hotel-stay-service/stay_db_password": [
+      "hotel.StayService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

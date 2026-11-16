@@ -1,0 +1,95 @@
+config service iot.TelemetryService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8002;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms alertDb from postgresContainer(id: "d53bd6fb-a813-40da-a4c9-74c62e790c8a", database: "iot_telemetry");
+    nosql docdb from mongoContainer(database: "iot_telemetry");
+    cache redis from redisContainer();
+    pubsub mq from kafkaContainer();
+    httpSecurity from localHttpSecurity(host: "iot-telemetry-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    cacheOps from redisPool();
+    rateLimitOps from rateLimitWindow();
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+          cache from standardCachePolicy();
+        }
+      }
+    }
+    secrets {
+      // The default only exists on a local stack, where it matches the hash seeded in
+      // seed/pager-mock.cseed, so the example runs with nothing to configure. Any other deployment must
+      // supply the handle's value.
+      secret pager_provider_api_key {
+        required = true;
+        purpose = "API key for the paging vendor (PagerProvider contract).";
+        localDefault = "dev-only-pager-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    remoteConfigOps {
+      appconfigMinPollSeconds = 15;
+    }
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+    // Consumers run as SQS-triggered Lambdas: the `mq` topics cross service boundaries, which on AWS
+    // means SNS/SQS, and no language target runs an SQS pubsub consumer inside the service process.
+    runtime { consumers = "decoupled"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms alertDb from rdsPostgres(id: "d53bd6fb-a813-40da-a4c9-74c62e790c8a", database: "iot_telemetry", poolSize: 20, maxOverflow: 10);
+    replace nosql docdb from documentDb(database: "iot_telemetry");
+    replace cache redis from elasticache();
+    replace pubsub mq from snsSqs();
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

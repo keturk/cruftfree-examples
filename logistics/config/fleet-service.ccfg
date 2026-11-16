@@ -1,0 +1,76 @@
+﻿config service logistics.FleetService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8002;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms fleetDb from postgresContainer(id: "d9cd4cf0-4e04-415d-a945-80f786704d5f", database: "logistics_fleet");
+    httpSecurity from localHttpSecurity(host: "logistics-fleet-service");
+    serviceCredentialOps from machineCredential();
+    jobs {
+      jobs {
+        FlagVehiclesDue {
+          schedule = "0 5 * * *";
+          timeout = "120s";
+        }
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    remoteConfigOps {
+      appconfigMinPollSeconds = 15;
+    }
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms fleetDb from rdsPostgres(id: "d9cd4cf0-4e04-415d-a945-80f786704d5f", database: "logistics_fleet", poolSize: 20, maxOverflow: 10);
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

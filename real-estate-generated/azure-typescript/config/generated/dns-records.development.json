@@ -1,0 +1,40 @@
+{
+  "environment": "development",
+  "records": [
+    {
+      "domain": "api.cobblestone.example.com",
+      "name": "api.cobblestone.example.com",
+      "purpose": "edge CNAME",
+      "recordType": "CNAME",
+      "value": "<value from the API Management instance's default hostname (*.azure-api.net)>"
+    },
+    {
+      "domain": "console.cobblestone.example.com",
+      "name": "console.cobblestone.example.com",
+      "purpose": "edge CNAME",
+      "recordType": "CNAME",
+      "value": "<value from the Static Web App's default hostname (*.azurestaticapps.net)>"
+    },
+    {
+      "domain": "console.cobblestone.example.com",
+      "name": "_dnsauth.console.cobblestone.example.com",
+      "purpose": "Static Web Apps domain verification",
+      "recordType": "TXT",
+      "value": "<value from Static Web Apps custom-domain validation token>"
+    },
+    {
+      "domain": "homes.cobblestone.example.com",
+      "name": "homes.cobblestone.example.com",
+      "purpose": "edge CNAME",
+      "recordType": "CNAME",
+      "value": "<value from the Static Web App's default hostname (*.azurestaticapps.net)>"
+    },
+    {
+      "domain": "homes.cobblestone.example.com",
+      "name": "_dnsauth.homes.cobblestone.example.com",
+      "purpose": "Static Web Apps domain verification",
+      "recordType": "TXT",
+      "value": "<value from Static Web Apps custom-domain validation token>"
+    }
+  ]
+}

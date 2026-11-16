@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "signature_db_database": "realestate_signature_mock",
+    "signature_db_host": "realestate-system-postgresql",
+    "signature_db_port": 5432,
+    "signature_db_user": "realestate_signature_mock_signature_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

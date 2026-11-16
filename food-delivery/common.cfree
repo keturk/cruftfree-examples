@@ -1,0 +1,18 @@
+// What the Saltbox services share.
+module fooddelivery.common {
+
+    /// An order's path. The kitchen board shows one column per member, in this order.
+    enum OrderStatus {
+        Placed : tone(warning),
+        Preparing : tone(info),
+        ReadyForPickup : tone(info),
+        OutForDelivery : tone(info),
+        Delivered : tone(success),
+        Cancelled : tone(neutral)
+    }
+
+    /// An order number a customer can read out loud.
+    fn generateOrderNumber() -> String {
+        return #"SB-{Random.string(6, '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ')}";
+    }
+}

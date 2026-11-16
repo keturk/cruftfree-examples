@@ -1,0 +1,2809 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "KeyAuthorizerCodeKey": {
+      "AllowedPattern": "[0-9A-Za-z!_.*'()/-]{1,1024}",
+      "ConstraintDescription": "an S3 object key of unreserved characters, 1-1024 long",
+      "Description": "Deployment-bucket key of the uploaded gateway authorizer function package.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "DefaultStage": {
+      "DependsOn": [
+        "HttpDomainName"
+      ],
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AutoDeploy": true,
+        "DefaultRouteSettings": {
+          "ThrottlingBurstLimit": 200,
+          "ThrottlingRateLimit": 100
+        },
+        "StageName": "$default"
+      },
+      "Type": "AWS::ApiGatewayV2::Stage"
+    },
+    "DefaultStageDomainMapping": {
+      "DependsOn": [
+        "HttpDomainName",
+        "DefaultStage"
+      ],
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "DomainName": {
+          "Ref": "HttpDomainName"
+        },
+        "Stage": "$default"
+      },
+      "Type": "AWS::ApiGatewayV2::ApiMapping"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayFn": {
+      "DependsOn": [
+        "GatewayCruftfreeInfraHealthApiGatewayFnServiceRole"
+      ],
+      "Properties": {
+        "Code": {
+          "ZipFile": "def handler(event, context):\n    return {\n        'statusCode': 200,\n        'headers': {'Content-Type': 'application/json'},\n        'body': '{\"status\":\"healthy\"}',\n    }\n"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeInfraHealthApiGatewayFnServiceRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 5
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayFnServiceRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayHttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "NONE",
+        "RouteKey": "GET /__cruftfree_infra_health__/api-gateway",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "GatewayCruftfreeInfraHealthApiGatewayIntegration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayIntegration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeInfraHealthApiGatewayFn",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayIntegrationPermission": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeInfraHealthApiGatewayFn",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*/__cruftfree_infra_health__/api-gateway"
+        }
+      },
+      "Type": "AWS::Lambda::Permission"
+    },
+    "GatewayCruftfreeOpenapiFn": {
+      "DependsOn": [
+        "GatewayCruftfreeOpenapiFnServiceRole"
+      ],
+      "Properties": {
+        "Code": {
+          "ZipFile": "def handler(event, context):\n    return {\n        'statusCode': 200,\n        'headers': {'Content-Type': 'application/json'},\n        'body': '{\"services\":[\"hotel-channel-mock\",\"hotel-email-mock\",\"hotel-notice-service\",\"hotel-payment-mock\",\"hotel-stay-service\"]}',\n    }\n"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeOpenapiFnServiceRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 5
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "GatewayCruftfreeOpenapiFnServiceRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "GatewayCruftfreeOpenapiHttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "JWT",
+        "AuthorizerId": {
+          "Ref": "GatewayJwtAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "GatewayCruftfreeOpenapiIntegration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "GatewayCruftfreeOpenapiIntegration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeOpenapiFn",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "GatewayCruftfreeOpenapiIntegrationPermission": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeOpenapiFn",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*/__cruftfree_openapi__"
+        }
+      },
+      "Type": "AWS::Lambda::Permission"
+    },
+    "GatewayJwtAuthorizer": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizerType": "JWT",
+        "IdentitySource": [
+          "$request.header.Authorization"
+        ],
+        "JwtConfiguration": {
+          "Audience": [
+            "marram-identity-app",
+            {
+              "Fn::ImportValue": "hotel-system-identity-StayServiceAppClientId"
+            },
+            {
+              "Fn::ImportValue": "hotel-system-identity-NoticeServiceAppClientId"
+            },
+            {
+              "Fn::ImportValue": "hotel-system-identity-PaymentMockAppClientId"
+            },
+            {
+              "Fn::ImportValue": "hotel-system-identity-EmailMockAppClientId"
+            },
+            {
+              "Fn::ImportValue": "hotel-system-identity-ChannelMockAppClientId"
+            },
+            {
+              "Fn::ImportValue": "hotel-system-identity-IdentityGuestBrowserPublicClientId"
+            },
+            {
+              "Fn::ImportValue": "hotel-system-identity-IdentityGuestNativePublicClientId"
+            },
+            {
+              "Fn::ImportValue": "hotel-system-identity-IdentityFrontDeskBrowserPublicClientId"
+            }
+          ],
+          "Issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity"
+        },
+        "Name": "GatewayJwtAuthorizer"
+      },
+      "Type": "AWS::ApiGatewayV2::Authorizer"
+    },
+    "GatewayKeyAuthorizer": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizerPayloadFormatVersion": "2.0",
+        "AuthorizerResultTtlInSeconds": 0,
+        "AuthorizerType": "REQUEST",
+        "AuthorizerUri": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function}/invocations",
+            {
+              "Function": {
+                "Fn::GetAtt": [
+                  "GatewayKeyAuthorizerFn",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "EnableSimpleResponses": true,
+        "IdentitySource": [],
+        "Name": "GatewayKeyAuthorizer"
+      },
+      "Type": "AWS::ApiGatewayV2::Authorizer"
+    },
+    "GatewayKeyAuthorizerFn": {
+      "DependsOn": [
+        "GatewayKeyAuthorizerRoleDefaultPolicy",
+        "GatewayKeyAuthorizerRole"
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::ImportValue": "hotel-system-bootstrap-DeploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "KeyAuthorizerCodeKey"
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "GATEWAY_CLIENT_AUDIENCES": {
+              "Fn::Join": [
+                ",",
+                [
+                  {
+                    "Fn::ImportValue": "hotel-system-identity-StayServiceAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "hotel-system-identity-NoticeServiceAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "hotel-system-identity-PaymentMockAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "hotel-system-identity-EmailMockAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "hotel-system-identity-ChannelMockAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "hotel-system-identity-IdentityGuestBrowserPublicClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "hotel-system-identity-IdentityGuestNativePublicClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "hotel-system-identity-IdentityFrontDeskBrowserPublicClientId"
+                  }
+                ]
+              ]
+            }
+          }
+        },
+        "Handler": "index.handler",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "GatewayKeyAuthorizerLogGroup"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "GatewayKeyAuthorizerRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 10
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "GatewayKeyAuthorizerLogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "GatewayKeyAuthorizerPermissions": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GatewayKeyAuthorizerFn",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/authorizers/${GatewayKeyAuthorizer}"
+        }
+      },
+      "Type": "AWS::Lambda::Permission"
+    },
+    "GatewayKeyAuthorizerRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::ImportValue": "hotel-system-trusted-caller-MintPolicyArn"
+          }
+        ],
+        "RoleName": "hotel-system-gateway-minter"
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "GatewayKeyAuthorizerRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "GatewayKeyAuthorizerLogGroup",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${GatewayKeyAuthorizerLogGroup.Arn}:*"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "GatewayKeyAuthorizerRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "GatewayKeyAuthorizerRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    },
+    "HotelChannelMockRoute33HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /v1/availability",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelChannelMockRoute33Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelChannelMockRoute33Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelChannelMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelChannelMockRoute34HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/channel/published_nights",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelChannelMockRoute34Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelChannelMockRoute34Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelChannelMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelChannelMockRoute39HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /v1/__cruftfree_gateway_health__/hotel-channel-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelChannelMockRoute39Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelChannelMockRoute39Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelChannelMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelChannelMockRoute44HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/hotel-channel-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelChannelMockRoute44Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelChannelMockRoute44Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelChannelMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelEmailMockRoute31HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /v1/deliveries",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelEmailMockRoute31Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelEmailMockRoute31Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelEmailMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelEmailMockRoute32HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/email/outbounds",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelEmailMockRoute32Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelEmailMockRoute32Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelEmailMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelEmailMockRoute38HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /v1/__cruftfree_gateway_health__/hotel-email-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelEmailMockRoute38Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelEmailMockRoute38Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelEmailMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelEmailMockRoute43HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/hotel-email-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelEmailMockRoute43Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelEmailMockRoute43Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelEmailMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelNoticeServiceRoute27HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/notices",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelNoticeServiceRoute27Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelNoticeServiceRoute27Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelNoticeServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelNoticeServiceRoute36HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/notices/health",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelNoticeServiceRoute36Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelNoticeServiceRoute36Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelNoticeServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelNoticeServiceRoute41HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/hotel-notice-service",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelNoticeServiceRoute41Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelNoticeServiceRoute41Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelNoticeServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelPaymentMockRoute28HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /v1/charges",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelPaymentMockRoute28Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelPaymentMockRoute28Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelPaymentMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelPaymentMockRoute29HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /v1/refunds",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelPaymentMockRoute29Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelPaymentMockRoute29Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelPaymentMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelPaymentMockRoute30HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/payment/card_charges",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelPaymentMockRoute30Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelPaymentMockRoute30Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelPaymentMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelPaymentMockRoute37HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /v1/__cruftfree_gateway_health__/hotel-payment-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelPaymentMockRoute37Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelPaymentMockRoute37Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelPaymentMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelPaymentMockRoute42HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/hotel-payment-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelPaymentMockRoute42Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelPaymentMockRoute42Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelPaymentMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute0HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/stays/room-types",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute0Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute0Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute10HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/desk/room_types",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute10Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute10Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute11HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "PUT /api/v1/desk/room_types/{p5}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute11Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute11Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute12HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "DELETE /api/v1/desk/room_types/{p5}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute12Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute12Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute13HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/stays",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute13Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute13Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute14HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/today",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute14Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute14Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute15HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/arrivals",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute15Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute15Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute16HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/departures",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute16Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute16Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute17HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/occupancy",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute17Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute17Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute18HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/calendar",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute18Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute18Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute19HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/stays/{p5}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute19Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute19Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute1HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/stays/room-types/{p5}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute1Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute1Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute20HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/stays/{p5}/free-rooms",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute20Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute20Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute21HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/desk/check-in",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute21Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute21Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute22HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/desk/stays/{p5}/check-out",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute22Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute22Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute23HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/desk/stays/{p5}/cancel",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute23Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute23Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute24HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/desk/note",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute24Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute24Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute25HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/rooms",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute25Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute25Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute26HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/desk/rooms/{p5}/condition",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute26Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute26Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute2HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/stays/search",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute2Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute2Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute35HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/health",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute35Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute35Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute3HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/stays/hold",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute3Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute3Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute40HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/hotel-stay-service",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute40Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute40Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute4HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/stays/pay",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute4Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute4Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute5HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/stays/mine",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute5Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute5Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute6HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/stays/mine/{p5}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute6Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute6Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute7HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/stays/mine/{p5}/cancel",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute7Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute7Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute8HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/room_types",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute8Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute8Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HotelStayServiceRoute9HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/room_types/{p5}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HotelStayServiceRoute9Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "HotelStayServiceRoute9Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-HotelStayServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "HttpApi": {
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowCredentials": false,
+          "AllowHeaders": [
+            "Authorization",
+            "Content-Type"
+          ],
+          "AllowMethods": [
+            "DELETE",
+            "GET",
+            "POST",
+            "PUT"
+          ],
+          "AllowOrigins": [
+            "https://desk.marram.example.com",
+            "https://stay.marram.example.com"
+          ],
+          "ExposeHeaders": [
+            "Retry-After"
+          ]
+        },
+        "Name": "hotel.System-api",
+        "ProtocolType": "HTTP"
+      },
+      "Type": "AWS::ApiGatewayV2::Api"
+    },
+    "HttpApiCert": {
+      "Properties": {
+        "DomainName": "api.marram.example.com",
+        "ValidationMethod": "DNS"
+      },
+      "Type": "AWS::CertificateManager::Certificate"
+    },
+    "HttpDomainName": {
+      "Properties": {
+        "DomainName": "api.marram.example.com",
+        "DomainNameConfigurations": [
+          {
+            "CertificateArn": {
+              "Ref": "HttpApiCert"
+            },
+            "EndpointType": "REGIONAL",
+            "SecurityPolicy": "TLS_1_2"
+          }
+        ]
+      },
+      "Type": "AWS::ApiGatewayV2::DomainName"
+    },
+    "VpcLink": {
+      "Properties": {
+        "Name": "hotel.System-vpc-link",
+        "SecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "VpcLinkSecurityGroup",
+              "GroupId"
+            ]
+          }
+        ],
+        "SubnetIds": [
+          {
+            "Fn::ImportValue": "hotel-system-vpc-PrivateSubnet1Id"
+          },
+          {
+            "Fn::ImportValue": "hotel-system-vpc-PrivateSubnet2Id"
+          }
+        ]
+      },
+      "Type": "AWS::ApiGatewayV2::VpcLink"
+    },
+    "VpcLinkSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Security group for hotel.System API gateway VPC link",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "hotel-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "VpcLinkSecurityGroupToHotelChannelMockNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-channel-mock",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8092,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8092
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToHotelChannelMockNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-channel-mock",
+        "FromPort": 8092,
+        "GroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8092
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "VpcLinkSecurityGroupToHotelEmailMockNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-email-mock",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8091,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8091
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToHotelEmailMockNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-email-mock",
+        "FromPort": 8091,
+        "GroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8091
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "VpcLinkSecurityGroupToHotelNoticeServiceNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-notice-service",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8002,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8002
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToHotelNoticeServiceNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-notice-service",
+        "FromPort": 8002,
+        "GroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8002
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "VpcLinkSecurityGroupToHotelPaymentMockNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-payment-mock",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8090,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8090
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToHotelPaymentMockNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-payment-mock",
+        "FromPort": 8090,
+        "GroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8090
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "VpcLinkSecurityGroupToHotelStayServiceNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-stay-service",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8001,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8001
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToHotelStayServiceNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of hotel-stay-service",
+        "FromPort": 8001,
+        "GroupId": {
+          "Fn::ImportValue": "hotel-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8001
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    }
+  }
+}

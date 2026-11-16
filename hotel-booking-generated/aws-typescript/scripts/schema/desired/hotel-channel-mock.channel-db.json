@@ -1,0 +1,480 @@
+{
+  "block": {
+    "name": "channelDb"
+  },
+  "container": {
+    "kind": "service",
+    "name": "hotel.ChannelMock"
+  },
+  "cqrs_views": {},
+  "entities": {
+    "ApiKey": {
+      "checks": [
+        {
+          "name": "chk_api_keys_key_hash_455a30f8",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "key_hash"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 64
+            },
+            "string_operands": false
+          }
+        }
+      ],
+      "comment": "API keys the vendor issued. Only the SHA-256 hash of a key is stored.",
+      "fields": {
+        "createdAt": {
+          "column_name": "created_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "expiresAt": {
+          "column_name": "expires_at",
+          "default": null,
+          "nullable": true,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "id": {
+          "column_name": "id",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": "uuid",
+              "kind": "BuiltinCall"
+            },
+            "value": "uuid()"
+          },
+          "nullable": false,
+          "primary_key": true,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "isActive": {
+          "column_name": "is_active",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "tree": {
+              "kind": "Literal",
+              "type": "boolean",
+              "value": true
+            },
+            "value": "true"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Boolean",
+            "values": []
+          }
+        },
+        "keyHash": {
+          "column_name": "key_hash",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 64,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 64
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          },
+          "unique": true
+        },
+        "lastUsedAt": {
+          "column_name": "last_used_at",
+          "default": null,
+          "nullable": true,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "ownerId": {
+          "column_name": "owner_id",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "scopes": {
+          "column_name": "scopes",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "value": "[]"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "JSON",
+            "values": []
+          }
+        },
+        "updatedAt": {
+          "column_name": "updated_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        }
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "columns": [
+            "owner_id"
+          ],
+          "fulltext": false,
+          "name": "ix_api_keys_owner_id",
+          "unique": false
+        }
+      ],
+      "table_name": "api_keys",
+      "table_options": {}
+    },
+    "PublishedNight": {
+      "checks": [
+        {
+          "name": "chk_published_nights_room_type_64d3c952",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "room_type"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 80
+            },
+            "string_operands": false
+          }
+        }
+      ],
+      "comment": "What the travel sites currently believe about one room type on one night.",
+      "fields": {
+        "createdAt": {
+          "column_name": "created_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "id": {
+          "column_name": "id",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": "uuid",
+              "kind": "BuiltinCall"
+            },
+            "value": "uuid()"
+          },
+          "nullable": false,
+          "primary_key": true,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "left": {
+          "column_name": "left",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Integer",
+            "values": []
+          }
+        },
+        "night": {
+          "column_name": "night",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Date",
+            "values": []
+          }
+        },
+        "nightlyRate": {
+          "column_name": "nightly_rate",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Money",
+            "values": []
+          }
+        },
+        "receivedAt": {
+          "column_name": "received_at",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "roomType": {
+          "column_name": "room_type",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 80,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 80
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "updatedAt": {
+          "column_name": "updated_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        }
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "columns": [
+            "room_type",
+            "night"
+          ],
+          "fulltext": false,
+          "name": "uq_published_nights_room_type_night",
+          "unique": true
+        }
+      ],
+      "table_name": "published_nights",
+      "table_options": {}
+    }
+  },
+  "enums": [],
+  "format": "cruftfree.rdbms.schema",
+  "rdbms_id": "e43a7c18-9d62-4b1f-b305-7f8e2c6a1d94",
+  "service": {
+    "name": "hotel.ChannelMock",
+    "version": "1.0.0"
+  },
+  "version": 9
+}

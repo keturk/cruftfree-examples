@@ -1,0 +1,15 @@
+{
+  "connections": {
+    "email_provider_base_url": "http://hotel-email-mock:8091",
+    "hotel_stay_service_base_url": "http://hotel-stay-service:8001",
+    "mq_brokers": "hotel-system-kafka:9092",
+    "mq_port": 9092,
+    "notice_db_database": "hotel_notice",
+    "notice_db_host": "hotel-system-postgresql",
+    "notice_db_port": 5432,
+    "notice_db_user": "hotel_notice_service_notice_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

@@ -1,0 +1,45 @@
+@if (__source.isLoaded) {
+@if (__source.error; as problem) {
+<div data-kind="callout" role="status" data-state="stale" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(problem, __source.site) ?? __messages.problemTitle(problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.isLoading || __source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+@let row = __item();
+<dl data-kind="detail">
+  <dt>{{ __messages.key(&#39;field.SavedReply.title&#39;).text }}</dt>
+  <dd>{{ __textOf(row.title) }}
+</dd>
+  <dt>{{ __messages.key(&#39;field.SavedReply.body&#39;).text }}</dt>
+  <dd>{{ __textOf(row.body) }}
+</dd>
+</dl>
+} @else if (__source.error; as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __source.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

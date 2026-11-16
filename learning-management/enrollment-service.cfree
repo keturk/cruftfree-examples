@@ -1,0 +1,308 @@
+from lms.common import QuizOption;
+
+// A student on a course: paying for it, passing its lessons, and getting a certificate or their money
+// back. A refund reaches this service only after an instructor approved the tutor's request for it.
+service lms.EnrollmentService('config/enrollment-service.ccfg') : version('2.0.0'), description('Enrollments, progress and refunds') {
+
+    discovery { }
+
+    uses CourseService;
+    uses PaymentProvider;
+    uses EmailProvider;
+
+    exceptions {
+        CardDeclinedError : status(402), message("Your card was declined");
+        NotYoursError : status(404), message("You are not enrolled on that");
+        AlreadyEnrolledError : status(409), message("You are already on this course");
+        NotRefundableError : status(409), message("That enrollment cannot be refunded");
+    }
+
+    enum EnrollmentStatus {
+        Active : tone(info),
+        Completed : tone(success),
+        Refunded : tone(neutral)
+    }
+
+    /// Two cards to try, so a decline can be seen. No real card enters this application.
+    enum TestCard {
+        CardThatPays,
+        CardThatDeclines
+    }
+
+    /// How long a course can sit untouched before a reminder goes out, in days.
+    const REMINDER_AFTER_DAYS = 7;
+
+    rdbms enrollmentDb : audit {
+
+        entity Enrollment extends BaseEntity {
+            String(200) courseTitle : filterable;
+            String(200) studentName : filterable;
+            String(200) studentEmail : index, filterable;
+            EnrollmentStatus status : filterable = EnrollmentStatus.Active;
+            Int lessonsPassed = 0;
+            Int lessonsTotal;
+            Int progressPercent = 0;
+            Money paid;
+            String(40)? chargeId : hidden;
+            String(20)? certificateCode;
+            String(500)? refundReason;
+            DateTime? completedAt;
+            DateTime lastActiveAt;
+            UUID courseId : index;
+
+            index(studentEmail, courseId);
+
+            // Runs before the write, so what it derives is written with the change.
+            beforeUpdate {
+                if (isChanged(lessonsPassed) && lessonsTotal > 0) {
+                    progressPercent = (lessonsPassed * 100 / lessonsTotal).toInteger();
+                }
+            }
+        }
+
+        /// A lesson someone has passed.
+        entity PassedLesson extends BaseEntity {
+            UUID enrollmentId : index;
+            UUID lessonId;
+
+            index(enrollmentId, lessonId) : unique;
+        }
+
+    }
+
+    struct EnrollRequest {
+        UUID courseId;
+        TestCard card;
+    }
+
+    struct AnswerRequest {
+        UUID enrollmentId;
+        UUID lessonId;
+        QuizOption answer;
+    }
+
+    struct AnswerResult {
+        Boolean correct;
+        Int progressPercent;
+        Boolean finished;
+    }
+
+    struct LessonStep {
+        UUID lessonId;
+        Int position;
+        String(200) title;
+        Int minutes;
+        Boolean passed;
+    }
+
+    struct Journey {
+        enrollmentDb.Enrollment enrollment;
+        Array<LessonStep> steps;
+    }
+
+    struct EnrollmentFacts {
+        String(200) studentName;
+        String(200) courseTitle;
+        Money paid;
+    }
+
+    struct ApprovedRefund {
+        UUID enrollmentId;
+        String(500) reason;
+    }
+
+    struct RefundDone {
+        EnrollmentStatus status;
+    }
+
+    struct DeclinedRefund {
+        UUID enrollmentId;
+    }
+
+    struct TeachingSummary {
+        Int activeStudents;
+        Int completed;
+        Money revenue;
+    }
+
+    /// Mail is a courtesy here. A vendor outage must not undo an enrollment that has been paid for.
+    fn sendMail(String to, String subject, String body, String key) {
+        try {
+            EmailProvider.EmailAPI.post.sendEmail(SendEmailRequest { to: to, subject: subject, body: body, idempotencyKey: key });
+        } catch (Exception e) {
+            Log.warn("Email not sent", { key: key });
+        }
+    }
+
+    fn enrollmentOfCaller(UUID id) -> enrollmentDb.Enrollment {
+        let enrollmentDb.Enrollment? found = enrollmentDb.Enrollment.where(id: id, studentEmail: Auth.identity.email.toString()).first();
+        if (found == null) {
+            throw NotYoursError();
+        }
+        return found;
+    }
+
+    rest_api LearnerAPI : basePath('/api/v1/learning'), rdbms(enrollmentDb) {
+        @path('/enrollments')
+        get mine() : auth(required, providers: [identity]) -> Array<Enrollment> {
+            return Enrollment.where(studentEmail: Auth.identity.email.toString()).orderBy(lastActiveAt: desc).limit(100).all();
+        }
+
+        @path('/enroll')
+        post enroll(EnrollRequest request) : auth(required, providers: [identity]) -> Enrollment {
+            let String email = Auth.identity.email.toString();
+            if (Enrollment.where(studentEmail: email, courseId: request.courseId).first() != null) {
+                throw AlreadyEnrolledError();
+            }
+            let CourseCard course = CourseService.CourseInternalAPI.get.card(id: request.courseId);
+            let Charge charge = PaymentProvider.PaymentAPI.post.createCharge(CreateChargeRequest {
+                cardToken: request.card == TestCard.CardThatPays ? "tok_visa" : "tok_declined",
+                amount: course.price,
+                currency: "USD",
+                reference: course.title,
+                idempotencyKey: #"enroll-{email}-{request.courseId}"
+            });
+            if (charge.status == ChargeStatus.Declined) {
+                throw CardDeclinedError();
+            }
+            let Enrollment created = Enrollment.create({
+                courseId: course.id,
+                courseTitle: course.title,
+                studentName: (Auth.identity.fullName ?? Auth.identity.email).toString(),
+                studentEmail: email,
+                lessonsTotal: course.lessonCount,
+                paid: course.price,
+                chargeId: charge.id,
+                lastActiveAt: DateTime.now()
+            });
+            sendMail(email, #"Welcome to {course.title}", "Your place is confirmed and your first lesson is ready.", #"welcome-{created.id}");
+            return created;
+        }
+
+        @path('/journeys/:id')
+        get journey(UUID id) : auth(required, providers: [identity]) -> Journey {
+            let Enrollment enrollment = enrollmentOfCaller(id);
+            let Array<LessonOutline> outline = CourseService.CourseInternalAPI.get.outline(courseId: enrollment.courseId);
+            let Array<PassedLesson> passed = PassedLesson.where(enrollmentId: id).limit(500).all();
+            return Journey {
+                enrollment: enrollment,
+                steps: outline.map(l => LessonStep {
+                    lessonId: l.id,
+                    position: l.position,
+                    title: l.title,
+                    minutes: l.minutes,
+                    passed: passed.filter(p => p.lessonId == l.id).length > 0
+                })
+            };
+        }
+
+        @path('/answers')
+        post answer(AnswerRequest request) : auth(required, providers: [identity]) -> AnswerResult {
+            let Enrollment enrollment = enrollmentOfCaller(request.enrollmentId);
+            let AnswerVerdict verdict = CourseService.CourseInternalAPI.post.checkAnswer({ lessonId: request.lessonId, answer: request.answer });
+            enrollment.lastActiveAt = DateTime.now();
+            if (verdict.correct && PassedLesson.where(enrollmentId: enrollment.id, lessonId: request.lessonId).first() == null) {
+                PassedLesson.create({ enrollmentId: enrollment.id, lessonId: request.lessonId });
+                enrollment.lessonsPassed = enrollment.lessonsPassed + 1;
+                if (enrollment.lessonsPassed >= enrollment.lessonsTotal && enrollment.status == EnrollmentStatus.Active) {
+                    enrollment.status = EnrollmentStatus.Completed;
+                    enrollment.completedAt = DateTime.now();
+                    enrollment.certificateCode = #"LH-{Random.string(10, 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789')}";
+                    sendMail(enrollment.studentEmail, #"You finished {enrollment.courseTitle}", #"Your certificate code is {enrollment.certificateCode}.", #"finished-{enrollment.id}");
+                }
+            }
+            enrollment.save();
+            return AnswerResult {
+                correct: verdict.correct,
+                progressPercent: enrollment.progressPercent,
+                finished: enrollment.status == EnrollmentStatus.Completed
+            };
+        }
+    }
+
+    // What instructors see and decide.
+    rest_api TeachingAPI : basePath('/api/v1/teaching'), rdbms(enrollmentDb) {
+        resource Enrollment : only(list), auth(required, providers: [identity], roles: [instructor]);
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [instructor]) -> TeachingSummary {
+            let Array<Enrollment> everyone = Enrollment.limit(5000).all();
+            let Money earned = everyone.filter(e => e.status != EnrollmentStatus.Refunded).reduce((total, e) => total.add(e.paid), Money.zero());
+            return TeachingSummary {
+                activeStudents: everyone.filter(e => e.status == EnrollmentStatus.Active).length,
+                completed: everyone.filter(e => e.status == EnrollmentStatus.Completed).length,
+                revenue: earned
+            };
+        }
+    }
+
+    // What the tutor reaches. It says on whose behalf it asks, and the enrollment has to be theirs.
+    rest_api EnrollmentInternalAPI : basePath('/api/v1/internal/enrollments'), rdbms(enrollmentDb) {
+        @path('/:id/facts')
+        get factsFor(UUID id, String studentEmail) : auth(service, providers: [machine]) -> EnrollmentFacts {
+            let Enrollment? enrollment = Enrollment.where(id: id, studentEmail: studentEmail).first();
+            if (enrollment == null) {
+                throw NotYoursError();
+            }
+            return EnrollmentFacts {
+                studentName: enrollment.studentName,
+                courseTitle: enrollment.courseTitle,
+                paid: enrollment.paid
+            };
+        }
+
+        // Runs once an instructor approved. A second approval of the same enrollment finds the work done, and
+        // the vendor's idempotency key would stop a second refund even if it did not.
+        @path('/refunds')
+        post refund(ApprovedRefund request) : auth(service, providers: [machine]) -> RefundDone {
+            let Enrollment enrollment = Enrollment.findOrFail(request.enrollmentId);
+            if (enrollment.status == EnrollmentStatus.Refunded) {
+                return RefundDone { status: enrollment.status };
+            }
+            if (enrollment.chargeId == null) {
+                throw NotRefundableError();
+            }
+            PaymentProvider.PaymentAPI.post.refundCharge(RefundChargeRequest { chargeId: enrollment.chargeId, idempotencyKey: #"refund-{enrollment.id}" });
+            enrollment.status = EnrollmentStatus.Refunded;
+            enrollment.refundReason = request.reason;
+            enrollment.save();
+            sendMail(enrollment.studentEmail, #"Your refund for {enrollment.courseTitle}", "Your refund is on its way to your card.", #"refunded-{enrollment.id}");
+            return RefundDone { status: enrollment.status };
+        }
+
+        @path('/refunds/declined')
+        post tellRefundDeclined(DeclinedRefund request) : auth(service, providers: [machine]) -> RefundDone {
+            let Enrollment enrollment = Enrollment.findOrFail(request.enrollmentId);
+            sendMail(enrollment.studentEmail, #"About your refund for {enrollment.courseTitle}", "Your instructor did not approve this refund. Reply to this email to talk it through.", #"refund-declined-{enrollment.id}-{uuid()}");
+            return RefundDone { status: enrollment.status };
+        }
+    }
+
+    jobs {
+        // Someone who has gone quiet gets one nudge a week, and the key keeps it to one.
+        job RemindQuietStudents {
+            let Array<enrollmentDb.Enrollment> quiet = enrollmentDb.Enrollment
+                .where(status: EnrollmentStatus.Active)
+                .where(lastActiveAt: lt(DateTime.now().addDays(-REMINDER_AFTER_DAYS)))
+                .limit(200)
+                .all();
+            foreach enrollment in quiet {
+                sendMail(enrollment.studentEmail, #"{enrollment.courseTitle} is waiting for you", "You are part of the way through. Your next lesson is ready.", #"nudge-{enrollment.id}-{DateTime.now().format('YYYY-MM-DD')}");
+            }
+        }
+    }
+
+    test("a new enrollment has nothing passed yet") {
+        let enrollmentDb.Enrollment created = enrollmentDb.Enrollment.create({
+            courseId: uuid(),
+            courseTitle: "Reading maps",
+            studentName: "Theo Marsh",
+            studentEmail: "theo@example.com",
+            lessonsTotal: 4,
+            paid: 40.00,
+            lastActiveAt: DateTime.now()
+        });
+        assert created.status == EnrollmentStatus.Active;
+        assert created.progressPercent == 0;
+    }
+}

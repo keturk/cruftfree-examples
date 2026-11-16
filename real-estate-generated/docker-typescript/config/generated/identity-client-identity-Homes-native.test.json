@@ -1,0 +1,36 @@
+{
+  "audience": "customer",
+  "authority": "http://localhost:8085",
+  "clientIdRef": "IdentityHomesNativePublicClientId",
+  "flows": [
+    "authorization_code"
+  ],
+  "issuer": "http://localhost:8085",
+  "logoutUris": [
+    "com.example.cobblestone://oauth/logout"
+  ],
+  "providerName": "identity",
+  "redirectUris": [
+    "com.example.cobblestone://oauth/callback"
+  ],
+  "roleMappings": {
+    "agent": "agent",
+    "operator": "operator"
+  },
+  "rolesClaim": "urn:zitadel:iam:org:project:roles",
+  "scopes": [
+    "openid",
+    "profile",
+    "email"
+  ],
+  "tokenValidation": {
+    "allowedAlgorithms": [
+      "RS256"
+    ],
+    "allowedAudiences": [
+      "http://localhost:8085"
+    ],
+    "issuer": "http://localhost:8085",
+    "jwksUri": "http://localhost:8085/oauth/v2/keys"
+  }
+}

@@ -1,0 +1,255 @@
+from iot.common import DeviceStatus;
+
+// The fleet's register: where each device is and what range it must keep. A device that stops
+// reporting is marked offline by a job, and that change goes out as an event.
+service iot.DeviceService('config/device-service.ccfg') : version('2.0.0'), description('Sites and devices') {
+
+    discovery { }
+
+    identity {
+        // The opsLead, technician and operator roles are granted, never self-assigned. Sign-in belongs
+        // to the hosted identity provider, so nothing here handles a password.
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+
+            group "opsLead" as opsLead;
+            group "technician" as technician;
+            group "operator" as operator;
+        }
+
+        // Service-to-service callers.
+        provider machine config('config/identity/machine.ccfg') {
+        }
+
+        // What a real device presents when it reports a reading.
+        provider deviceKeys config('config/identity/device-keys.ccfg') {
+        }
+
+        // API keys the mocks issue, the way a real vendor authenticates its API callers.
+        provider fleetKeys config('config/identity/fleet-keys.ccfg') {
+        }
+
+        provider pagerKeys config('config/identity/pager-keys.ccfg') {
+        }
+    }
+
+    exceptions {
+        UnknownDeviceError : status(404), message("There is no device with that serial number");
+    }
+
+    enum DeviceKind {
+        Fridge,
+        Freezer,
+        ColdRoom
+    }
+
+    /// How long a device can stay silent before it counts as offline, in minutes.
+    const SILENT_MINUTES = 5;
+
+    rdbms deviceDb : audit {
+
+        entity Site extends BaseEntity {
+            String(120) name : filterable;
+            String(120) city;
+            Float latitude;
+            Float longitude;
+        }
+
+        entity Device extends BaseEntity {
+            String(40) serialNumber : unique, filterable;
+            String(120) name : filterable;
+            DeviceKind kind : filterable;
+            String(120) siteName : filterable;
+            DeviceStatus status : filterable = DeviceStatus.Provisioning;
+            String(40) firmwareVersion;
+            DateTime? lastSeenAt;
+            Float minTemperature;
+            Float maxTemperature;
+            UUID siteId : index;
+
+            index(status);
+
+            afterUpdate {
+                if (isChanged(status)) {
+                    dispatch DeviceStatusChanged(id, serialNumber, name, siteName, oldValue(status), status);
+                }
+            }
+        }
+    }
+
+    pubsub mq {
+        topic DeviceEvents {
+            publish DeviceStatusChanged(UUID deviceId, String serialNumber, String deviceName, String siteName, DeviceStatus oldStatus, DeviceStatus newStatus) {
+                ensure oldStatus != newStatus;
+            }
+        }
+    }
+
+    struct RegisterDeviceRequest {
+        String(40) serialNumber;
+        String(120) name;
+        DeviceKind kind;
+        UUID siteId;
+        String(40) firmwareVersion;
+        Float minTemperature;
+        Float maxTemperature;
+    }
+
+    struct SeenRequest {
+        String(40) serialNumber;
+    }
+
+    struct FirmwareReportRequest {
+        String(40) serialNumber;
+        String(40) firmwareVersion;
+    }
+
+    /// What another service needs to know about a device, and no more.
+    struct DeviceCard {
+        UUID id;
+        String(40) serialNumber;
+        String(120) name;
+        String(120) siteName;
+        Float minTemperature;
+        Float maxTemperature;
+    }
+
+    struct FleetSummary {
+        Int total;
+        Int online;
+        Int offline;
+        Int provisioning;
+    }
+
+    struct SitePin {
+        String(120) name;
+        GeoPoint point;
+        Int devices;
+    }
+
+    fn cardOf(deviceDb.Device device) -> DeviceCard {
+        return DeviceCard {
+            id: device.id,
+            serialNumber: device.serialNumber,
+            name: device.name,
+            siteName: device.siteName,
+            minTemperature: device.minTemperature,
+            maxTemperature: device.maxTemperature
+        };
+    }
+
+    // What the operations team and technicians read.
+    rest_api FleetAPI : basePath('/api/v1/fleet'), rdbms(deviceDb) {
+        resource Device : only(list, get), auth(required, providers: [identity], roles: [opsLead, technician]);
+        resource Site : only(list), auth(required, providers: [identity], roles: [opsLead, technician]);
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [opsLead, technician]) -> FleetSummary {
+            let Array<Device> devices = Device.limit(5000).all();
+            return FleetSummary {
+                total: devices.filter(d => d.status != DeviceStatus.Retired).length,
+                online: devices.filter(d => d.status == DeviceStatus.Online).length,
+                offline: devices.filter(d => d.status == DeviceStatus.Offline).length,
+                provisioning: devices.filter(d => d.status == DeviceStatus.Provisioning).length
+            };
+        }
+
+        @path('/pins')
+        get pins() : auth(required, providers: [identity], roles: [opsLead, technician]) -> Array<SitePin> {
+            let Array<Site> sites = Site.orderBy(name: asc).limit(500).all();
+            return sites.map(s => SitePin {
+                name: s.name,
+                point: GeoPoint { latitude: s.latitude, longitude: s.longitude },
+                devices: Device.where(siteId: s.id).count()
+            });
+        }
+
+        @path('/devices')
+        post register(RegisterDeviceRequest request) : auth(required, providers: [identity], roles: [opsLead]) -> Device {
+            let Site site = Site.findOrFail(request.siteId);
+            return Device.create({
+                serialNumber: request.serialNumber,
+                name: request.name,
+                kind: request.kind,
+                siteId: site.id,
+                siteName: site.name,
+                firmwareVersion: request.firmwareVersion,
+                minTemperature: request.minTemperature,
+                maxTemperature: request.maxTemperature
+            });
+        }
+
+        @path('/devices/:id/retire')
+        post retire(UUID id) : auth(required, providers: [identity], roles: [opsLead]) -> Device {
+            let Device device = Device.findOrFail(id);
+            device.status = DeviceStatus.Retired;
+            device.save();
+            return device;
+        }
+    }
+
+    // What the telemetry and firmware services read. Only a service with a machine credential reaches
+    // these.
+    rest_api DeviceCardAPI : basePath('/api/v1/internal/devices'), rdbms(deviceDb) {
+        // A device was heard from: it is online, and the caller gets the range to judge the reading by.
+        @path('/seen')
+        post seen(SeenRequest request) : auth(service, providers: [machine]) -> DeviceCard {
+            let Device? device = Device.where(serialNumber: request.serialNumber).first();
+            if (device == null) {
+                throw UnknownDeviceError();
+            }
+            device.lastSeenAt = DateTime.now();
+            if (device.status != DeviceStatus.Retired) {
+                device.status = DeviceStatus.Online;
+            }
+            device.save();
+            return cardOf(device);
+        }
+
+        @path('/active')
+        get activeSerials() : auth(service, providers: [machine]) -> Array<DeviceCard> {
+            let Array<Device> devices = Device.whereIn(status: [DeviceStatus.Online, DeviceStatus.Offline]).limit(5000).all();
+            return devices.map(d => cardOf(d));
+        }
+
+        @path('/firmware')
+        post firmwareReported(FirmwareReportRequest request) : auth(service, providers: [machine]) -> DeviceCard {
+            let Device? device = Device.where(serialNumber: request.serialNumber).first();
+            if (device == null) {
+                throw UnknownDeviceError();
+            }
+            device.firmwareVersion = request.firmwareVersion;
+            device.save();
+            return cardOf(device);
+        }
+    }
+
+    jobs {
+        job MarkOffline {
+            let Array<deviceDb.Device> silent = deviceDb.Device
+                .where(status: DeviceStatus.Online)
+                .where(lastSeenAt: lt(DateTime.now().addMinutes(-SILENT_MINUTES)))
+                .limit(1000)
+                .all();
+            foreach device in silent {
+                device.status = DeviceStatus.Offline;
+                device.save();
+            }
+        }
+    }
+
+    test("a new device waits for its first reading") {
+        let deviceDb.Device created = deviceDb.Device.create({
+            serialNumber: "CF-0001",
+            name: "Dairy fridge",
+            kind: DeviceKind.Fridge,
+            siteName: "Harbor Street",
+            siteId: uuid(),
+            firmwareVersion: "1.0.0",
+            minTemperature: 1.0,
+            maxTemperature: 5.0
+        });
+        assert created.status == DeviceStatus.Provisioning;
+    }
+}

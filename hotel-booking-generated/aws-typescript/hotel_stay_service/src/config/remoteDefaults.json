@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "channel_provider_base_url": "http://hotel-channel-mock:8092",
+    "payment_provider_base_url": "http://hotel-payment-mock:8090",
+    "stay_db_database": "hotel_stay",
+    "stay_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

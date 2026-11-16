@@ -1,0 +1,308 @@
+from lms.common import QuizOption;
+
+// What Larkhill teaches: courses and their lessons, each lesson ending in one question. The catalog is
+// public. The right answer never leaves this service: the app sends an answer and is told if it is right.
+service lms.CourseService('config/course-service.ccfg') : version('2.0.0'), description('Courses and lessons') {
+
+    discovery { }
+
+    identity {
+        // Instructor and operator are granted, never self-assigned; anyone may sign up and learn. Sign-in
+        // belongs to the hosted identity provider, so nothing here handles a password.
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+
+            group "instructor" as instructor;
+            group "operator" as operator;
+        }
+
+        // Service-to-service callers.
+        provider machine config('config/identity/machine.ccfg') {
+        }
+
+        // API keys the mocks issue, the way a real vendor authenticates its API callers.
+        provider paymentKeys config('config/identity/payment-keys.ccfg') {
+        }
+
+        provider emailKeys config('config/identity/email-keys.ccfg') {
+        }
+    }
+
+    exceptions {
+        NotPublishedError : status(404), message("That course is not open");
+        EmptyCourseError : status(409), message("A course needs a lesson before it can be published");
+    }
+
+    enum CourseLevel {
+        Beginner : tone(success),
+        Intermediate : tone(info),
+        Advanced : tone(warning)
+    }
+
+    enum CourseStatus {
+        Draft : tone(neutral),
+        Published : tone(success),
+        Archived : tone(neutral)
+    }
+
+    rdbms courseDb : audit {
+
+        entity Course extends BaseEntity {
+            String(200) title : filterable;
+            String(600) summary;
+            String(200) instructorName : filterable;
+            CourseLevel level : filterable;
+            CourseStatus status : filterable = CourseStatus.Draft;
+            Money price;
+            Int lessonCount = 0;
+            Int totalMinutes = 0;
+            DateTime? publishedAt;
+        }
+
+        entity Lesson extends BaseEntity {
+            Int position;
+            String(200) title;
+            Int minutes;
+            Text body;
+            String(300) question;
+            String(200) optionA;
+            String(200) optionB;
+            String(200) optionC;
+            QuizOption rightAnswer : hidden;
+            UUID courseId : index;
+
+            index(courseId, position);
+        }
+    }
+
+    struct CreateCourseRequest {
+        String(200) title;
+        String(600) summary;
+        CourseLevel level;
+        Money price;
+    }
+
+    struct AddLessonRequest {
+        UUID courseId;
+        String(200) title;
+        Int minutes;
+        Text body;
+        String(300) question;
+        String(200) optionA;
+        String(200) optionB;
+        String(200) optionC;
+        QuizOption rightAnswer;
+    }
+
+    /// What the catalog shows of a lesson: a syllabus, not the lesson.
+    struct LessonOutline {
+        UUID id;
+        Int position;
+        String(200) title;
+        Int minutes;
+    }
+
+    struct CoursePage {
+        UUID id;
+        String(200) title;
+        String(600) summary;
+        String(200) instructorName;
+        CourseLevel level;
+        Money price;
+        Int totalMinutes;
+        Array<LessonOutline> lessons;
+    }
+
+    /// A lesson as a student reads it. There is no answer here.
+    struct LessonView {
+        UUID id;
+        UUID courseId;
+        Int position;
+        String(200) title;
+        Int minutes;
+        Text body;
+        String(300) question;
+        String(200) optionA;
+        String(200) optionB;
+        String(200) optionC;
+    }
+
+    struct CheckAnswerRequest {
+        UUID lessonId;
+        QuizOption answer;
+    }
+
+    struct AnswerVerdict {
+        Boolean correct;
+    }
+
+    /// What the enrollment service needs to sell a course.
+    struct CourseCard {
+        UUID id;
+        String(200) title;
+        Money price;
+        Int lessonCount;
+    }
+
+    struct LessonNote {
+        String(200) title;
+        Text body;
+    }
+
+    fn outlineOf(courseDb.Lesson lesson) -> LessonOutline {
+        return LessonOutline { id: lesson.id, position: lesson.position, title: lesson.title, minutes: lesson.minutes };
+    }
+
+    // Open to anyone: the catalog and each course's syllabus.
+    rest_api CatalogAPI : basePath('/api/v1/catalog'), rdbms(courseDb) {
+        @path('/courses')
+        get published() : auth(public) -> Array<Course> {
+            return Course.where(status: CourseStatus.Published).orderBy(publishedAt: desc).limit(60).all();
+        }
+
+        @path('/courses/:id')
+        get courseById(UUID id) : auth(public) -> CoursePage {
+            let Course course = Course.findOrFail(id);
+            if (course.status != CourseStatus.Published) {
+                throw NotPublishedError();
+            }
+            let Array<Lesson> lessons = Lesson.where(courseId: id).orderBy(position: asc).limit(200).all();
+            return CoursePage {
+                id: course.id,
+                title: course.title,
+                summary: course.summary,
+                instructorName: course.instructorName,
+                level: course.level,
+                price: course.price,
+                totalMinutes: course.totalMinutes,
+                lessons: lessons.map(l => outlineOf(l))
+            };
+        }
+    }
+
+    // What a signed-in student reads.
+    rest_api LessonAPI : basePath('/api/v1/lessons'), rdbms(courseDb) {
+        @path('/:id')
+        get lessonById(UUID id) : auth(required, providers: [identity]) -> LessonView {
+            let Lesson lesson = Lesson.findOrFail(id);
+            return LessonView {
+                id: lesson.id,
+                courseId: lesson.courseId,
+                position: lesson.position,
+                title: lesson.title,
+                minutes: lesson.minutes,
+                body: lesson.body,
+                question: lesson.question,
+                optionA: lesson.optionA,
+                optionB: lesson.optionB,
+                optionC: lesson.optionC
+            };
+        }
+    }
+
+    // What instructors do.
+    rest_api StudioAPI : basePath('/api/v1/studio'), rdbms(courseDb) {
+        resource Course : only(list, get), auth(required, providers: [identity], roles: [instructor]);
+
+        @path('/courses')
+        post createCourse(CreateCourseRequest request) : auth(required, providers: [identity], roles: [instructor]) -> Course {
+            return Course.create({
+                title: request.title,
+                summary: request.summary,
+                level: request.level,
+                price: request.price,
+                instructorName: (Auth.identity.fullName ?? Auth.identity.email).toString()
+            });
+        }
+
+        @path('/courses/:courseId/lessons')
+        get lessonsOf(UUID courseId) : auth(required, providers: [identity], roles: [instructor]) -> Array<LessonOutline> {
+            let Array<Lesson> lessons = Lesson.where(courseId: courseId).orderBy(position: asc).limit(200).all();
+            return lessons.map(l => outlineOf(l));
+        }
+
+        @path('/lessons')
+        post addLesson(AddLessonRequest request) : auth(required, providers: [identity], roles: [instructor]) -> LessonOutline {
+            let Course course = Course.findOrFail(request.courseId);
+            let Lesson lesson = Lesson.create({
+                courseId: course.id,
+                position: course.lessonCount + 1,
+                title: request.title,
+                minutes: request.minutes,
+                body: request.body,
+                question: request.question,
+                optionA: request.optionA,
+                optionB: request.optionB,
+                optionC: request.optionC,
+                rightAnswer: request.rightAnswer
+            });
+            course.lessonCount = course.lessonCount + 1;
+            course.totalMinutes = course.totalMinutes + request.minutes;
+            course.save();
+            return outlineOf(lesson);
+        }
+
+        @path('/courses/:id/publish')
+        post publish(UUID id) : auth(required, providers: [identity], roles: [instructor]) -> Course {
+            let Course course = Course.findOrFail(id);
+            if (course.lessonCount == 0) {
+                throw EmptyCourseError();
+            }
+            course.status = CourseStatus.Published;
+            course.publishedAt = DateTime.now();
+            course.save();
+            return course;
+        }
+
+        @path('/courses/:id/archive')
+        post archive(UUID id) : auth(required, providers: [identity], roles: [instructor]) -> Course {
+            let Course course = Course.findOrFail(id);
+            course.status = CourseStatus.Archived;
+            course.save();
+            return course;
+        }
+    }
+
+    // What other services read. Only a service with a machine credential reaches these.
+    rest_api CourseInternalAPI : basePath('/api/v1/internal/courses'), rdbms(courseDb) {
+        @path('/cards/:id')
+        get card(UUID id) : auth(service, providers: [machine]) -> CourseCard {
+            let Course course = Course.findOrFail(id);
+            if (course.status != CourseStatus.Published) {
+                throw NotPublishedError();
+            }
+            return CourseCard { id: course.id, title: course.title, price: course.price, lessonCount: course.lessonCount };
+        }
+
+        @path('/outlines/:courseId')
+        get outline(UUID courseId) : auth(service, providers: [machine]) -> Array<LessonOutline> {
+            let Array<Lesson> lessons = Lesson.where(courseId: courseId).orderBy(position: asc).limit(200).all();
+            return lessons.map(l => outlineOf(l));
+        }
+
+        @path('/check-answer')
+        post checkAnswer(CheckAnswerRequest request) : auth(service, providers: [machine]) -> AnswerVerdict {
+            let Lesson lesson = Lesson.findOrFail(request.lessonId);
+            return AnswerVerdict { correct: lesson.rightAnswer == request.answer };
+        }
+
+        @path('/notes/:lessonId')
+        get note(UUID lessonId) : auth(service, providers: [machine]) -> LessonNote {
+            let Lesson lesson = Lesson.findOrFail(lessonId);
+            return LessonNote { title: lesson.title, body: lesson.body };
+        }
+    }
+
+    test("a new course starts as a draft with nothing in it") {
+        let courseDb.Course created = courseDb.Course.create({
+            title: "Reading maps",
+            summary: "Contours, bearings and finding your way back.",
+            instructorName: "Mira Olsen",
+            level: CourseLevel.Beginner,
+            price: 40.00
+        });
+        assert created.status == CourseStatus.Draft;
+        assert created.lessonCount == 0;
+    }
+}

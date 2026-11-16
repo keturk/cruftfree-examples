@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "mortgage_db_database": "realestate_mortgage_mock",
+    "mortgage_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

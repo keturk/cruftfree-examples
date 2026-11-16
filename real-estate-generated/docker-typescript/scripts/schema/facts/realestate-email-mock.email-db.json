@@ -1,0 +1,5 @@
+{
+  "ddl_dialect": "postgresql",
+  "engine": "postgres",
+  "minimum_server_version": 130000
+}

@@ -1,0 +1,510 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "CityservicesDistrictServiceRepositoryArn": {
+      "Description": "ARN of the 'cityservices_district_service' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesDistrictServiceRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesDistrictServiceRepository",
+          "Arn"
+        ]
+      }
+    },
+    "CityservicesDistrictServiceRepositoryUri": {
+      "Description": "Image URI of the 'cityservices_district_service' repository.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesDistrictServiceRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesDistrictServiceRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "CityservicesFacilityServiceRepositoryArn": {
+      "Description": "ARN of the 'cityservices_facility_service' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesFacilityServiceRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesFacilityServiceRepository",
+          "Arn"
+        ]
+      }
+    },
+    "CityservicesFacilityServiceRepositoryUri": {
+      "Description": "Image URI of the 'cityservices_facility_service' repository.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesFacilityServiceRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesFacilityServiceRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "CityservicesGeocoderMockRepositoryArn": {
+      "Description": "ARN of the 'cityservices_geocoder_mock' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesGeocoderMockRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesGeocoderMockRepository",
+          "Arn"
+        ]
+      }
+    },
+    "CityservicesGeocoderMockRepositoryUri": {
+      "Description": "Image URI of the 'cityservices_geocoder_mock' repository.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesGeocoderMockRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesGeocoderMockRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "CityservicesRequestServiceRepositoryArn": {
+      "Description": "ARN of the 'cityservices_request_service' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesRequestServiceRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesRequestServiceRepository",
+          "Arn"
+        ]
+      }
+    },
+    "CityservicesRequestServiceRepositoryUri": {
+      "Description": "Image URI of the 'cityservices_request_service' repository.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesRequestServiceRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesRequestServiceRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "CityservicesSmsMockRepositoryArn": {
+      "Description": "ARN of the 'cityservices_sms_mock' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesSmsMockRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesSmsMockRepository",
+          "Arn"
+        ]
+      }
+    },
+    "CityservicesSmsMockRepositoryUri": {
+      "Description": "Image URI of the 'cityservices_sms_mock' repository.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesSmsMockRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesSmsMockRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "CityservicesSystemPythonBaseRepositoryArn": {
+      "Description": "ARN of the 'cityservices-system-python-base' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesSystemPythonBaseRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesSystemPythonBaseRepository",
+          "Arn"
+        ]
+      }
+    },
+    "CityservicesSystemPythonBaseRepositoryUri": {
+      "Description": "Image URI of the 'cityservices-system-python-base' repository.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-CityservicesSystemPythonBaseRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "CityservicesSystemPythonBaseRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "DeploymentBucketName": {
+      "Description": "Bucket the deployment uploads templates and function assets to.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-DeploymentBucketName"
+      },
+      "Value": {
+        "Ref": "DeploymentBucket"
+      }
+    },
+    "RequestServiceConsumersRepositoryArn": {
+      "Description": "ARN of the 'request_service-consumers' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-RequestServiceConsumersRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "RequestServiceConsumersRepository",
+          "Arn"
+        ]
+      }
+    },
+    "RequestServiceConsumersRepositoryUri": {
+      "Description": "Image URI of the 'request_service-consumers' repository.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-RequestServiceConsumersRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "RequestServiceConsumersRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "RunStoreBucketArn": {
+      "Description": "ARN of the run store, for grants scoped to one database's prefix.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-RunStoreBucketArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "RunStoreBucket",
+          "Arn"
+        ]
+      }
+    },
+    "RunStoreBucketName": {
+      "Description": "Bucket carrying files between the deploy and its database workloads.",
+      "Export": {
+        "Name": "cityservices-system-bootstrap-RunStoreBucketName"
+      },
+      "Value": {
+        "Ref": "RunStoreBucket"
+      }
+    }
+  },
+  "Resources": {
+    "CityservicesDistrictServiceRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "cityservices_district_service"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "CityservicesFacilityServiceRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "cityservices_facility_service"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "CityservicesGeocoderMockRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "cityservices_geocoder_mock"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "CityservicesRequestServiceRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "cityservices_request_service"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "CityservicesSmsMockRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "cityservices_sms_mock"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "CityservicesSystemPythonBaseRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "cityservices-system-python-base"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "DeploymentBucket": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": true,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "ExpireNoncurrentVersions",
+              "NoncurrentVersionExpiration": {
+                "NoncurrentDays": 30
+              },
+              "Status": "Enabled"
+            }
+          ]
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "DeploymentBucketPolicy": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "DeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:*"
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DeploymentBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "DeploymentBucket",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::S3::BucketPolicy"
+    },
+    "RequestServiceConsumersRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "request_service-consumers",
+        "RepositoryPolicyText": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "RunStoreBucket": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": true,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1
+              },
+              "ExpirationInDays": 1,
+              "Id": "ExpireRunFiles",
+              "Status": "Enabled"
+            }
+          ]
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "RunStoreBucketPolicy": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "RunStoreBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:*"
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "RunStoreBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "RunStoreBucket",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::S3::BucketPolicy"
+    }
+  }
+}

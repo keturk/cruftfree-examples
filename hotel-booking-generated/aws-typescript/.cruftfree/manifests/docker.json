@@ -1,0 +1,82 @@
+{
+  "target": "docker",
+  "generated_at": "2026-11-16T02:30:28Z",
+  "files": [
+    "hotel_channel_mock/.dockerignore",
+    "hotel_channel_mock/Dockerfile",
+    "hotel_email_mock/.dockerignore",
+    "hotel_email_mock/Dockerfile",
+    "hotel_notice_service/.dockerignore",
+    "hotel_notice_service/Dockerfile",
+    "hotel_payment_mock/.dockerignore",
+    "hotel_payment_mock/Dockerfile",
+    "hotel_stay_service/.dockerignore",
+    "hotel_stay_service/Dockerfile",
+    "typescript-base/Dockerfile",
+    "typescript-base/package.json"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    "hotel_channel_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_channel_mock/Dockerfile": "b13ddf9157db4ac2f15760ceaafd76facf03dd65d7d68d3ce3f7268f271d4a99",
+    "hotel_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_email_mock/Dockerfile": "c5a6d9a22d18e5920d3275660a17f45a9fedf44451a8964a220b0e73a51abd67",
+    "hotel_notice_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_notice_service/Dockerfile": "7dcc7a5a1fd5abb35c3cfb40e54860e13dcd0b84777c5e351194fbc2055c0a76",
+    "hotel_payment_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_payment_mock/Dockerfile": "d890f9df0ca5070dd1290afb24d64291707ac7ece98212005bfe647a39aff8ec",
+    "hotel_stay_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_stay_service/Dockerfile": "6c5c0253633ad36369e13a39392b89c031f3b2eadc1a208531a84aa36e79b049",
+    "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
+    "typescript-base/package.json": "8b102bd444a02c22148b1c53dd15e67dd98ea32572604de2de8d3ebf3bc410db"
+  },
+  "output_hashes": {
+    "hotel_channel_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_channel_mock/Dockerfile": "b13ddf9157db4ac2f15760ceaafd76facf03dd65d7d68d3ce3f7268f271d4a99",
+    "hotel_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_email_mock/Dockerfile": "c5a6d9a22d18e5920d3275660a17f45a9fedf44451a8964a220b0e73a51abd67",
+    "hotel_notice_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_notice_service/Dockerfile": "7dcc7a5a1fd5abb35c3cfb40e54860e13dcd0b84777c5e351194fbc2055c0a76",
+    "hotel_payment_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_payment_mock/Dockerfile": "d890f9df0ca5070dd1290afb24d64291707ac7ece98212005bfe647a39aff8ec",
+    "hotel_stay_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "hotel_stay_service/Dockerfile": "6c5c0253633ad36369e13a39392b89c031f3b2eadc1a208531a84aa36e79b049",
+    "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
+    "typescript-base/package.json": "b520544bf419f6c0d560c59f3aba9174461391e43c55a56ccfa16200daa82397"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "hotel_channel_mock/.dockerignore": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/Dockerfile": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_email_mock/.dockerignore": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/Dockerfile": [
+      "hotel.EmailMock"
+    ],
+    "hotel_notice_service/.dockerignore": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/Dockerfile": [
+      "hotel.NoticeService"
+    ],
+    "hotel_payment_mock/.dockerignore": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/Dockerfile": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_stay_service/.dockerignore": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/Dockerfile": [
+      "hotel.StayService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

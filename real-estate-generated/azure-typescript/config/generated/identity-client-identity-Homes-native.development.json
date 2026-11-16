@@ -1,0 +1,37 @@
+{
+  "audience": "customer",
+  "authority": "https://login.microsoftonline.com/cobblestone.onmicrosoft.com/v2.0",
+  "clientIdRef": "IdentityHomesNativePublicClientId",
+  "flows": [
+    "authorization_code"
+  ],
+  "issuer": "https://login.microsoftonline.com/cobblestone.onmicrosoft.com/v2.0",
+  "logoutUris": [
+    "com.example.cobblestone://oauth/logout"
+  ],
+  "providerName": "identity",
+  "redirectUris": [
+    "com.example.cobblestone://oauth/callback"
+  ],
+  "roleMappings": {
+    "agent": "agent",
+    "operator": "operator"
+  },
+  "rolesClaim": "roles",
+  "scopes": [
+    "openid",
+    "profile",
+    "email",
+    "api://cobblestone.onmicrosoft.com/identity-development/access_as_user"
+  ],
+  "tokenValidation": {
+    "allowedAlgorithms": [
+      "RS256"
+    ],
+    "allowedAudiences": [
+      "https://login.microsoftonline.com/cobblestone.onmicrosoft.com/v2.0"
+    ],
+    "issuer": "https://login.microsoftonline.com/cobblestone.onmicrosoft.com/v2.0",
+    "jwksUri": "https://login.microsoftonline.com/cobblestone.onmicrosoft.com/discovery/v2.0/keys"
+  }
+}

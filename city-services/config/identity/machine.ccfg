@@ -1,0 +1,32 @@
+// Service-to-service callers. Issues the tokens that let a service reach a peer or a key-verifying
+// mock; never a browser.
+config identity machine {
+  base {
+    audience = "machine";
+    mode = "platformManaged";
+    jwksCacheTtlSeconds = 3600;
+    tokens {
+      accessToken = "15m";
+    }
+  }
+
+  profile test as "test" extends base {
+  }
+
+  // AWS provisions exactly one Cognito User Pool per application, and the staff-facing 'identity'
+  // provider owns it. The machine-to-machine provider is therefore validated against an
+  // operator-managed OIDC issuer on this target rather than provisioned.
+  profile aws as "aws" extends base {
+    mode = "external";
+    provider = "external";
+    issuer = "https://machine-auth.portalder.example.com";
+    clientId = "portalder-service-clients";
+    clientSecret = "machine_identity_client_secret";
+  }
+
+  profile development as "dev" extends aws {
+  }
+
+  profile production as "prod" extends base {
+  }
+}

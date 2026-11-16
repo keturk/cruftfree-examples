@@ -1,0 +1,16 @@
+// What the Coldframe services share.
+module iot.common {
+
+    enum DeviceStatus {
+        Provisioning : tone(neutral),
+        Online : tone(success),
+        Offline : tone(danger),
+        Retired : tone(neutral)
+    }
+
+    /// What a command to a device asks for.
+    enum DeviceCommandKind {
+        UpdateFirmware,
+        Restart
+    }
+}

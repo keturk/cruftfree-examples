@@ -1,0 +1,39 @@
+groups:
+  - name: cityservices-district-service-standard
+    rules:
+      - alert: HighErrorRate
+        expr: sum(rate(http_errors_total{service="cityservices-district-service",status_code=~"5.."}[5m])) / clamp_min(sum(rate(http_requests_total{service="cityservices-district-service"}[5m])), 1e-9) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: cityservices-district-service
+        annotations:
+          summary: "High error rate on cityservices-district-service"
+          description: "5xx error rate above 5% for 5 minutes."
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{service="cityservices-district-service"}[5m])) by (le)) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: cityservices-district-service
+        annotations:
+          summary: "High P95 latency on cityservices-district-service"
+          description: "P95 latency above 2 seconds for 5 minutes."
+      - alert: DatabaseConnectionPoolExhausted
+        expr: sum(sqlalchemy_pool_checked_out{service="cityservices-district-service"}) / clamp_min(sum(sqlalchemy_pool_size{service="cityservices-district-service"}), 1) > 0.9
+        for: 2m
+        labels:
+          severity: critical
+          service: cityservices-district-service
+        annotations:
+          summary: "DB pool nearly exhausted on cityservices-district-service"
+          description: "Checked-out connections exceed 90% of configured pool capacity."
+      - alert: JobFailureRate
+        expr: increase(job_failures_total{service="cityservices-district-service"}[1h]) > 0
+        for: 10m
+        labels:
+          severity: warning
+          service: cityservices-district-service
+        annotations:
+          summary: "Background job failures on cityservices-district-service"
+          description: "At least one job failure recorded in the last hour."

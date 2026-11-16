@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "geocoder_provider_base_url": "http://cityservices-geocoder-mock:8091",
+    "request_db_database": "cityservices_request",
+    "request_db_port": 5432,
+    "sms_provider_base_url": "http://cityservices-sms-mock:8090"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

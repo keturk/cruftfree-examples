@@ -1,0 +1,85 @@
+@if (__loaded()) {
+@if (__stale(); as staleFailure) {
+<div data-kind="callout" role="status" data-state="stale">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(staleFailure.problem, staleFailure.binding.site) ?? __messages.problemTitle(staleFailure.problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="staleFailure.binding.isLoading || staleFailure.binding.pausedForMs &gt; 0" (click)="staleFailure.binding.refresh()">{{ staleFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(staleFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+
+<header data-kind="pageHeader">
+<a data-part="back" [routerLink]="&quot;/&quot;" [attr.aria-label]="__messages.key('framework.back').text"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span></a>
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+<div data-part="actions">
+<span data-kind="badge" [attr.data-tone]="__mod0()">
+{{ __arg2() }}
+</span>
+
+</div>
+</header>
+
+<div data-kind="card">
+<ui-markdown data-kind="markdown" [source]="__arg3()">
+</ui-markdown>
+</div>
+
+<div data-kind="card">
+<div data-part="header">
+<h3 data-part="title">{{ __arg4() }}</h3>
+</div>
+@if (__when0()) {
+<span data-kind="text">
+{{ __arg5() }}
+</span>
+} @else {
+<div data-kind="row">
+<button data-kind="button" type="button" (click)="((!(this.voted())) ? (this.__ui.settle(this.vote(true))) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">thumb_up</span>
+{{ __arg6() }}
+</button>
+<button data-kind="button" type="button" (click)="((!(this.voted())) ? (this.__ui.settle(this.vote(false))) : this.__outsideWhen())">
+<span class="material-symbols-outlined" aria-hidden="true">thumb_down</span>
+{{ __arg7() }}
+</button>
+<div data-kind="spacer" aria-hidden="true">
+</div>
+<a data-kind="link" [routerLink]="&quot;/tickets/new&quot;">
+<span class="material-symbols-outlined" aria-hidden="true">edit_note</span>
+{{ __arg8() }}
+</a>
+</div>
+}
+</div>
+
+
+} @else if (__failed(); as failed) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(failed.problem, failed.binding.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(failed.problem) }}</span>
+    @if (failed.problem.detail) {
+    <span data-part="detail">{{ failed.problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="failed.binding.pausedForMs &gt; 0" (click)="failed.binding.refresh()">{{ failed.binding.pausedForMs &gt; 0 ? __messages.retryIn(failed.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

@@ -1,0 +1,24 @@
+{
+  "settings": [
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "helpdesk-email-mock-email-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "helpdesk-knowledge-service-knowledge-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "helpdesk-notice-service-notice-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "helpdesk-ticket-service-ticket-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.EventHub/namespaces",
+      "settingName": "pooled-event-hubs-lanternpost-events-development-diag"
+    }
+  ]
+}

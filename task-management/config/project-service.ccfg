@@ -1,0 +1,62 @@
+config service taskapp.ProjectService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8001;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms projectDb from postgresContainer(id: "603ffb82-7681-4eea-bed2-bbe8c7c8b2a1", database: "taskapp_project");
+    pubsub mq from kafkaContainer();
+    httpSecurity from localHttpSecurity(host: "taskapp-project-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    serviceCredentialOps from machineCredential();
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile azure as "azure" extends base {
+    alias env = "AZURE";
+    alias resource = "azure";
+
+    // Consumers run inside the web app, not in separate compute.
+    runtime { consumers = "in-process"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms projectDb from azurePostgres(id: "603ffb82-7681-4eea-bed2-bbe8c7c8b2a1", database: "taskapp_project", poolSize: 20, maxOverflow: 10);
+    replace pubsub mq from azureEventHubs();
+  }
+
+  profile development as "dev" extends azure {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

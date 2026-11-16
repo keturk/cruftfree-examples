@@ -1,0 +1,19 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/moderation-provider.cfree';
+include 'providers/push-provider.cfree';
+include 'providers/email-provider.cfree';
+include 'people-service.cfree';
+include 'post-service.cfree';
+include 'notice-service.cfree';
+include 'mocks/moderation-mock.cfree';
+include 'mocks/push-mock.cfree';
+include 'mocks/email-mock.cfree';
+include 'social-app.cfree';
+include 'desk-app.cfree';
+
+/// Rookery: a place to post short notes and follow people. Anyone can read. Every post goes past a moderation
+/// vendor before anyone sees it, and a person on the Trust and Safety desk decides what the vendor is unsure of.
+/// The moderation, push and email vendors run as mocks in the same stack.
+system social.System('config/system.ccfg') : version('2.0.0') {
+}

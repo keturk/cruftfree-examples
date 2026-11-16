@@ -1,0 +1,76 @@
+﻿config service cityservices.FacilityService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8002;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms facilityDb from postgisContainer(id: "c4ad569c-c10c-46bd-a4a7-cb62bd9904d5", database: "cityservices_facility");
+    httpSecurity from localHttpSecurity(host: "cityservices-facility-service");
+    jobs {
+      jobs {
+        ConvertShapes {
+          schedule = "* * * * *";
+          timeout = "60s";
+        }
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    remoteConfigOps {
+      appconfigMinPollSeconds = 15;
+    }
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms facilityDb from rdsPostgres(id: "c4ad569c-c10c-46bd-a4a7-cb62bd9904d5", database: "cityservices_facility", poolSize: 20, maxOverflow: 10);
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

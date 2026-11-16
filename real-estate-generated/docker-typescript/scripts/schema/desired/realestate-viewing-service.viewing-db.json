@@ -1,0 +1,478 @@
+{
+  "block": {
+    "name": "viewingDb"
+  },
+  "container": {
+    "kind": "service",
+    "name": "realestate.ViewingService"
+  },
+  "cqrs_views": {},
+  "entities": {
+    "Viewing": {
+      "checks": [
+        {
+          "name": "chk_viewings_agent_name_b28b8d16",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "agent_name"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_viewings_buyer_name_20c2bccd",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "buyer_name"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_viewings_listing_title_3dd2881f",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "listing_title"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 200
+            },
+            "string_operands": false
+          }
+        },
+        {
+          "name": "chk_viewings_note_db49f8ea",
+          "tree": {
+            "kind": "Comparison",
+            "left": {
+              "key": [
+                "String",
+                "length"
+              ],
+              "kind": "BuiltinCall",
+              "operands": [
+                {
+                  "kind": "FieldReference",
+                  "name": "note"
+                }
+              ]
+            },
+            "operator": "<=",
+            "right": {
+              "kind": "Literal",
+              "type": "integer",
+              "value": 500
+            },
+            "string_operands": false
+          }
+        }
+      ],
+      "fields": {
+        "agentEmail": {
+          "column_name": "agent_email",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Email",
+            "values": []
+          }
+        },
+        "agentName": {
+          "column_name": "agent_name",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "buyerEmail": {
+          "column_name": "buyer_email",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Email",
+            "values": []
+          }
+        },
+        "buyerName": {
+          "column_name": "buyer_name",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "createdAt": {
+          "column_name": "created_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "endsAt": {
+          "column_name": "ends_at",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "id": {
+          "column_name": "id",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": "uuid",
+              "kind": "BuiltinCall"
+            },
+            "value": "uuid()"
+          },
+          "nullable": false,
+          "primary_key": true,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "listingId": {
+          "column_name": "listing_id",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "UUID",
+            "values": []
+          }
+        },
+        "listingTitle": {
+          "column_name": "listing_title",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": 200,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 200
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "note": {
+          "column_name": "note",
+          "default": null,
+          "nullable": true,
+          "primary_key": false,
+          "storage": {
+            "max_length": 500,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {
+              "max_length": 500
+            },
+            "kind": "scalar",
+            "name": "String",
+            "values": []
+          }
+        },
+        "reminderSent": {
+          "column_name": "reminder_sent",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "tree": {
+              "kind": "Literal",
+              "type": "boolean",
+              "value": false
+            },
+            "value": "false"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "Boolean",
+            "values": []
+          }
+        },
+        "startsAt": {
+          "column_name": "starts_at",
+          "default": null,
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        },
+        "status": {
+          "column_name": "status",
+          "default": {
+            "kind": "literal",
+            "name": "literal",
+            "tree": {
+              "kind": "Literal",
+              "type": "text",
+              "value": "requested"
+            },
+            "value": "ViewingStatus.Requested"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "enum",
+            "name": "ViewingStatus",
+            "values": [
+              "Requested",
+              "Confirmed",
+              "Completed",
+              "Cancelled",
+              "NoShow"
+            ]
+          }
+        },
+        "updatedAt": {
+          "column_name": "updated_at",
+          "default": {
+            "kind": "server_function",
+            "name": "server_default",
+            "tree": {
+              "key": [
+                "DateTime",
+                "now"
+              ],
+              "kind": "BuiltinCall"
+            },
+            "value": "DateTime.now()"
+          },
+          "nullable": false,
+          "primary_key": false,
+          "storage": {
+            "max_length": null,
+            "precision": null,
+            "scale": null
+          },
+          "type": {
+            "constraints": {},
+            "kind": "scalar",
+            "name": "DateTime",
+            "values": []
+          }
+        }
+      },
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "columns": [
+            "listing_id"
+          ],
+          "fulltext": false,
+          "name": "ix_viewings_listing_id",
+          "unique": false
+        },
+        {
+          "columns": [
+            "buyer_email"
+          ],
+          "fulltext": false,
+          "name": "ix_viewings_buyer_email",
+          "unique": false
+        },
+        {
+          "columns": [
+            "agent_email"
+          ],
+          "fulltext": false,
+          "name": "ix_viewings_agent_email",
+          "unique": false
+        }
+      ],
+      "table_name": "viewings",
+      "table_options": {}
+    }
+  },
+  "enums": [
+    {
+      "database_name": "viewing_status",
+      "member_values": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "name": "ViewingStatus",
+      "values": [
+        "Requested",
+        "Confirmed",
+        "Completed",
+        "Cancelled",
+        "NoShow"
+      ]
+    }
+  ],
+  "format": "cruftfree.rdbms.schema",
+  "rdbms_id": "ec0977bd-086f-4670-a383-76b48d4b4dfb",
+  "service": {
+    "name": "realestate.ViewingService",
+    "version": "2.0.0"
+  },
+  "version": 9
+}

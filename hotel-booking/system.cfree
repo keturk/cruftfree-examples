@@ -1,0 +1,18 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/payment-provider.cfree';
+include 'providers/email-provider.cfree';
+include 'providers/channel-provider.cfree';
+include 'stay-service.cfree';
+include 'notice-service.cfree';
+include 'mocks/payment-mock.cfree';
+include 'mocks/email-mock.cfree';
+include 'mocks/channel-mock.cfree';
+include 'guest-app.cfree';
+include 'front-desk-app.cfree';
+
+/// Marram House: a small hotel on the coast. A guest searches for dates, holds a room for ten minutes while they
+/// pay, and manages the stay afterwards. The front desk runs arrivals, departures and housekeeping. The card
+/// vendor, the email vendor and the channel manager run as mocks in the same stack.
+system hotel.System('config/system.ccfg') : version('1.0.0') {
+}

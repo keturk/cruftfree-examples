@@ -1,0 +1,42 @@
+@if (__loadProblem(); as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" (click)="__retryLoad()">{{ __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else if (!__loaded()) {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+} @else {
+<form [formGroup]="__form" (ngSubmit)="__submit()">
+<label>
+  <span>{{ __messages.key(&#39;field.ThreadEntry.body&#39;).text }}</span>
+  <input type="text" [formControlName]="&#39;body&#39;" name="body" required [attr.aria-invalid]="__invalid(__form.get(&#39;body&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;body&#39;))" />
+</label>
+@if (__serverError(__form.get('body')) ?? __fieldError(__form.get('body')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;body&#39;))">{{ message }}</span>
+}
+
+
+  @if (__formError(); as message) {
+  <div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">{{ message }}</span>
+</div>
+
+  }
+  <button type="submit" data-kind="button" [disabled]="__submitting()" [attr.aria-busy]="__submitting() ? 'true' : null" [attr.data-busy]="__submitting() ? 'true' : null">{{ __messages.key(&#39;framework.submit&#39;).text }}</button>
+</form>
+}

@@ -1,0 +1,35 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "CityservicesDistrictServiceFromCityservicesRequestServiceEgress": {
+      "Properties": {
+        "Description": "Allow traffic from cityservices_request_service (declared dependency)",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "cityservices-system-cityservices-district-service-ServiceSecurityGroupId"
+        },
+        "FromPort": 8001,
+        "GroupId": {
+          "Fn::ImportValue": "cityservices-system-cityservices-request-service-ServiceSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8001
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "CityservicesDistrictServiceFromCityservicesRequestServiceIngress": {
+      "Properties": {
+        "Description": "Allow traffic from cityservices_request_service (declared dependency)",
+        "FromPort": 8001,
+        "GroupId": {
+          "Fn::ImportValue": "cityservices-system-cityservices-district-service-ServiceSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::ImportValue": "cityservices-system-cityservices-request-service-ServiceSecurityGroupId"
+        },
+        "ToPort": 8001
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    }
+  }
+}

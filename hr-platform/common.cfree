@@ -1,0 +1,28 @@
+// What the Alderbrook services share.
+module hr.common {
+
+    enum Department {
+        Engineering,
+        Design,
+        Sales,
+        People,
+        Finance,
+        Operations
+    }
+
+    enum EmploymentType {
+        FullTime,
+        PartTime,
+        Contract
+    }
+
+    /// A number a person can read out, printed on a badge.
+    fn generateEmployeeNumber() -> String {
+        return #"AB-{Random.string(6, '0123456789')}";
+    }
+
+    /// What a candidate quotes to follow an application. Long enough that nobody can guess another's.
+    fn generateReference() -> String {
+        return #"APP-{Random.string(14, '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ')}";
+    }
+}

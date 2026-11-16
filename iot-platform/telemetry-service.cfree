@@ -1,0 +1,322 @@
+from iot.common import DeviceStatus;
+
+// Readings and alerts. Every reading goes into a document store built for a lot of small writes, the
+// latest one into a cache, and one out of range opens an alert and pages someone. A device back in
+// range closes an alert nobody has taken yet. A real device reports with its own API key.
+service iot.TelemetryService('config/telemetry-service.ccfg') : version('2.0.0'), description('Readings and alerts') {
+
+    discovery { }
+
+    uses DeviceService;
+    uses PagerProvider;
+
+    exceptions {
+        AlreadyClaimedError : status(409), message("Someone else has already taken this alert");
+        AlreadyResolvedError : status(409), message("This alert is already resolved");
+    }
+
+    enum AlertKind {
+        TooWarm : tone(danger),
+        TooCold : tone(info),
+        DeviceOffline : tone(warning)
+    }
+
+    enum AlertStatus {
+        Open : tone(danger),
+        Claimed : tone(warning),
+        Resolved : tone(success)
+    }
+
+    nosql docdb {
+        /// One temperature reading. Nothing relational reads these; a chart does.
+        entity TelemetryReading {
+            String(40) serialNumber : index;
+            DateTime takenAt;
+            Float temperature;
+            Float? humidity;
+            Int? batteryPercent;
+
+            index(serialNumber, takenAt);
+        }
+    }
+
+    cache redis {
+        hash LatestReading : prefix('latest:'), ttl(3600) {
+            String serialNumber : key;
+            Float temperature;
+            DateTime takenAt;
+        }
+    }
+
+    rdbms alertDb {
+
+        entity Alert extends BaseEntity {
+            String(120) deviceName : filterable;
+            String(120) siteName : filterable;
+            AlertKind kind : filterable;
+            AlertStatus status : filterable = AlertStatus.Open;
+            Float? temperature;
+            String(200)? claimedByName;
+            DateTime? resolvedAt;
+            String(500)? resolution;
+            String(40) serialNumber : filterable;
+            UUID deviceId : index;
+
+            index(serialNumber, status);
+        }
+
+        /// The keys real devices report with. Only the SHA-256 hash of a key is stored.
+        entity ApiKey extends BaseEntity {
+            String(64) keyHash : unique;
+            UUID ownerId : index;
+            Array<String> scopes = [];
+            Boolean isActive = true;
+            DateTime? expiresAt;
+            DateTime? lastUsedAt;
+        }
+    }
+
+    // A service reads another service's topics through a pubsub block of its own.
+    pubsub mq { }
+
+    subscribe DeviceEvents {
+        // A device that stops reporting is an alert in its own right.
+        on DeviceStatusChanged(UUID deviceId, String serialNumber, String deviceName, String siteName, DeviceStatus oldStatus, DeviceStatus newStatus) {
+            if (newStatus == DeviceStatus.Offline) {
+                openAlert(deviceId, serialNumber, deviceName, siteName, AlertKind.DeviceOffline, null);
+            }
+            if (oldStatus == DeviceStatus.Offline && newStatus == DeviceStatus.Online) {
+                closeUnclaimed(serialNumber, AlertKind.DeviceOffline);
+            }
+        }
+    }
+
+    struct ReadingRequest {
+        String(40) serialNumber;
+        Float temperature;
+        Float? humidity;
+        Int? batteryPercent;
+    }
+
+    /// One point on a chart.
+    struct ReadingPoint {
+        String(20) takenAt;
+        Float temperature;
+    }
+
+    struct LatestView {
+        String(40) serialNumber;
+        Float? temperature;
+    }
+
+    struct WatchDeviceRequest {
+        String(40) serialNumber;
+    }
+
+    struct ResolveAlertRequest {
+        UUID id;
+        String(500) resolution;
+    }
+
+    struct SiteAlertCount {
+        String(120) siteName;
+        Int alerts;
+    }
+
+    struct AlertSummary {
+        Int open;
+        Int claimed;
+        Int resolvedToday;
+        Array<SiteAlertCount> openBySite;
+    }
+
+    /// How a person would say it, for a page that wakes someone up.
+    fn describe(AlertKind kind) -> String {
+        if (kind == AlertKind.TooWarm) {
+            return "too warm";
+        }
+        if (kind == AlertKind.TooCold) {
+            return "too cold";
+        }
+        return "stopped reporting";
+    }
+
+    /// At most one alert of a kind is open per device, so a warm fridge pages once and not every minute.
+    fn openAlert(UUID deviceId, String serialNumber, String deviceName, String siteName, AlertKind kind, Float? temperature) {
+        let alertDb.Alert? existing = alertDb.Alert.where(serialNumber: serialNumber, kind: kind).whereIn(status: [AlertStatus.Open, AlertStatus.Claimed]).first();
+        if (existing != null) {
+            return;
+        }
+        let alertDb.Alert created = alertDb.Alert.create({
+            deviceId: deviceId,
+            serialNumber: serialNumber,
+            deviceName: deviceName,
+            siteName: siteName,
+            kind: kind,
+            temperature: temperature
+        });
+        try {
+            PagerProvider.PagerAPI.post.sendPage(SendPageRequest {
+                severity: kind == AlertKind.DeviceOffline ? "warning" : "critical",
+                title: #"{deviceName} at {siteName}: {describe(kind)}",
+                body: temperature != null ? #"Last reading {Math.round(temperature, 1)} degrees" : "No readings for five minutes",
+                idempotencyKey: #"alert-{created.id}"
+            });
+        } catch (Exception e) {
+            Log.warn("Page not sent", { alertId: created.id });
+        }
+    }
+
+    fn closeUnclaimed(String serialNumber, AlertKind kind) {
+        let Array<alertDb.Alert> open = alertDb.Alert.where(serialNumber: serialNumber, kind: kind, status: AlertStatus.Open).limit(10).all();
+        foreach alert in open {
+            alert.status = AlertStatus.Resolved;
+            alert.resolvedAt = DateTime.now();
+            alert.resolution = "Back to normal without anyone stepping in";
+            alert.save();
+        }
+    }
+
+    fn recordReading(ReadingRequest request) {
+        let DeviceCard card = DeviceService.DeviceCardAPI.post.seen({ serialNumber: request.serialNumber });
+        let DateTime now = DateTime.now();
+        docdb.TelemetryReading.insert({
+            serialNumber: request.serialNumber,
+            takenAt: now,
+            temperature: request.temperature,
+            humidity: request.humidity,
+            batteryPercent: request.batteryPercent
+        });
+        redis.LatestReading.set(request.serialNumber, {
+            serialNumber: request.serialNumber,
+            temperature: request.temperature,
+            takenAt: now
+        });
+        if (request.temperature > card.maxTemperature) {
+            openAlert(card.id, card.serialNumber, card.name, card.siteName, AlertKind.TooWarm, request.temperature);
+        } else if (request.temperature < card.minTemperature) {
+            openAlert(card.id, card.serialNumber, card.name, card.siteName, AlertKind.TooCold, request.temperature);
+        } else {
+            closeUnclaimed(card.serialNumber, AlertKind.TooWarm);
+            closeUnclaimed(card.serialNumber, AlertKind.TooCold);
+        }
+    }
+
+    // What a real device calls, with its own key.
+    rest_api DeviceIngestAPI : basePath('/api/v1/ingest'), rdbms(alertDb) {
+        @path('/readings')
+        post reading(ReadingRequest request) : auth(required, providers: [deviceKeys]) -> Void {
+            recordReading(request);
+        }
+    }
+
+    // What the simulated fleet calls. Only a service with a machine credential reaches this.
+    rest_api SimulatorIngestAPI : basePath('/api/v1/internal/ingest'), rdbms(alertDb) {
+        @path('/readings')
+        post simulatedReading(ReadingRequest request) : auth(service, providers: [machine]) -> Void {
+            recordReading(request);
+        }
+    }
+
+    // What people read and do.
+    rest_api AlertAPI : basePath('/api/v1/alerts'), rdbms(alertDb) {
+        resource Alert : only(list, get), auth(required, providers: [identity], roles: [opsLead, technician]);
+
+        @path('/queue')
+        get queue() : auth(required, providers: [identity], roles: [opsLead, technician]) -> Array<Alert> {
+            return Alert.whereIn(status: [AlertStatus.Open, AlertStatus.Claimed]).orderBy(createdAt: desc).limit(100).all();
+        }
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [opsLead, technician]) -> AlertSummary {
+            let Array<Alert> live = Alert.whereIn(status: [AlertStatus.Open, AlertStatus.Claimed]).limit(1000).all();
+            let Array<SiteAlertCount> bySite = [];
+            foreach alert in live {
+                let Int found = bySite.findIndex(c => c.siteName == alert.siteName);
+                if (found < 0) {
+                    bySite = bySite.append(SiteAlertCount { siteName: alert.siteName, alerts: live.filter(a => a.siteName == alert.siteName).length });
+                }
+            }
+            return AlertSummary {
+                open: live.filter(a => a.status == AlertStatus.Open).length,
+                claimed: live.filter(a => a.status == AlertStatus.Claimed).length,
+                resolvedToday: Alert.where(status: AlertStatus.Resolved).where(resolvedAt: gte(DateTime.now().startOfDay())).count(),
+                openBySite: bySite
+            };
+        }
+
+        @path('/of-device/:serialNumber')
+        get ofDevice(String serialNumber) : auth(required, providers: [identity], roles: [opsLead, technician]) -> Array<Alert> {
+            return Alert.where(serialNumber: serialNumber).orderBy(createdAt: desc).limit(20).all();
+        }
+
+        @path('/:id/claim')
+        post claim(UUID id) : auth(required, providers: [identity], roles: [opsLead, technician]) -> Alert {
+            transaction(alertDb) {
+                let alertDb.Alert alert = alertDb.Alert.where(id: id).forUpdate().firstOrFail();
+                if (alert.status == AlertStatus.Claimed) {
+                    throw AlreadyClaimedError();
+                }
+                if (alert.status == AlertStatus.Resolved) {
+                    throw AlreadyResolvedError();
+                }
+                alert.status = AlertStatus.Claimed;
+                alert.claimedByName = (Auth.identity.fullName ?? Auth.identity.email).toString();
+                alert.save();
+                return alert;
+            }
+        }
+
+        @path('/resolve')
+        post resolve(ResolveAlertRequest request) : auth(required, providers: [identity], roles: [opsLead, technician]) -> Alert {
+            let Alert alert = Alert.findOrFail(request.id);
+            if (alert.status == AlertStatus.Resolved) {
+                throw AlreadyResolvedError();
+            }
+            alert.status = AlertStatus.Resolved;
+            alert.resolvedAt = DateTime.now();
+            alert.resolution = request.resolution;
+            alert.save();
+            return alert;
+        }
+    }
+
+    rest_api ReadingAPI : basePath('/api/v1/readings'), rdbms(alertDb) {
+        // The last few hours for a chart, oldest first. This one reads the document store.
+        @path('/:serialNumber/recent')
+        get recent(String serialNumber) : auth(required, providers: [identity], roles: [opsLead, technician]) -> Array<ReadingPoint> {
+            let Array<docdb.TelemetryReading> rows = docdb.TelemetryReading.where(serialNumber: serialNumber).orderBy(takenAt: desc).limit(120).all();
+            return rows.reverse().map(r => ReadingPoint { takenAt: r.takenAt.format('HH:mm'), temperature: r.temperature });
+        }
+
+        @path('/:serialNumber/latest')
+        get latest(String serialNumber) : auth(required, providers: [identity], roles: [opsLead, technician]) -> LatestView {
+            let JSON? cached = redis.LatestReading.get(serialNumber);
+            return LatestView { serialNumber: serialNumber, temperature: cached != null ? JSON.get(cached, "temperature") : null };
+        }
+    }
+
+    // The same reading on a socket, for a wall display or a client that would rather not poll.
+    websocket_api LiveFeed : basePath("/ws/live"), rdbms(alertDb),
+        auth(required, providers: [identity], roles: [opsLead]) {
+
+        event LatestReadingSeen(LatestView payload);
+
+        on WatchDevice(WatchDeviceRequest payload) replies LatestReadingSeen {
+            let JSON? cached = redis.LatestReading.get(payload.serialNumber);
+            return LatestView { serialNumber: payload.serialNumber, temperature: cached != null ? JSON.get(cached, "temperature") : null };
+        }
+    }
+
+    test("a new alert is open") {
+        let alertDb.Alert created = alertDb.Alert.create({
+            deviceId: uuid(),
+            serialNumber: "CF-0001",
+            deviceName: "Dairy fridge",
+            siteName: "Harbor Street",
+            kind: AlertKind.TooWarm,
+            temperature: 11.5
+        });
+        assert created.status == AlertStatus.Open;
+    }
+}

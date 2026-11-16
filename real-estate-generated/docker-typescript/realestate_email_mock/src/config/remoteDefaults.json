@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "email_db_database": "realestate_email_mock",
+    "email_db_host": "localhost",
+    "email_db_port": 5432,
+    "email_db_user": "postgres"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

@@ -1,0 +1,51 @@
+// What every Port Alder service shares.
+module cityservices.common {
+
+    enum FacilityType {
+        Library : tone(info),
+        FireStation : tone(danger),
+        CommunityCenter : tone(success),
+        Clinic : tone(warning)
+    }
+
+    enum ZoningType {
+        Residential : tone(success),
+        Commercial : tone(info),
+        Industrial : tone(warning),
+        MixedUse : tone(neutral)
+    }
+
+    enum RequestCategory {
+        Pothole,
+        Streetlight,
+        Graffiti,
+        Flooding,
+        FallenTree,
+        Other
+    }
+
+    enum RequestPriority {
+        Low : tone(neutral),
+        Medium : tone(info),
+        High : tone(warning),
+        Critical : tone(danger)
+    }
+
+    enum RequestStatus {
+        Open : tone(warning),
+        Assigned : tone(info),
+        InProgress : tone(info),
+        Resolved : tone(success),
+        Closed : tone(neutral)
+    }
+
+    /// The reference a resident quotes: today's date and a random part nobody can guess.
+    fn generateRequestNumber() -> String {
+        return #"SR-{DateTime.now().format('yyyyMMdd')}-{Random.string(6, 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789')}";
+    }
+
+    /// A point as PostGIS reads it: longitude first.
+    fn pointWkt(Float latitude, Float longitude) -> String {
+        return #"POINT({longitude} {latitude})";
+    }
+}

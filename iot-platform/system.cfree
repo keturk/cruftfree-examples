@@ -1,0 +1,18 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/fleet-provider.cfree';
+include 'providers/pager-provider.cfree';
+include 'device-service.cfree';
+include 'telemetry-service.cfree';
+include 'firmware-service.cfree';
+include 'mocks/fleet-mock.cfree';
+include 'mocks/pager-mock.cfree';
+include 'operations-app.cfree';
+include 'technician-app.cfree';
+
+/// Coldframe: every fridge in a chain of cold stores reports its temperature. A reading out of range
+/// opens an alert and pages someone, a technician claims it and fixes it, and new firmware rolls out a
+/// few devices at a time. The devices and the paging vendor are outside the company, played here by
+/// mocks in the same stack, and the simulated fleet really does send readings every minute.
+system iot.System('config/system.ccfg') : version('2.0.0') {
+}

@@ -1,0 +1,36 @@
+name: guest
+description: "Guest: the generated mobile app. Never edited."
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.4
+  flutter: ^3.47.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cruftfree_client:
+    path: ../..
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: "6.0.0"
+  go_router: "18.0.1"
+  http: "1.6.0"
+  shared_preferences_platform_interface: "2.4.2"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/apps/guest/
+    - assets/config/
+    - assets/strings/
+  fonts:
+    - family: "Inter"
+      fonts:
+        - asset: assets/apps/guest/body-regular-8909904ab6c8.ttf
+          weight: 400
+        - asset: assets/apps/guest/heading-semibold-f9a06e79cd3a.ttf
+          weight: 600

@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "listing_db_database": "realestate_listing",
+    "listing_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

@@ -1,0 +1,344 @@
+from logistics.common import ShipmentStatus, newTrackingNumber;
+
+// The parcels. Booking one geocodes the address and decides who delivers it: inside the area it goes on
+// a route, outside it goes to the partner carrier. Every step lands in an append-only history, and a text
+// to the recipient goes on a queue so a slow vendor never holds up a dispatcher or a driver.
+service logistics.ShipmentService('config/shipment-service.ccfg') : version('2.0.0'), description('Parcels and their history') {
+
+    discovery { }
+
+    identity {
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+            group "dispatcher" as dispatcher;
+            group "driver" as driver;
+            group "operator" as operator;
+        }
+        provider machine config('config/identity/machine.ccfg') { }
+        provider carrierKeys config('config/identity/carrier-keys.ccfg') { }
+        provider geocodeKeys config('config/identity/geocode-keys.ccfg') { }
+        provider smsKeys config('config/identity/sms-keys.ccfg') { }
+    }
+
+    uses GeocodeProvider;
+    uses CarrierProvider;
+
+    exceptions {
+        AddressNotFoundError : status(422), message("We could not find that address. Check the city.");
+        WrongStepError : status(409), message("This parcel is not at that step");
+    }
+
+    rdbms shipmentDb {
+
+        entity Shipment extends BaseEntity {
+            String(20) trackingNumber : unique, filterable;
+            String(200) shipperName : filterable;
+            String(200) recipientName : filterable;
+            String(300) recipientAddress;
+            String(100) city : filterable;
+            Float weightKg;
+            ShipmentStatus status : filterable = ShipmentStatus.Booked;
+            DateTime promisedBy;
+            String(100)? driverName;
+            DateTime? deliveredAt;
+            String(200)? deliveredTo;
+            String(300)? failureReason;
+            String(40)? carrierReference;
+            /// Only ever used to text the recipient, so no response carries it.
+            Phone recipientPhone : sensitive;
+            Float latitude;
+            Float longitude;
+
+            index(status);
+        }
+
+        /// What happened to a parcel. Never changed once written.
+        entity TrackingEvent extends BaseEntity : appendOnly {
+            UUID shipmentId : index;
+            ShipmentStatus status;
+            String(300) note;
+        }
+    }
+
+    pubsub mq {
+        topic ShipmentEvents {
+            /// A parcel is waiting for a place on a route.
+            publish ShipmentBooked(UUID shipmentId, String trackingNumber, String recipientName, String address, String city, Float latitude, Float longitude, Float weightKg) {
+                ensure weightKg > 0;
+            }
+        }
+    }
+
+    queues {
+        queue TextRecipient(String trackingNumber, Phone phone, String noticeKey, String body) {
+            ensure noticeKey.length > 0;
+        }
+    }
+
+    struct BookRequest {
+        String(200) shipperName;
+        String(200) recipientName;
+        Phone recipientPhone;
+        String(300) recipientAddress;
+        String(100) city;
+        Float weightKg;
+        DateTime promisedBy;
+    }
+
+    /// What anyone holding a tracking number may see: where it has got to, and nothing about who it is for.
+    struct TrackingView {
+        String trackingNumber;
+        ShipmentStatus status;
+        String city;
+        DateTime promisedBy;
+        DateTime? deliveredAt;
+        GeoPoint area;
+        Array<TrackingStep> steps;
+    }
+
+    struct TrackingStep {
+        ShipmentStatus status;
+        String note;
+        DateTime at;
+    }
+
+    struct ShipmentDetail {
+        shipmentDb.Shipment shipment;
+        GeoPoint point;
+        Array<shipmentDb.TrackingEvent> events;
+    }
+
+    struct DayCount {
+        String day;
+        Int booked;
+        Int delivered;
+    }
+
+    struct DeskSummary {
+        Int waiting;
+        Int onTheRoad;
+        Int failed;
+        Int withPartner;
+        Int deliveredToday;
+        Array<DayCount> lastWeek;
+    }
+
+    struct StopReport {
+        UUID shipmentId;
+        ShipmentStatus status;
+        String(300) note;
+        String(100)? driverName;
+        String(200)? deliveredTo;
+        String(300)? failureReason;
+    }
+
+    struct ReportAck {
+        String trackingNumber;
+    }
+
+    /// One step: the status, the history row and the text, together.
+    fn advance(shipmentDb.Shipment shipment, ShipmentStatus status, String note) {
+        shipment.status = status;
+        shipment.save();
+        shipmentDb.TrackingEvent.create({ shipmentId: shipment.id, status: status, note: note });
+        // The key is made here, once, so a delivery the broker repeats finds the text it already sent.
+        dispatch TextRecipient(shipment.trackingNumber, shipment.recipientPhone, #"{shipment.trackingNumber}-{Random.string(12, 'abcdefghijklmnopqrstuvwxyz0123456789')}", #"Quayline parcel {shipment.trackingNumber}: {note}");
+    }
+
+    /// What the partner says about a consignment, or nothing if it does not answer. A vendor being down
+    /// is only worth a line in the log, because the next run asks again.
+    fn askPartner(String reference) -> Consignment? {
+        try {
+            return CarrierProvider.CarrierAPI.get.consignment(reference: reference);
+        } catch (Exception e) {
+            Log.warn("Partner carrier did not answer", { reference: reference });
+            return null;
+        }
+    }
+
+    fn locate(String address, String city) -> GeocodedAddress {
+        let GeocodedAddress place = GeocodeProvider.GeocodeAPI.post.geocode(GeocodeRequest { address: address, city: city });
+        if (!place.found) {
+            throw AddressNotFoundError();
+        }
+        return place;
+    }
+
+    fn offerToRoutes(shipmentDb.Shipment shipment) {
+        dispatch ShipmentBooked(shipment.id, shipment.trackingNumber, shipment.recipientName, shipment.recipientAddress, shipment.city, shipment.latitude, shipment.longitude, shipment.weightKg);
+    }
+
+    fn handToCarrier(shipmentDb.Shipment shipment) {
+        let Consignment consignment = CarrierProvider.CarrierAPI.post.createConsignment(CreateConsignmentRequest {
+            trackingNumber: shipment.trackingNumber,
+            recipientName: shipment.recipientName,
+            address: shipment.recipientAddress,
+            city: shipment.city,
+            weightKg: shipment.weightKg,
+            idempotencyKey: #"consign-{shipment.id}"
+        });
+        shipment.carrierReference = consignment.reference;
+        advance(shipment, ShipmentStatus.WithPartner, #"With our delivery partner for {shipment.city}");
+    }
+
+    fn dayCount(Int daysAgo) -> DayCount {
+        let DateTime start = DateTime.now().startOfDay().addDays(-daysAgo);
+        let DateTime end = start.addDays(1);
+        return DayCount {
+            day: start.format('MMM dd'),
+            booked: shipmentDb.Shipment.where(createdAt: gte(start)).where(createdAt: lt(end)).count(),
+            delivered: shipmentDb.Shipment.where(deliveredAt: gte(start)).where(deliveredAt: lt(end)).count()
+        };
+    }
+
+    // The public page. A tracking number is the only key, the gateway limits how fast anyone can try
+    // them, and the answer names neither the recipient nor the street.
+    rest_api TrackingAPI : basePath('/api/v1/tracking'), rdbms(shipmentDb) {
+        @path('/:number')
+        get track(String number) : auth(public) -> TrackingView {
+            let Shipment shipment = Shipment.where(trackingNumber: number).firstOrFail();
+            let Array<TrackingEvent> events = TrackingEvent.where(shipmentId: shipment.id).orderBy(createdAt: desc).limit(50).all();
+            return TrackingView {
+                trackingNumber: shipment.trackingNumber,
+                status: shipment.status,
+                city: shipment.city,
+                promisedBy: shipment.promisedBy,
+                deliveredAt: shipment.deliveredAt,
+                area: GeoPoint { latitude: Math.round(shipment.latitude, 1), longitude: Math.round(shipment.longitude, 1) },
+                steps: events.map(e => TrackingStep { status: e.status, note: e.note, at: e.createdAt })
+            };
+        }
+    }
+
+    // The dispatch desk.
+    rest_api ShipmentDeskAPI : basePath('/api/v1/desk/shipments'), rdbms(shipmentDb) {
+        resource Shipment : only(list), auth(required, providers: [identity], roles: [dispatcher]);
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [dispatcher]) -> DeskSummary {
+            let Array<Int> days = [6, 5, 4, 3, 2, 1, 0];
+            return DeskSummary {
+                waiting: Shipment.where(status: ShipmentStatus.Booked).count(),
+                onTheRoad: Shipment.where(status: ShipmentStatus.OutForDelivery).count(),
+                failed: Shipment.where(status: ShipmentStatus.Failed).count(),
+                withPartner: Shipment.where(status: ShipmentStatus.WithPartner).count(),
+                deliveredToday: Shipment.where(deliveredAt: gte(DateTime.now().startOfDay())).count(),
+                lastWeek: days.map(d => dayCount(d))
+            };
+        }
+
+        @path('/parcel/:id')
+        get detail(UUID id) : auth(required, providers: [identity], roles: [dispatcher]) -> ShipmentDetail {
+            let Shipment shipment = Shipment.findOrFail(id);
+            return ShipmentDetail {
+                shipment: shipment,
+                point: GeoPoint { latitude: shipment.latitude, longitude: shipment.longitude },
+                events: TrackingEvent.where(shipmentId: id).orderBy(createdAt: desc).limit(100).all()
+            };
+        }
+
+        @path('/book')
+        post book(BookRequest request) : auth(required, providers: [identity], roles: [dispatcher]) -> Shipment {
+            let GeocodedAddress place = locate(request.recipientAddress, request.city);
+            let Shipment created = Shipment.create({
+                trackingNumber: newTrackingNumber(),
+                shipperName: request.shipperName,
+                recipientName: request.recipientName,
+                recipientPhone: request.recipientPhone,
+                recipientAddress: request.recipientAddress,
+                city: request.city,
+                weightKg: request.weightKg,
+                promisedBy: request.promisedBy,
+                latitude: place.latitude,
+                longitude: place.longitude
+            });
+            advance(created, ShipmentStatus.Booked, "Booked with Quayline");
+            if (place.withinServiceArea) {
+                offerToRoutes(created);
+            } else {
+                handToCarrier(created);
+            }
+            return created;
+        }
+
+        // A failed parcel goes back in the queue for another route.
+        @path('/parcel/:id/retry')
+        post retry(UUID id) : auth(required, providers: [identity], roles: [dispatcher]) -> Shipment {
+            let Shipment shipment = Shipment.findOrFail(id);
+            if (shipment.status != ShipmentStatus.Failed) {
+                throw WrongStepError();
+            }
+            advance(shipment, ShipmentStatus.Booked, "We will try again");
+            offerToRoutes(shipment);
+            return shipment;
+        }
+
+        @path('/parcel/:id/to-partner')
+        post toPartner(UUID id) : auth(required, providers: [identity], roles: [dispatcher]) -> Shipment {
+            let Shipment shipment = Shipment.findOrFail(id);
+            if (shipment.status != ShipmentStatus.Failed) {
+                throw WrongStepError();
+            }
+            handToCarrier(shipment);
+            return shipment;
+        }
+    }
+
+    // What the routes report as a van goes round.
+    rest_api ShipmentInternalAPI : basePath('/internal/shipments'), rdbms(shipmentDb) {
+        @path('/report')
+        post report(StopReport report) : auth(service, providers: [machine]) -> ReportAck {
+            let Shipment shipment = Shipment.findOrFail(report.shipmentId);
+            shipment.driverName = report.driverName ?? shipment.driverName;
+            shipment.failureReason = report.failureReason;
+            if (report.status == ShipmentStatus.Delivered) {
+                shipment.deliveredAt = DateTime.now();
+                shipment.deliveredTo = report.deliveredTo;
+            }
+            advance(shipment, report.status, report.note);
+            return ReportAck { trackingNumber: shipment.trackingNumber };
+        }
+    }
+
+    jobs {
+        // The partner has no way to call us, so anything with them is asked about every two minutes.
+        // One failed question must not stop the others.
+        job SyncPartnerConsignments {
+            let Array<shipmentDb.Shipment> held = shipmentDb.Shipment.where(status: ShipmentStatus.WithPartner).limit(200).all();
+            foreach shipment in held {
+                if (shipment.carrierReference != null) {
+                    let Consignment? consignment = askPartner(shipment.carrierReference);
+                    if (consignment != null && consignment.status == ConsignmentStatus.Delivered) {
+                        shipment.deliveredAt = DateTime.now();
+                        shipment.deliveredTo = consignment.signedBy;
+                        advance(shipment, ShipmentStatus.Delivered, "Delivered by our partner");
+                    }
+                }
+            }
+        }
+    }
+
+    test("a tracking number reads clearly and is not short") {
+        let String number = newTrackingNumber();
+        assert number.substring(0, 3) == "QL-";
+        assert number.length == 13;
+    }
+
+    test("a new shipment waits for a route") {
+        let shipmentDb.Shipment created = shipmentDb.Shipment.create({
+            trackingNumber: "QL-TEST000001",
+            shipperName: "Bramble and Sons",
+            recipientName: "Theo Marsh",
+            recipientPhone: "+15035550101",
+            recipientAddress: "12 Alder Street",
+            city: "Portland",
+            weightKg: 4.5,
+            promisedBy: DateTime.now().addDays(2),
+            latitude: 45.52,
+            longitude: -122.68
+        });
+        assert created.status == ShipmentStatus.Booked;
+        assert created.deliveredAt == null;
+    }
+}

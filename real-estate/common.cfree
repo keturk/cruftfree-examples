@@ -1,0 +1,12 @@
+// What the Cobblestone services share.
+module realestate.common {
+
+    /// Where a home is in being sold. An offer and a viewing are only taken while it is Active.
+    enum ListingStatus {
+        Draft : tone(neutral),
+        Active : tone(success),
+        UnderOffer : tone(warning),
+        Sold : tone(info),
+        Withdrawn : tone(neutral)
+    }
+}

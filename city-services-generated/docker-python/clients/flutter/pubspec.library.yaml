@@ -1,0 +1,35 @@
+name: cruftfree_client
+description: The generated Flutter client. Regenerated from the application's .cfree; never edited.
+publish_to: none
+
+environment:
+  sdk: ^3.13.4
+  flutter: ^3.47.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  characters: "1.4.1"
+  crypto: "3.0.8"
+  fl_chart: "1.2.0"
+  flutter_appauth: "12.1.0"
+  flutter_secure_storage: "11.2.0"
+  flutter_svg: "2.3.0"
+  go_router: "18.0.1"
+  http: "1.6.0"
+  logging: "1.3.0"
+  maplibre_gl: "0.27.1"
+  markdown_widget: "2.3.2+8"
+  material_symbols_icons: "4.2960.0"
+  path_provider: "2.1.6"
+  shared_preferences: "2.5.5"
+  url_launcher: "6.3.2"
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: "6.0.0"
+  shared_preferences_platform_interface: "2.4.2"
+
+flutter:
+  uses-material-design: true

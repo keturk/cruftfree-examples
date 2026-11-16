@@ -1,0 +1,13 @@
+{
+  "connections": {
+    "mq_brokers": "localhost:9092",
+    "mq_port": 9092,
+    "ticket_db_database": "helpdesk_ticket",
+    "ticket_db_host": "localhost",
+    "ticket_db_port": 5432,
+    "ticket_db_user": "postgres"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

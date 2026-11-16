@@ -1,0 +1,13 @@
+{
+  "connections": {
+    "listing_db_database": "realestate_listing",
+    "listing_db_host": "realestate-system-postgresql",
+    "listing_db_port": 5432,
+    "listing_db_user": "realestate_listing_service_listing_db_rw",
+    "mq_brokers": "realestate-system-kafka:9092",
+    "mq_port": 9092
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

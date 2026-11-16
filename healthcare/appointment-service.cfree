@@ -1,0 +1,315 @@
+from healthcare.common import AppointmentStatus, VisitKind;
+
+// The calendar. A patient takes an open slot, and a row lock lets exactly one patient have it. The
+// front desk moves a visit through the day from a board, a job texts a reminder the day before, and
+// a visit nobody came to becomes a no-show.
+service healthcare.AppointmentService('config/appointment-service.ccfg') : version('2.0.0'), description('Clinicians, slots and visits') {
+
+    discovery { }
+
+    uses PatientService;
+    uses SmsProvider;
+
+    exceptions {
+        SlotTakenError : status(409), message("Someone else just took that time. Pick another");
+        SlotPastError : status(409), message("That time has already passed");
+        TooLateToCancelError : status(409), message("This visit starts within two hours. Call the clinic to cancel");
+        NoSuchMoveError : status(409), message("A visit cannot move there from where it is");
+    }
+
+    rdbms appointmentDb {
+
+        entity Clinician extends BaseEntity {
+            String(200) name : filterable;
+            String(100) specialty : filterable;
+            String(400) bio;
+            String(40) room;
+            Money visitCharge;
+            Boolean acceptingPatients = true;
+        }
+
+        /// A bookable half hour.
+        entity OpenSlot extends BaseEntity {
+            UUID clinicianId : index;
+            String(200) clinicianName;
+            DateTime startsAt;
+            DateTime endsAt;
+            Boolean isTaken = false;
+
+            index(clinicianId, startsAt);
+        }
+
+        entity Appointment extends BaseEntity {
+            DateTime startsAt : index;
+            DateTime endsAt;
+            String(200) patientName : filterable;
+            String(200) clinicianName : filterable;
+            String(100) specialty;
+            String(40) room;
+            AppointmentStatus status : filterable = AppointmentStatus.Booked;
+            VisitKind kind : filterable = VisitKind.InPerson;
+            String(300) reason;
+            Money visitCharge;
+            DateTime? reminderSentAt;
+            UUID patientId : index;
+            String(64)? patientUserId : index, hidden;
+            UUID clinicianId : index;
+            UUID slotId;
+
+            afterUpdate {
+                if (isChanged(status)) {
+                    dispatch AppointmentStatusChanged(id, patientId, patientUserId, patientName, clinicianName, specialty, reason, startsAt, visitCharge, oldValue(status), status);
+                }
+            }
+        }
+    }
+
+    pubsub mq {
+        topic AppointmentEvents {
+            publish AppointmentStatusChanged(UUID appointmentId, UUID patientId, String? patientUserId, String patientName, String clinicianName, String specialty, String reason, DateTime startsAt, Money visitCharge, AppointmentStatus oldStatus, AppointmentStatus newStatus) {
+                ensure oldStatus != newStatus;
+            }
+        }
+    }
+
+    struct BookVisitRequest {
+        UUID slotId;
+        VisitKind kind;
+        String(300) reason;
+    }
+
+    struct BookWalkInRequest {
+        UUID patientId;
+        UUID slotId;
+        String(300) reason;
+    }
+
+    struct MoveVisitRequest {
+        AppointmentStatus status;
+    }
+
+    /// One choice in the front desk's list of open times.
+    struct SlotChoice {
+        UUID id;
+        String(120) label;
+    }
+
+    struct DaySummary {
+        Int booked;
+        Int inClinic;
+        Int completed;
+        Int noShows;
+    }
+
+    /// Takes the slot under a lock, so two patients pressing the button together get one visit.
+    fn takeSlot(UUID slotId, UUID patientId, String? patientUserId, String patientName, VisitKind kind, String reason) -> appointmentDb.Appointment {
+        transaction(appointmentDb) {
+            let appointmentDb.OpenSlot slot = appointmentDb.OpenSlot.where(id: slotId).forUpdate().firstOrFail();
+            if (slot.isTaken) {
+                throw SlotTakenError();
+            }
+            if (slot.startsAt < DateTime.now()) {
+                throw SlotPastError();
+            }
+            let appointmentDb.Clinician clinician = appointmentDb.Clinician.findOrFail(slot.clinicianId);
+            slot.isTaken = true;
+            slot.save();
+            return appointmentDb.Appointment.create({
+                startsAt: slot.startsAt,
+                endsAt: slot.endsAt,
+                patientId: patientId,
+                patientUserId: patientUserId,
+                patientName: patientName,
+                clinicianId: clinician.id,
+                clinicianName: clinician.name,
+                specialty: clinician.specialty,
+                room: clinician.room,
+                visitCharge: clinician.visitCharge,
+                slotId: slot.id,
+                kind: kind,
+                reason: reason
+            });
+        }
+    }
+
+    fn freeSlot(appointmentDb.Appointment visit) {
+        let appointmentDb.OpenSlot? slot = appointmentDb.OpenSlot.find(visit.slotId);
+        if (slot != null) {
+            slot.isTaken = false;
+            slot.save();
+        }
+    }
+
+    /// The moves the front desk may make from a board column.
+    fn deskMayMove(AppointmentStatus from, AppointmentStatus to) -> Boolean {
+        return (from == AppointmentStatus.Booked && to == AppointmentStatus.CheckedIn)
+            || (from == AppointmentStatus.CheckedIn && to == AppointmentStatus.InRoom)
+            || (from == AppointmentStatus.InRoom && to == AppointmentStatus.Completed)
+            || (from == AppointmentStatus.Booked && to == AppointmentStatus.Cancelled)
+            || (from == AppointmentStatus.Booked && to == AppointmentStatus.NoShow)
+            || (from == AppointmentStatus.CheckedIn && to == AppointmentStatus.Cancelled);
+    }
+
+    // What anyone can read, and what a signed-in patient can do with their own visits.
+    rest_api BookingAPI : basePath('/api/v1/booking'), rdbms(appointmentDb) {
+        resource Clinician : only(list, get), auth(public);
+
+        @path('/clinicians/:id/slots')
+        get slotsOf(UUID id) : auth(public) -> Array<OpenSlot> {
+            return OpenSlot.where(clinicianId: id, isTaken: false).where(startsAt: gte(DateTime.now())).orderBy(startsAt: asc).limit(30).all();
+        }
+
+        @path('/visits')
+        post book(BookVisitRequest request) : auth(required, providers: [identity]) -> Appointment {
+            let PatientCard card = PatientService.PatientCardAPI.post.cardForUser({
+                userId: Auth.userId(),
+                fullName: Auth.identity.fullName ?? Auth.identity.email.toString()
+            });
+            return takeSlot(request.slotId, card.id, Auth.userId(), card.fullName, request.kind, request.reason);
+        }
+
+        @path('/visits/mine')
+        get myVisits() : auth(required, providers: [identity]) -> Array<Appointment> {
+            return Appointment.where(patientUserId: Auth.userId()).orderBy(startsAt: desc).limit(50).all();
+        }
+
+        @path('/visits/:id/cancel')
+        post cancelMine(UUID id) : auth(required, providers: [identity]) -> Appointment {
+            let Appointment visit = Appointment.where(id: id, patientUserId: Auth.userId()).firstOrFail();
+            if (visit.status != AppointmentStatus.Booked) {
+                throw NoSuchMoveError();
+            }
+            if (visit.startsAt < DateTime.now().addHours(2)) {
+                throw TooLateToCancelError();
+            }
+            visit.status = AppointmentStatus.Cancelled;
+            visit.save();
+            freeSlot(visit);
+            return visit;
+        }
+    }
+
+    // What the clinic runs the day from.
+    rest_api ScheduleAPI : basePath('/api/v1/clinic/schedule'), rdbms(appointmentDb) {
+        resource Appointment : only(list), auth(required, providers: [identity], roles: [clinician, frontDesk]);
+
+        @path('/today')
+        get today() : auth(required, providers: [identity], roles: [clinician, frontDesk]) -> Array<Appointment> {
+            let DateTime start = DateTime.now().startOfDay();
+            return Appointment.where(startsAt: gte(start)).where(startsAt: lt(start.addDays(1))).orderBy(startsAt: asc).limit(200).all();
+        }
+
+        @path('/ahead')
+        get ahead() : auth(required, providers: [identity], roles: [clinician, frontDesk]) -> Array<Appointment> {
+            let DateTime start = DateTime.now().startOfDay();
+            return Appointment.where(startsAt: gte(start)).where(startsAt: lt(start.addDays(30))).orderBy(startsAt: asc).limit(500).all();
+        }
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [clinician, frontDesk]) -> DaySummary {
+            let DateTime start = DateTime.now().startOfDay();
+            let Array<Appointment> day = Appointment.where(startsAt: gte(start)).where(startsAt: lt(start.addDays(1))).limit(500).all();
+            return DaySummary {
+                booked: day.filter(v => v.status == AppointmentStatus.Booked).length,
+                inClinic: day.filter(v => v.status == AppointmentStatus.CheckedIn || v.status == AppointmentStatus.InRoom).length,
+                completed: day.filter(v => v.status == AppointmentStatus.Completed).length,
+                noShows: day.filter(v => v.status == AppointmentStatus.NoShow).length
+            };
+        }
+
+        @path('/open-slots')
+        get openSlots() : auth(required, providers: [identity], roles: [frontDesk]) -> Array<SlotChoice> {
+            let Array<OpenSlot> slots = OpenSlot.where(isTaken: false).where(startsAt: gte(DateTime.now())).orderBy(startsAt: asc).limit(100).all();
+            return slots.map(s => SlotChoice { id: s.id, label: #"{s.clinicianName}, {s.startsAt.format('yyyy-MM-dd HH:mm')}" });
+        }
+
+        @path('/walk-in')
+        post bookWalkIn(BookWalkInRequest request) : auth(required, providers: [identity], roles: [frontDesk]) -> Appointment {
+            let PatientCard card = PatientService.PatientCardAPI.get.cardById(id: request.patientId);
+            return takeSlot(request.slotId, card.id, card.userId, card.fullName, VisitKind.InPerson, request.reason);
+        }
+
+        @path('/:id/move')
+        post moveVisit(UUID id, MoveVisitRequest request) : auth(required, providers: [identity], roles: [clinician, frontDesk]) -> Appointment {
+            let Appointment visit = Appointment.findOrFail(id);
+            if (!deskMayMove(visit.status, request.status)) {
+                throw NoSuchMoveError();
+            }
+            visit.status = request.status;
+            visit.save();
+            if (request.status == AppointmentStatus.Cancelled) {
+                freeSlot(visit);
+            }
+            return visit;
+        }
+    }
+
+    jobs {
+        // Texts everyone with a visit in the next day, once. A failed text is tried at the next run.
+        job SendReminders {
+            let DateTime now = DateTime.now();
+            let Array<appointmentDb.Appointment> due = appointmentDb.Appointment
+                .where(status: AppointmentStatus.Booked)
+                .whereNull(reminderSentAt)
+                .where(startsAt: gte(now))
+                .where(startsAt: lt(now.addDays(1)))
+                .limit(200)
+                .all();
+            foreach visit in due {
+                try {
+                    let PatientCard card = PatientService.PatientCardAPI.get.cardById(id: visit.patientId);
+                    if (card.phone != null) {
+                        SmsProvider.SmsAPI.post.sendSms(SendSmsRequest {
+                            to: card.phone,
+                            body: #"Ferncrest Clinic: your visit with {visit.clinicianName} is at {visit.startsAt.format('MMM dd, HH:mm')}.",
+                            idempotencyKey: #"reminder-{visit.id}"
+                        });
+                    }
+                    visit.reminderSentAt = DateTime.now();
+                    visit.save();
+                } catch (Exception e) {
+                    Log.warn("Reminder not sent", { appointmentId: visit.id });
+                }
+            }
+        }
+
+        // A booked visit an hour past its start is a visit nobody came to, and the slot stays taken.
+        job MarkNoShows {
+            let Array<appointmentDb.Appointment> missed = appointmentDb.Appointment
+                .where(status: AppointmentStatus.Booked)
+                .where(startsAt: lt(DateTime.now().addHours(-1)))
+                .limit(200)
+                .all();
+            foreach visit in missed {
+                visit.status = AppointmentStatus.NoShow;
+                visit.save();
+            }
+        }
+
+        // Keeps two weeks of morning slots open for every clinician who accepts patients.
+        job OpenSlots {
+            let Array<appointmentDb.Clinician> clinicians = appointmentDb.Clinician.where(acceptingPatients: true).all();
+            let DateTime today = DateTime.now().startOfDay();
+            foreach clinician in clinicians {
+                foreach day in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] {
+                    foreach minutes in [540, 570, 600, 630, 660, 690] {
+                        let DateTime startsAt = today.addDays(day).addMinutes(minutes);
+                        if (appointmentDb.OpenSlot.where(clinicianId: clinician.id, startsAt: startsAt).first() == null) {
+                            appointmentDb.OpenSlot.create({
+                                clinicianId: clinician.id,
+                                clinicianName: clinician.name,
+                                startsAt: startsAt,
+                                endsAt: startsAt.addMinutes(30)
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    test("the front desk checks a patient in but cannot skip to the end") {
+        assert deskMayMove(AppointmentStatus.Booked, AppointmentStatus.CheckedIn);
+        assert !deskMayMove(AppointmentStatus.Booked, AppointmentStatus.Completed);
+    }
+}

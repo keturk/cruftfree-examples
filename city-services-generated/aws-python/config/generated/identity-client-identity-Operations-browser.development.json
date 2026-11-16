@@ -1,0 +1,37 @@
+{
+  "audience": "workforce",
+  "authority": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PortalderIdentity",
+  "clientIdRef": "IdentityOperationsBrowserPublicClientId",
+  "flows": [
+    "authorization_code"
+  ],
+  "issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PortalderIdentity",
+  "logoutUris": [
+    "https://operations.portalder.example.com/auth/logout"
+  ],
+  "providerName": "identity",
+  "redirectUris": [
+    "https://operations.portalder.example.com/auth/callback"
+  ],
+  "roleMappings": {
+    "admin": "admin",
+    "dispatcher": "dispatcher",
+    "operator": "operator"
+  },
+  "rolesClaim": "cognito:groups",
+  "scopes": [
+    "openid",
+    "profile",
+    "email"
+  ],
+  "tokenValidation": {
+    "allowedAlgorithms": [
+      "RS256"
+    ],
+    "allowedAudiences": [
+      "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PortalderIdentity"
+    ],
+    "issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PortalderIdentity",
+    "jwksUri": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PortalderIdentity/.well-known/jwks.json"
+  }
+}

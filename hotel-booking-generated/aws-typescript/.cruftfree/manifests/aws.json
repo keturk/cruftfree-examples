@@ -1,0 +1,178 @@
+{
+  "target": "aws",
+  "generated_at": "2026-11-16T02:30:28Z",
+  "files": [
+    ".cruftfree/runtime-requirements.json",
+    "DEPLOYMENT.md",
+    "deploy.ps1",
+    "deploy.py",
+    "deploy.sh",
+    "hotel_notice_service/src/consumers/lambda_adapters/Dockerfile",
+    "hotel_notice_service/src/consumers/lambda_adapters/consume_stay_events.ts",
+    "hotel_notice_service/src/consumers/lambda_adapters/package.json",
+    "infrastructure/api-gateway.template.json",
+    "infrastructure/assets/default_security_group/index.py",
+    "infrastructure/assets/default_security_group/requirements.txt",
+    "infrastructure/assets/key_authorizer/index.py",
+    "infrastructure/assets/key_authorizer/requirements.txt",
+    "infrastructure/assets/outbound_federation/index.py",
+    "infrastructure/assets/outbound_federation/requirements.txt",
+    "infrastructure/assets/preflight/preflight_handler.py",
+    "infrastructure/assets/preflight/requirements.txt",
+    "infrastructure/assets/rdbms_access/index.py",
+    "infrastructure/assets/rdbms_access/requirements.txt",
+    "infrastructure/bootstrap.template.json",
+    "infrastructure/ecs.template.json",
+    "infrastructure/front-desk-angular-web.template.json",
+    "infrastructure/gateway-nlb.template.json",
+    "infrastructure/guest-angular-web.template.json",
+    "infrastructure/hotel-channel-mock-data.template.json",
+    "infrastructure/hotel-channel-mock.template.json",
+    "infrastructure/hotel-email-mock-data.template.json",
+    "infrastructure/hotel-email-mock.template.json",
+    "infrastructure/hotel-notice-service-data.template.json",
+    "infrastructure/hotel-notice-service.template.json",
+    "infrastructure/hotel-payment-mock-data.template.json",
+    "infrastructure/hotel-payment-mock.template.json",
+    "infrastructure/hotel-stay-service-data.template.json",
+    "infrastructure/hotel-stay-service.template.json",
+    "infrastructure/identity.template.json",
+    "infrastructure/notice-service-consumer-lambda.template.json",
+    "infrastructure/preflight.template.json",
+    "infrastructure/service-access.template.json",
+    "infrastructure/trusted-caller.template.json",
+    "infrastructure/vpc.template.json"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    ".cruftfree/runtime-requirements.json": "4e33fe9206b48cbc299735bb890c97d22efb0e27f0275b1f1e1ff92cbb7dc23c",
+    "DEPLOYMENT.md": "e6ea31ba7d7239a67c91e4cb2f6c2ac84f38018c997f9a551f82c633a90af2d0",
+    "deploy.ps1": "6731b7af0dc8519f85932e1c2dd170650781ab93a487b15960989a112199d169",
+    "deploy.py": "ac3308a181a3f9afd1efaf0151b567d8b4402ede4766d149fbab543a1e1b1e07",
+    "deploy.sh": "b56a1ae4389139cf47ee56361dafacd8cd24e86257d5da85269d4bd8de634211",
+    "hotel_notice_service/src/consumers/lambda_adapters/Dockerfile": "3866110ccd4e00c905dad3eddc898f4267f2953973859bafa15333905423f7f2",
+    "hotel_notice_service/src/consumers/lambda_adapters/consume_stay_events.ts": "6a0676e1fe4e61cfd7a6526b3fe61d958c22aff49d983b007809cf6a2eefae1b",
+    "hotel_notice_service/src/consumers/lambda_adapters/package.json": "896aba9becf43710f6dbcff0493374283d4187e52bee33c52342ede1d438cc3f",
+    "infrastructure/api-gateway.template.json": "08d5a4357dde5df1c02363e84a45f5bf304f397f692f8f1a103a70cbc8a4255e",
+    "infrastructure/assets/default_security_group/index.py": "6a471b3d0442f9ea9a65197286ef848aa30ea50153ad414e26987c8d784b73a6",
+    "infrastructure/assets/default_security_group/requirements.txt": "2f0ce6816045075c816c25794fcec501dadf2edc0ed555c232276333aaf44e97",
+    "infrastructure/assets/key_authorizer/index.py": "3ed28e0dc7173cb981c9f1c013f00b622200e74a34a188ab0f2a99fea0339778",
+    "infrastructure/assets/key_authorizer/requirements.txt": "e62a677ab4534472c6b48ca6b50c4e80459ab8e4bda19ba96fd80b7f9c5caf8e",
+    "infrastructure/assets/outbound_federation/index.py": "1815d980c86f6b4a302ce93a5026be379cb0a0e0ad4226b414ae70d1e49e4f37",
+    "infrastructure/assets/outbound_federation/requirements.txt": "2f0ce6816045075c816c25794fcec501dadf2edc0ed555c232276333aaf44e97",
+    "infrastructure/assets/preflight/preflight_handler.py": "8b29abf1debc4fda3c4ac6398ce86d9927bebc85a1ee8e5fb77f457fafab1220",
+    "infrastructure/assets/preflight/requirements.txt": "ce4e9ef7761524aaf15f81b00f90378b1b0de63b86c173d5fad560c762608153",
+    "infrastructure/assets/rdbms_access/index.py": "86e2541a956814a2d4e0f6eefa3763561a6e6e7578dc22162358b90600e6772c",
+    "infrastructure/assets/rdbms_access/requirements.txt": "2b5323319e2cbbd4ecad1abb5db8e04db63bd1129d7c7124904b85bf35dd51a8",
+    "infrastructure/bootstrap.template.json": "49ea7e8efa2baf847e7b4ed3a85f0dcdb748a6be0ee8d26210f972dac55513d2",
+    "infrastructure/ecs.template.json": "0e6c19cb19fa3d6d5daae85ef79cd78454f11353fc91f46ac2f58ab47be58f20",
+    "infrastructure/front-desk-angular-web.template.json": "68cea0a589c7d5813e25b241ebcdb31926c70acbfeb5d73978db15eda0249cfb",
+    "infrastructure/gateway-nlb.template.json": "8e876dc40d204e0fdd5b0359b5054113b77aeae93487d8a9c95b1f19e9a70a2b",
+    "infrastructure/guest-angular-web.template.json": "3109e941d9e5015d24c5d72e70ccab9bfb92b40886337bd8d67e763a0a922295",
+    "infrastructure/hotel-channel-mock-data.template.json": "a8b4b46346df8e6b03ca688a0a556917988853a751d0f196a1824089976a47c0",
+    "infrastructure/hotel-channel-mock.template.json": "5f642faea55aeeade00c81599db135da246dd4961e6232cdd280598383cd63d1",
+    "infrastructure/hotel-email-mock-data.template.json": "4b666004233abcf9d1cfdbb3262ed815bc471175b2d97e88aba66ba9552afe9e",
+    "infrastructure/hotel-email-mock.template.json": "6afdb139e5ccd63bf805edb39e026c331e9939838ae45f10b76acdd8116334c0",
+    "infrastructure/hotel-notice-service-data.template.json": "2adbe44dcedb09de0ab86d55877bbc8644b35b467dcb0eb7a9468bebaa36ec10",
+    "infrastructure/hotel-notice-service.template.json": "0c3348dc155f6c5d8c28824b1e3420fe12ebc7a3d6cabbeffea9589dfcdd771a",
+    "infrastructure/hotel-payment-mock-data.template.json": "694c8cad839e0262b401e6f75108f71b8c103770058e4c3128cc79344a42398d",
+    "infrastructure/hotel-payment-mock.template.json": "9d12b7dee624fe64633f993a75eacbc920d78ac6657cb6821eeb17b22f6b7530",
+    "infrastructure/hotel-stay-service-data.template.json": "7832c2e5f62066ed595fbdf624e73071ae5ae54d8ad89c22fcb3179943dfc99c",
+    "infrastructure/hotel-stay-service.template.json": "1dcb2950aca82112c6eddab6383813e9840f0b2e4a4950b2a6a0b9faf7f6cbb5",
+    "infrastructure/identity.template.json": "6e2f52b876bda65f397f0df7da091b67976671cb1b0ef1ae730f84d22fb1295f",
+    "infrastructure/notice-service-consumer-lambda.template.json": "e987fd264235052525215b5fb8f3f83ca536e6a68aa36739f6705b599ac9d2ab",
+    "infrastructure/preflight.template.json": "247d26b5bc626943de0c2f70adf1965eecb5079c94b5f9c618773de8a01b8e8a",
+    "infrastructure/service-access.template.json": "cd0e6f81d2745509c8f4241904ed818d5072a2dba941deeacb94668b9c06a8a0",
+    "infrastructure/trusted-caller.template.json": "3970f4b250db2d18e8bcb173cb224fabc38cdc3828277afb5406a0cabbc7a481",
+    "infrastructure/vpc.template.json": "b0a399202a8f5b955003e3d0bbdc9d4a8e520deb89c583bba8207e84616a2222"
+  },
+  "output_hashes": {
+    ".cruftfree/runtime-requirements.json": "2a86481e460ef7a546e331015ecd502d4b629a1dbc965c076a94872796d19914",
+    "DEPLOYMENT.md": "e6ea31ba7d7239a67c91e4cb2f6c2ac84f38018c997f9a551f82c633a90af2d0",
+    "deploy.ps1": "6731b7af0dc8519f85932e1c2dd170650781ab93a487b15960989a112199d169",
+    "deploy.py": "ac3308a181a3f9afd1efaf0151b567d8b4402ede4766d149fbab543a1e1b1e07",
+    "deploy.sh": "b56a1ae4389139cf47ee56361dafacd8cd24e86257d5da85269d4bd8de634211",
+    "hotel_notice_service/src/consumers/lambda_adapters/Dockerfile": "3866110ccd4e00c905dad3eddc898f4267f2953973859bafa15333905423f7f2",
+    "hotel_notice_service/src/consumers/lambda_adapters/consume_stay_events.ts": "6a0676e1fe4e61cfd7a6526b3fe61d958c22aff49d983b007809cf6a2eefae1b",
+    "hotel_notice_service/src/consumers/lambda_adapters/package.json": "896aba9becf43710f6dbcff0493374283d4187e52bee33c52342ede1d438cc3f",
+    "infrastructure/api-gateway.template.json": "08d5a4357dde5df1c02363e84a45f5bf304f397f692f8f1a103a70cbc8a4255e",
+    "infrastructure/assets/default_security_group/index.py": "6a471b3d0442f9ea9a65197286ef848aa30ea50153ad414e26987c8d784b73a6",
+    "infrastructure/assets/default_security_group/requirements.txt": "2f0ce6816045075c816c25794fcec501dadf2edc0ed555c232276333aaf44e97",
+    "infrastructure/assets/key_authorizer/index.py": "3ed28e0dc7173cb981c9f1c013f00b622200e74a34a188ab0f2a99fea0339778",
+    "infrastructure/assets/key_authorizer/requirements.txt": "e62a677ab4534472c6b48ca6b50c4e80459ab8e4bda19ba96fd80b7f9c5caf8e",
+    "infrastructure/assets/outbound_federation/index.py": "1815d980c86f6b4a302ce93a5026be379cb0a0e0ad4226b414ae70d1e49e4f37",
+    "infrastructure/assets/outbound_federation/requirements.txt": "2f0ce6816045075c816c25794fcec501dadf2edc0ed555c232276333aaf44e97",
+    "infrastructure/assets/preflight/preflight_handler.py": "8b29abf1debc4fda3c4ac6398ce86d9927bebc85a1ee8e5fb77f457fafab1220",
+    "infrastructure/assets/preflight/requirements.txt": "ce4e9ef7761524aaf15f81b00f90378b1b0de63b86c173d5fad560c762608153",
+    "infrastructure/assets/rdbms_access/index.py": "86e2541a956814a2d4e0f6eefa3763561a6e6e7578dc22162358b90600e6772c",
+    "infrastructure/assets/rdbms_access/requirements.txt": "2b5323319e2cbbd4ecad1abb5db8e04db63bd1129d7c7124904b85bf35dd51a8",
+    "infrastructure/bootstrap.template.json": "49ea7e8efa2baf847e7b4ed3a85f0dcdb748a6be0ee8d26210f972dac55513d2",
+    "infrastructure/ecs.template.json": "0e6c19cb19fa3d6d5daae85ef79cd78454f11353fc91f46ac2f58ab47be58f20",
+    "infrastructure/front-desk-angular-web.template.json": "68cea0a589c7d5813e25b241ebcdb31926c70acbfeb5d73978db15eda0249cfb",
+    "infrastructure/gateway-nlb.template.json": "8e876dc40d204e0fdd5b0359b5054113b77aeae93487d8a9c95b1f19e9a70a2b",
+    "infrastructure/guest-angular-web.template.json": "3109e941d9e5015d24c5d72e70ccab9bfb92b40886337bd8d67e763a0a922295",
+    "infrastructure/hotel-channel-mock-data.template.json": "a8b4b46346df8e6b03ca688a0a556917988853a751d0f196a1824089976a47c0",
+    "infrastructure/hotel-channel-mock.template.json": "5f642faea55aeeade00c81599db135da246dd4961e6232cdd280598383cd63d1",
+    "infrastructure/hotel-email-mock-data.template.json": "4b666004233abcf9d1cfdbb3262ed815bc471175b2d97e88aba66ba9552afe9e",
+    "infrastructure/hotel-email-mock.template.json": "6afdb139e5ccd63bf805edb39e026c331e9939838ae45f10b76acdd8116334c0",
+    "infrastructure/hotel-notice-service-data.template.json": "2adbe44dcedb09de0ab86d55877bbc8644b35b467dcb0eb7a9468bebaa36ec10",
+    "infrastructure/hotel-notice-service.template.json": "0c3348dc155f6c5d8c28824b1e3420fe12ebc7a3d6cabbeffea9589dfcdd771a",
+    "infrastructure/hotel-payment-mock-data.template.json": "694c8cad839e0262b401e6f75108f71b8c103770058e4c3128cc79344a42398d",
+    "infrastructure/hotel-payment-mock.template.json": "9d12b7dee624fe64633f993a75eacbc920d78ac6657cb6821eeb17b22f6b7530",
+    "infrastructure/hotel-stay-service-data.template.json": "7832c2e5f62066ed595fbdf624e73071ae5ae54d8ad89c22fcb3179943dfc99c",
+    "infrastructure/hotel-stay-service.template.json": "1dcb2950aca82112c6eddab6383813e9840f0b2e4a4950b2a6a0b9faf7f6cbb5",
+    "infrastructure/identity.template.json": "6e2f52b876bda65f397f0df7da091b67976671cb1b0ef1ae730f84d22fb1295f",
+    "infrastructure/notice-service-consumer-lambda.template.json": "e987fd264235052525215b5fb8f3f83ca536e6a68aa36739f6705b599ac9d2ab",
+    "infrastructure/preflight.template.json": "247d26b5bc626943de0c2f70adf1965eecb5079c94b5f9c618773de8a01b8e8a",
+    "infrastructure/service-access.template.json": "cd0e6f81d2745509c8f4241904ed818d5072a2dba941deeacb94668b9c06a8a0",
+    "infrastructure/trusted-caller.template.json": "3970f4b250db2d18e8bcb173cb224fabc38cdc3828277afb5406a0cabbc7a481",
+    "infrastructure/vpc.template.json": "b0a399202a8f5b955003e3d0bbdc9d4a8e520deb89c583bba8207e84616a2222"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "hotel_notice_service/src/consumers/lambda_adapters/Dockerfile": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/src/consumers/lambda_adapters/consume_stay_events.ts": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/src/consumers/lambda_adapters/package.json": [
+      "hotel.NoticeService"
+    ],
+    "infrastructure/hotel-channel-mock-data.template.json": [
+      "hotel.ChannelMock"
+    ],
+    "infrastructure/hotel-channel-mock.template.json": [
+      "hotel.ChannelMock"
+    ],
+    "infrastructure/hotel-email-mock-data.template.json": [
+      "hotel.EmailMock"
+    ],
+    "infrastructure/hotel-email-mock.template.json": [
+      "hotel.EmailMock"
+    ],
+    "infrastructure/hotel-notice-service-data.template.json": [
+      "hotel.NoticeService"
+    ],
+    "infrastructure/hotel-notice-service.template.json": [
+      "hotel.NoticeService"
+    ],
+    "infrastructure/hotel-payment-mock-data.template.json": [
+      "hotel.PaymentMock"
+    ],
+    "infrastructure/hotel-payment-mock.template.json": [
+      "hotel.PaymentMock"
+    ],
+    "infrastructure/hotel-stay-service-data.template.json": [
+      "hotel.StayService"
+    ],
+    "infrastructure/hotel-stay-service.template.json": [
+      "hotel.StayService"
+    ],
+    "infrastructure/notice-service-consumer-lambda.template.json": [
+      "hotel.NoticeService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

@@ -1,0 +1,14 @@
+{
+  "connections": {
+    "email_provider_base_url": "http://realestate-email-mock:8092",
+    "mq_brokers": "localhost:9092",
+    "mq_port": 9092,
+    "viewing_db_database": "realestate_viewing",
+    "viewing_db_host": "localhost",
+    "viewing_db_port": 5432,
+    "viewing_db_user": "postgres"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

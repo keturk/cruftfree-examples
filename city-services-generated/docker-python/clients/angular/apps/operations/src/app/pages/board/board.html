@@ -1,0 +1,73 @@
+@if (__loaded()) {
+@if (__stale(); as staleFailure) {
+<div data-kind="callout" role="status" data-state="stale">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(staleFailure.problem, staleFailure.binding.site) ?? __messages.problemTitle(staleFailure.problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="staleFailure.binding.isLoading || staleFailure.binding.pausedForMs &gt; 0" (click)="staleFailure.binding.refresh()">{{ staleFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(staleFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+
+<header data-kind="pageHeader">
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+</header>
+
+<div data-kind="grid" class="style-statRow">
+<div data-kind="stat" data-tone="warning">
+<span class="material-symbols-outlined" aria-hidden="true">warning</span>
+<span data-part="label">{{ __arg2() }}</span>
+<span data-part="value">{{ __arg3() }}</span>
+</div>
+<div data-kind="stat" data-tone="info">
+<span class="material-symbols-outlined" aria-hidden="true">assignment_ind</span>
+<span data-part="label">{{ __arg4() }}</span>
+<span data-part="value">{{ __arg5() }}</span>
+</div>
+<div data-kind="stat" data-tone="info">
+<span class="material-symbols-outlined" aria-hidden="true">construction</span>
+<span data-part="label">{{ __arg6() }}</span>
+<span data-part="value">{{ __arg7() }}</span>
+</div>
+<div data-kind="stat" data-tone="danger">
+<span class="material-symbols-outlined" aria-hidden="true">wrong_location</span>
+<span data-part="label">{{ __arg8() }}</span>
+<span data-part="value">{{ __arg9() }}</span>
+</div>
+</div>
+<ui-map data-kind="map">
+@for (pin of __foreach0(); track $index) {
+<li data-kind="marker" ui-map-marker="" [point]="pin.point" [label]="this.__textOf(pin.title)" (activate)="this.__nav.to(&quot;/requests/:id&quot;, &#123; &quot;id&quot;: pin.id &#125;)">
+</li>
+}
+</ui-map>
+
+} @else if (__failed(); as failed) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(failed.problem, failed.binding.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(failed.problem) }}</span>
+    @if (failed.problem.detail) {
+    <span data-part="detail">{{ failed.problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="failed.binding.pausedForMs &gt; 0" (click)="failed.binding.refresh()">{{ failed.binding.pausedForMs &gt; 0 ? __messages.retryIn(failed.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

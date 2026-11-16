@@ -1,0 +1,54 @@
+// The people who use Saltbox. The generated stack hosts the sign-in: nothing here or in a service
+// ever handles a password. Anyone may register as a customer; the kitchen, driver and operator roles
+// are granted, never self-assigned.
+config identity identity {
+  base {
+    audience = "workforce";
+    mode = "platformManaged";
+    jwksCacheTtlSeconds = 3600;
+    signUp {
+      allowed = true;
+    }
+    publicClient {
+      flows = ["authorization_code"];
+    }
+    identityFields {
+      email {
+        claimPath = "email";
+        guarantee = "required";
+        syncPolicy = "syncOnAuth";
+      }
+      fullName {
+        claimPath = "name";
+        guarantee = "optional";
+        syncPolicy = "syncOnAuth";
+      }
+    }
+    roleSource {
+      claimPath = "urn:zitadel:iam:org:project:roles";
+      guarantee = "optional";
+    }
+  }
+
+  profile test as "test" extends base {
+  }
+
+  // Entra ID opens no self-service registration, so on Azure an administrator creates or invites each
+  // account.
+  profile azure as "azure" extends base {
+    signUp {
+      allowed = false;
+    }
+    // Entra ID carries a person's app roles in the `roles` claim; Zitadel uses its own project-roles claim.
+    roleSource {
+      claimPath = "roles";
+      guarantee = "optional";
+    }
+  }
+
+  profile development as "dev" extends azure {
+  }
+
+  profile production as "prod" extends base {
+  }
+}

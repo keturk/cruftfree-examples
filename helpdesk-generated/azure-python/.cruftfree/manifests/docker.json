@@ -1,0 +1,70 @@
+{
+  "target": "docker",
+  "generated_at": "2026-11-16T02:28:04Z",
+  "files": [
+    "helpdesk_email_mock/.dockerignore",
+    "helpdesk_email_mock/Dockerfile",
+    "helpdesk_knowledge_service/.dockerignore",
+    "helpdesk_knowledge_service/Dockerfile",
+    "helpdesk_notice_service/.dockerignore",
+    "helpdesk_notice_service/Dockerfile",
+    "helpdesk_ticket_service/.dockerignore",
+    "helpdesk_ticket_service/Dockerfile",
+    "python-base/Dockerfile",
+    "python-base/requirements.txt"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    "helpdesk_email_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_email_mock/Dockerfile": "6a3813970a3484dbdc4baf401500c7c7b246289926e60ecf79e4aa2d88ede234",
+    "helpdesk_knowledge_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_knowledge_service/Dockerfile": "d1f8f76a60789852c64427c4276d727d9a69572eb6913f4d6ee9457e72b7230e",
+    "helpdesk_notice_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_notice_service/Dockerfile": "9ed6b287fd0bdb7fcba983761a72adc32e305f9008edbfc147cf269456a2ae27",
+    "helpdesk_ticket_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_ticket_service/Dockerfile": "c3fc31cc55a2c1fe6c35a47616273ec5738e5a1f92f7433a4ca327597da0b406",
+    "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
+    "python-base/requirements.txt": "91d9c1fd247b755d175f13ea65c55a511474c5051ff66918cfb357623215a1c9"
+  },
+  "output_hashes": {
+    "helpdesk_email_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_email_mock/Dockerfile": "6a3813970a3484dbdc4baf401500c7c7b246289926e60ecf79e4aa2d88ede234",
+    "helpdesk_knowledge_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_knowledge_service/Dockerfile": "d1f8f76a60789852c64427c4276d727d9a69572eb6913f4d6ee9457e72b7230e",
+    "helpdesk_notice_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_notice_service/Dockerfile": "9ed6b287fd0bdb7fcba983761a72adc32e305f9008edbfc147cf269456a2ae27",
+    "helpdesk_ticket_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "helpdesk_ticket_service/Dockerfile": "c3fc31cc55a2c1fe6c35a47616273ec5738e5a1f92f7433a4ca327597da0b406",
+    "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
+    "python-base/requirements.txt": "91d9c1fd247b755d175f13ea65c55a511474c5051ff66918cfb357623215a1c9"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "helpdesk_email_mock/.dockerignore": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/Dockerfile": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_knowledge_service/.dockerignore": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/Dockerfile": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_notice_service/.dockerignore": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/Dockerfile": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_ticket_service/.dockerignore": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/Dockerfile": [
+      "helpdesk.TicketService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

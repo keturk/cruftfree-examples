@@ -1,0 +1,47 @@
+{
+  "environment": "development",
+  "records": [
+    {
+      "domain": "api.portalder.example.com",
+      "name": "<name from ACM certificate validation output>",
+      "purpose": "ACM DNS validation",
+      "recordType": "CNAME",
+      "value": "<value from ACM certificate validation output>"
+    },
+    {
+      "domain": "api.portalder.example.com",
+      "name": "api.portalder.example.com",
+      "purpose": "edge CNAME",
+      "recordType": "CNAME",
+      "value": "<value from the API Gateway custom domain's regional domain name>"
+    },
+    {
+      "domain": "operations.portalder.example.com",
+      "name": "<name from ACM certificate validation output>",
+      "purpose": "ACM DNS validation",
+      "recordType": "CNAME",
+      "value": "<value from ACM certificate validation output>"
+    },
+    {
+      "domain": "operations.portalder.example.com",
+      "name": "operations.portalder.example.com",
+      "purpose": "edge CNAME",
+      "recordType": "CNAME",
+      "value": "<value from the static site's CloudFront distribution domain name (*.cloudfront.net)>"
+    },
+    {
+      "domain": "portalder.example.com",
+      "name": "<name from ACM certificate validation output>",
+      "purpose": "ACM DNS validation",
+      "recordType": "CNAME",
+      "value": "<value from ACM certificate validation output>"
+    },
+    {
+      "domain": "portalder.example.com",
+      "name": "portalder.example.com",
+      "purpose": "edge CNAME",
+      "recordType": "CNAME",
+      "value": "<value from the static site's CloudFront distribution domain name (*.cloudfront.net)>"
+    }
+  ]
+}

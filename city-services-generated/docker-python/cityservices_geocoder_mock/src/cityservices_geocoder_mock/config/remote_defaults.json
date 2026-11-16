@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "geocoder_db_database": "cityservices_geocoder_mock",
+    "geocoder_db_host": "localhost",
+    "geocoder_db_port": 5432,
+    "geocoder_db_user": "postgres"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

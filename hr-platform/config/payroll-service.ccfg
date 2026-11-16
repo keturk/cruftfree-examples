@@ -1,0 +1,82 @@
+config service hr.PayrollService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8002;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms payrollDb from postgresContainer(id: "73472252-6373-4751-b8a2-9e14dda29e28", database: "hr_payroll");
+    pubsub mq from kafkaContainer();
+    httpSecurity from localHttpSecurity(host: "hr-payroll-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    jobs {
+      jobs {
+        PrepareMonthlyRun {
+          schedule = "0 6 25 * *";
+          timeout = "300s";
+        }
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // The default only exists on a local stack, where it matches the hash seeded in
+      // seed/bank-mock.cseed, so the example runs with nothing to configure. Any other deployment must
+      // supply the handle's value.
+      secret bank_provider_api_key {
+        required = true;
+        purpose = "API key for the payroll bank (BankProvider contract).";
+        localDefault = "dev-only-bank-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile azure as "azure" extends base {
+    alias env = "AZURE";
+    alias resource = "azure";
+
+    // Consumers run inside the web app, not in separate compute.
+    runtime { consumers = "in-process"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms payrollDb from azurePostgres(id: "73472252-6373-4751-b8a2-9e14dda29e28", database: "hr_payroll", poolSize: 20, maxOverflow: 10);
+    replace pubsub mq from azureEventHubs();
+  }
+
+  profile development as "dev" extends azure {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

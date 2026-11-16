@@ -1,0 +1,14 @@
+{
+  "name": "@lanternpost/system-api-state-common",
+  "private": true,
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/common": "22.1.7",
+    "@angular/core": "22.1.7",
+    "@angular/forms": "22.1.7",
+    "@lanternpost/system-api-common": "*",
+    "@ngrx/entity": "22.0.1",
+    "@ngrx/store": "22.0.1",
+    "rxjs": "7.8.2"
+  }
+}

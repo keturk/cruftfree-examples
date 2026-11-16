@@ -1,0 +1,15 @@
+{
+  "name": "@marram/channel-mock-api-state",
+  "private": true,
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/core": "22.1.7",
+    "@marram/channel-mock-api": "*",
+    "@marram/system-api-common": "*",
+    "@marram/system-api-state-common": "*",
+    "@ngrx/effects": "22.0.1",
+    "@ngrx/entity": "22.0.1",
+    "@ngrx/store": "22.0.1",
+    "rxjs": "7.8.2"
+  }
+}

@@ -1,0 +1,510 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "DeploymentBucketName": {
+      "Description": "Bucket the deployment uploads templates and function assets to.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-DeploymentBucketName"
+      },
+      "Value": {
+        "Ref": "DeploymentBucket"
+      }
+    },
+    "HotelChannelMockRepositoryArn": {
+      "Description": "ARN of the 'hotel_channel_mock' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelChannelMockRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelChannelMockRepository",
+          "Arn"
+        ]
+      }
+    },
+    "HotelChannelMockRepositoryUri": {
+      "Description": "Image URI of the 'hotel_channel_mock' repository.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelChannelMockRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelChannelMockRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "HotelEmailMockRepositoryArn": {
+      "Description": "ARN of the 'hotel_email_mock' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelEmailMockRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelEmailMockRepository",
+          "Arn"
+        ]
+      }
+    },
+    "HotelEmailMockRepositoryUri": {
+      "Description": "Image URI of the 'hotel_email_mock' repository.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelEmailMockRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelEmailMockRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "HotelNoticeServiceRepositoryArn": {
+      "Description": "ARN of the 'hotel_notice_service' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelNoticeServiceRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelNoticeServiceRepository",
+          "Arn"
+        ]
+      }
+    },
+    "HotelNoticeServiceRepositoryUri": {
+      "Description": "Image URI of the 'hotel_notice_service' repository.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelNoticeServiceRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelNoticeServiceRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "HotelPaymentMockRepositoryArn": {
+      "Description": "ARN of the 'hotel_payment_mock' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelPaymentMockRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelPaymentMockRepository",
+          "Arn"
+        ]
+      }
+    },
+    "HotelPaymentMockRepositoryUri": {
+      "Description": "Image URI of the 'hotel_payment_mock' repository.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelPaymentMockRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelPaymentMockRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "HotelStayServiceRepositoryArn": {
+      "Description": "ARN of the 'hotel_stay_service' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelStayServiceRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelStayServiceRepository",
+          "Arn"
+        ]
+      }
+    },
+    "HotelStayServiceRepositoryUri": {
+      "Description": "Image URI of the 'hotel_stay_service' repository.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelStayServiceRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelStayServiceRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "HotelSystemTypescriptBaseRepositoryArn": {
+      "Description": "ARN of the 'hotel-system-typescript-base' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelSystemTypescriptBaseRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelSystemTypescriptBaseRepository",
+          "Arn"
+        ]
+      }
+    },
+    "HotelSystemTypescriptBaseRepositoryUri": {
+      "Description": "Image URI of the 'hotel-system-typescript-base' repository.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-HotelSystemTypescriptBaseRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "HotelSystemTypescriptBaseRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "NoticeServiceConsumersRepositoryArn": {
+      "Description": "ARN of the 'notice_service-consumers' repository, for scoped image-pull grants.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-NoticeServiceConsumersRepositoryArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "NoticeServiceConsumersRepository",
+          "Arn"
+        ]
+      }
+    },
+    "NoticeServiceConsumersRepositoryUri": {
+      "Description": "Image URI of the 'notice_service-consumers' repository.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-NoticeServiceConsumersRepositoryUri"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "NoticeServiceConsumersRepository",
+          "RepositoryUri"
+        ]
+      }
+    },
+    "RunStoreBucketArn": {
+      "Description": "ARN of the run store, for grants scoped to one database's prefix.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-RunStoreBucketArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "RunStoreBucket",
+          "Arn"
+        ]
+      }
+    },
+    "RunStoreBucketName": {
+      "Description": "Bucket carrying files between the deploy and its database workloads.",
+      "Export": {
+        "Name": "hotel-system-bootstrap-RunStoreBucketName"
+      },
+      "Value": {
+        "Ref": "RunStoreBucket"
+      }
+    }
+  },
+  "Resources": {
+    "DeploymentBucket": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": true,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "Id": "ExpireNoncurrentVersions",
+              "NoncurrentVersionExpiration": {
+                "NoncurrentDays": 30
+              },
+              "Status": "Enabled"
+            }
+          ]
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "DeploymentBucketPolicy": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "DeploymentBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:*"
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DeploymentBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "DeploymentBucket",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::S3::BucketPolicy"
+    },
+    "HotelChannelMockRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "hotel_channel_mock"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "HotelEmailMockRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "hotel_email_mock"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "HotelNoticeServiceRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "hotel_notice_service"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "HotelPaymentMockRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "hotel_payment_mock"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "HotelStayServiceRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "hotel_stay_service"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "HotelSystemTypescriptBaseRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "hotel-system-typescript-base"
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "NoticeServiceConsumersRepository": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "EncryptionConfiguration": {
+          "EncryptionType": "AES256"
+        },
+        "ImageScanningConfiguration": {
+          "ScanOnPush": true
+        },
+        "ImageTagMutability": "IMMUTABLE",
+        "RepositoryName": "notice_service-consumers",
+        "RepositoryPolicyText": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::ECR::Repository",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "RunStoreBucket": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "BucketKeyEnabled": true,
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "aws:kms"
+              }
+            }
+          ]
+        },
+        "LifecycleConfiguration": {
+          "Rules": [
+            {
+              "AbortIncompleteMultipartUpload": {
+                "DaysAfterInitiation": 1
+              },
+              "ExpirationInDays": 1,
+              "Id": "ExpireRunFiles",
+              "Status": "Enabled"
+            }
+          ]
+        },
+        "OwnershipControls": {
+          "Rules": [
+            {
+              "ObjectOwnership": "BucketOwnerEnforced"
+            }
+          ]
+        },
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        }
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "RunStoreBucketPolicy": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "RunStoreBucket"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:*"
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "RunStoreBucket",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "RunStoreBucket",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::S3::BucketPolicy"
+    }
+  }
+}

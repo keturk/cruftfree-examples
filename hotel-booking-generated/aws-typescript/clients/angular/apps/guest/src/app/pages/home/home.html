@@ -1,0 +1,103 @@
+<header data-kind="pageHeader">
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+</header>
+
+<div data-kind="card">
+<div data-part="header">
+<h3 data-part="title">{{ __arg2() }}</h3>
+</div>
+<div data-kind="row">
+<label>
+{{ __arg3() }}
+<input data-kind="date" type="date" [attr.aria-label]="__aname0()" [uiTemporal]="&#39;date&#39;" [temporalValue]="this.arriving()" (temporalValueChange)="this.arriving.set($event)" />
+</label>
+
+<label>
+{{ __arg4() }}
+<input data-kind="date" type="date" [attr.aria-label]="__aname1()" [uiTemporal]="&#39;date&#39;" [temporalValue]="this.leaving()" (temporalValueChange)="this.leaving.set($event)" />
+</label>
+
+<label>
+{{ __arg5() }}
+<input data-kind="number" type="number" [attr.aria-label]="__aname2()" [uiNumber]="&#39;whole&#39;" [numberValue]="this.party()" (numberValueChange)="$event !== null &amp;&amp; this.party.set($event)" />
+</label>
+
+<button data-kind="button" type="button" data-variant="primary" (click)="this.__ui.settle(this.search())">
+<span class="material-symbols-outlined" aria-hidden="true">search</span>
+{{ __arg6() }}
+</button>
+</div>
+</div>
+
+@if (__region0Loaded()) {
+<section data-kind="section" [attr.aria-label]="__aname3()">
+<div data-part="header">
+<h2 data-part="title">{{ __arg7() }}</h2>
+</div>
+@if (__region0Stale(); as staleFailure) {
+<div data-kind="callout" role="status" data-state="stale" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(staleFailure.problem, staleFailure.binding.site) ?? __messages.problemTitle(staleFailure.problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="staleFailure.binding.isLoading || staleFailure.binding.pausedForMs &gt; 0" (click)="staleFailure.binding.refresh()">{{ staleFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(staleFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+
+<div data-kind="grid" class="style-cardGrid">
+@for (room of __foreach0(); track $index) {
+<div data-kind="card">
+<div data-part="header">
+<h3 data-part="title">{{ this.__textOf(room.name) }}</h3>
+</div>
+<span data-kind="text">
+{{ this.__textOf(room.summary) }}
+</span>
+<span data-kind="text">
+{{ this.__textOf(this.__messages.key(&quot;sleepsLine&quot;, &#123; &quot;count&quot;: this.__format.number(room.sleeps) &#125;)) }}
+</span>
+<span data-kind="text">
+{{ this.__textOf(this.__messages.key(&quot;fromLine&quot;, &#123; &quot;price&quot;: this.__format.money(room.nightlyRate) &#125;)) }}
+</span>
+<a data-kind="link" [routerLink]="this.__nav.url(&quot;/rooms/:id&quot;, &#123; &quot;id&quot;: room.id &#125;)">
+<span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+{{ __arg8() }}
+</a>
+</div>
+
+}
+</div>
+</section>
+
+
+} @else if (__region0Failed(); as regionFailure) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(regionFailure.problem, regionFailure.binding.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(regionFailure.problem) }}</span>
+    @if (regionFailure.problem.detail) {
+    <span data-part="detail">{{ regionFailure.problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="regionFailure.binding.pausedForMs &gt; 0" (click)="regionFailure.binding.refresh()">{{ regionFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(regionFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}
+
+

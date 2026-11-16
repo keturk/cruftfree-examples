@@ -1,0 +1,112 @@
+@if (__loadProblem(); as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" (click)="__retryLoad()">{{ __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else if (!__loaded()) {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+} @else {
+<form [formGroup]="__form" (ngSubmit)="__submit()">
+<label>
+  <span>{{ __messages.key(&#39;field.NewListing.title&#39;).text }}</span>
+  <input type="text" [formControlName]="&#39;title&#39;" name="title" required [attr.aria-invalid]="__invalid(__form.get(&#39;title&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;title&#39;))" />
+</label>
+@if (__serverError(__form.get('title')) ?? __fieldError(__form.get('title')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;title&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.NewListing.neighbourhoodId&#39;).text }}</span>
+  <ui-choice-picker [formControlName]="&#39;neighbourhoodId&#39;" [choices]="__choicesNeighbourhoodId()" [known]="__chosenNeighbourhoodId()" [pages]="__choicePagesNeighbourhoodId" (picked)="__chosenNeighbourhoodId.set($event)" required />
+</label>
+@if (__serverError(__form.get('neighbourhoodId')) ?? __fieldError(__form.get('neighbourhoodId')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;neighbourhoodId&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.NewListing.kind&#39;).text }}</span>
+  <select [formControlName]="&#39;kind&#39;" required [attr.aria-invalid]="__invalid(__form.get(&#39;kind&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;kind&#39;))">
+    <option [ngValue]="null"></option>
+    <option [ngValue]="'House'">{{ __messages.key(&#39;enum.PropertyKind.House&#39;).text }}</option>
+    <option [ngValue]="'Apartment'">{{ __messages.key(&#39;enum.PropertyKind.Apartment&#39;).text }}</option>
+    <option [ngValue]="'Townhouse'">{{ __messages.key(&#39;enum.PropertyKind.Townhouse&#39;).text }}</option>
+    <option [ngValue]="'Cottage'">{{ __messages.key(&#39;enum.PropertyKind.Cottage&#39;).text }}</option>
+    <option [ngValue]="'Land'">{{ __messages.key(&#39;enum.PropertyKind.Land&#39;).text }}</option>
+  </select>
+</label>
+@if (__serverError(__form.get('kind')) ?? __fieldError(__form.get('kind')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;kind&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.NewListing.price&#39;).text }}</span>
+  <input type="text" [formControlName]="&#39;price&#39;" name="price" required [attr.aria-invalid]="__invalid(__form.get(&#39;price&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;price&#39;))" />
+</label>
+@if (__serverError(__form.get('price')) ?? __fieldError(__form.get('price')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;price&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.NewListing.bedrooms&#39;).text }}</span>
+  <input type="number" [formControlName]="&#39;bedrooms&#39;" name="bedrooms" required step="any" [attr.aria-invalid]="__invalid(__form.get(&#39;bedrooms&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;bedrooms&#39;))" />
+</label>
+@if (__serverError(__form.get('bedrooms')) ?? __fieldError(__form.get('bedrooms')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;bedrooms&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.NewListing.bathrooms&#39;).text }}</span>
+  <input type="number" [formControlName]="&#39;bathrooms&#39;" name="bathrooms" required step="any" [attr.aria-invalid]="__invalid(__form.get(&#39;bathrooms&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;bathrooms&#39;))" />
+</label>
+@if (__serverError(__form.get('bathrooms')) ?? __fieldError(__form.get('bathrooms')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;bathrooms&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.NewListing.areaSqm&#39;).text }}</span>
+  <input type="number" [formControlName]="&#39;areaSqm&#39;" name="areaSqm" required step="any" [attr.aria-invalid]="__invalid(__form.get(&#39;areaSqm&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;areaSqm&#39;))" />
+</label>
+@if (__serverError(__form.get('areaSqm')) ?? __fieldError(__form.get('areaSqm')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;areaSqm&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.NewListing.summary&#39;).text }}</span>
+  <textarea [formControlName]="&#39;summary&#39;" name="summary" required [attr.aria-invalid]="__invalid(__form.get(&#39;summary&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;summary&#39;))"></textarea>
+</label>
+@if (__serverError(__form.get('summary')) ?? __fieldError(__form.get('summary')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;summary&#39;))">{{ message }}</span>
+}
+
+
+  @if (__formError(); as message) {
+  <div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">{{ message }}</span>
+</div>
+
+  }
+  <button type="submit" data-kind="button" [disabled]="__submitting()" [attr.aria-busy]="__submitting() ? 'true' : null" [attr.data-busy]="__submitting() ? 'true' : null">{{ __messages.key(&#39;framework.submit&#39;).text }}</button>
+</form>
+}

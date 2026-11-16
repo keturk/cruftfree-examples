@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "knowledge_db_database": "helpdesk_knowledge",
+    "knowledge_db_host": "helpdesk-system-postgresql",
+    "knowledge_db_port": 5432,
+    "knowledge_db_user": "helpdesk_knowledge_service_knowledge_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

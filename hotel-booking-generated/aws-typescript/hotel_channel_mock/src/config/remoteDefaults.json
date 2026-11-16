@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "channel_db_database": "hotel_channel_mock",
+    "channel_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

@@ -1,0 +1,24 @@
+<header data-kind="pageHeader">
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+<div data-part="actions">
+<button data-kind="button" type="button" data-variant="primary" (click)="this.startListing()">
+<span class="material-symbols-outlined" aria-hidden="true">add_home</span>
+{{ __arg2() }}
+</button>
+
+</div>
+</header>
+
+<app-listing-list-table data-kind="table">
+</app-listing-list-table>
+@if (__when0()) {
+<dialog data-kind="dialog" #__elRef0 aria-modal="true" [attr.aria-label]="__aname0()" (close)="((this.__app.listing()) ? (this.stopListing()) : this.__outsideWhen())">
+{{ __arg3() }}
+<app-new-listing-form-form data-kind="form">
+</app-new-listing-form-form>
+</dialog>
+}
+

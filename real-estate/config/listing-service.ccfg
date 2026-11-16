@@ -1,0 +1,62 @@
+config service realestate.ListingService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8001;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms listingDb from postgresContainer(id: "006bfb76-6012-4878-9e8a-06fd9636de60", database: "realestate_listing");
+    pubsub mq from kafkaContainer();
+    httpSecurity from localHttpSecurity(host: "realestate-listing-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    serviceCredentialOps from machineCredential();
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile azure as "azure" extends base {
+    alias env = "AZURE";
+    alias resource = "azure";
+
+    // Consumers run inside the web app, not in separate compute.
+    runtime { consumers = "in-process"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms listingDb from azurePostgres(id: "006bfb76-6012-4878-9e8a-06fd9636de60", database: "realestate_listing", poolSize: 20, maxOverflow: 10);
+    replace pubsub mq from azureEventHubs();
+  }
+
+  profile development as "dev" extends azure {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "globalHeaders": {
+    "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.lanternpost.example.com https://login.microsoftonline.com/lanternpost.onmicrosoft.com/v2.0; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://login.microsoftonline.com/lanternpost.onmicrosoft.com/v2.0; object-src 'none'",
+    "Permissions-Policy": "camera=(), geolocation=()",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "X-Content-Type-Options": "nosniff"
+  },
+  "mimeTypes": {
+    ".avif": "image/avif",
+    ".css": "text/css; charset=utf-8",
+    ".gif": "image/gif",
+    ".html": "text/html; charset=utf-8",
+    ".ico": "image/vnd.microsoft.icon",
+    ".jpeg": "image/jpeg",
+    ".jpg": "image/jpeg",
+    ".js": "text/javascript; charset=utf-8",
+    ".json": "application/json",
+    ".map": "application/json",
+    ".mjs": "text/javascript; charset=utf-8",
+    ".otf": "font/otf",
+    ".png": "image/png",
+    ".svg": "image/svg+xml",
+    ".ttf": "font/ttf",
+    ".txt": "text/plain; charset=utf-8",
+    ".webp": "image/webp",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2",
+    ".xml": "application/xml; charset=utf-8"
+  },
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/index.html",
+      "statusCode": 404
+    }
+  },
+  "routes": [
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "route": "/index.html"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "route": "/runtime-config.json"
+    },
+    {
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "route": "/*.{js,mjs,css,svg,png,jpg,jpeg,webp,avif,gif,ico,woff,woff2,ttf,otf,map}"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/articles/*"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/auth/callback"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/auth/forbidden"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/auth/login"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/auth/logout"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/search/*"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/tickets"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/tickets/*"
+    },
+    {
+      "headers": {
+        "Cache-Control": "no-cache"
+      },
+      "rewrite": "/index.html",
+      "route": "/tickets/new"
+    }
+  ]
+}

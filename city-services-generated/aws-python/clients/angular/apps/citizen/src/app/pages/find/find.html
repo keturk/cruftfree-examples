@@ -1,0 +1,16 @@
+<header data-kind="pageHeader">
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+</header>
+
+<label>
+{{ __arg2() }}
+<input data-kind="input" type="text" [attr.aria-label]="__aname0()" [value]="this.reference()" (input)="this.reference.set($any($event.target).value)" />
+</label>
+
+<button data-kind="button" type="button" data-variant="primary" [disabled]="__disabled0() === true" (click)="this.__nav.to(&quot;/track/:reference&quot;, &#123; &quot;reference&quot;: this.reference() &#125;)">
+{{ __arg3() }}
+</button>
+

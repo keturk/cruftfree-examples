@@ -1,0 +1,158 @@
+// Author profiles, and the application's identity block. Sign-in belongs to the hosted identity
+// provider: this service never sees a password. A profile is created the first time a signed-in
+// person opens it.
+service blog.AuthorService('config/author-service.ccfg') : version('2.0.0'), description('Author profiles and application identity') {
+
+    discovery { }
+
+    identity {
+        // People: readers, authors, editors and the operator who plays the outside world.
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+
+            group "editor" as editor;
+            group "admin" as admin;
+            group "operator" as operator;
+        }
+
+        // Service-to-service callers.
+        provider machine config('config/identity/machine.ccfg') {
+        }
+
+        // API keys the mocks issue, the way a real provider authenticates its API callers.
+        provider mailKeys config('config/identity/mail-keys.ccfg') {
+        }
+
+        provider moderationKeys config('config/identity/moderation-keys.ccfg') {
+        }
+    }
+
+    enum AuthorStatus {
+        Active : tone(success),
+        Suspended : tone(danger)
+    }
+
+    rdbms authorDb {
+
+        entity Author extends BaseEntity {
+            /// The signed-in person this profile belongs to.
+            String(64) userId : unique;
+            String(100) displayName : trim, filterable, sortable;
+            String(500)? bio;
+            URL? avatarUrl;
+            AuthorStatus status : filterable = AuthorStatus.Active;
+
+            Boolean isActive := status == AuthorStatus.Active;
+
+            afterUpdate {
+                if (isChanged(status)) {
+                    dispatch AuthorStatusChanged(id, userId, oldValue(status), status);
+                }
+            }
+        }
+    }
+
+    pubsub mq {
+        topic AuthorEvents {
+            publish AuthorStatusChanged(UUID authorId, String userId, AuthorStatus oldStatus, AuthorStatus newStatus) {
+                ensure oldStatus != newStatus;
+            }
+        }
+    }
+
+    struct UpdateProfileRequest {
+        String(100) displayName;
+        String(500)? bio;
+        URL? avatarUrl;
+    }
+
+    /// What anyone may read about an author.
+    struct AuthorCard {
+        UUID id;
+        String userId;
+        String displayName;
+        String? bio;
+        URL? avatarUrl;
+    }
+
+    fn toCard(authorDb.Author author) -> AuthorCard {
+        return AuthorCard {
+            id: author.id,
+            userId: author.userId,
+            displayName: author.displayName,
+            bio: author.bio,
+            avatarUrl: author.avatarUrl
+        };
+    }
+
+    rest_api AuthorAPI : basePath('/api/v1/authors'), rdbms(authorDb) {
+        // Public: the people behind the articles, with nothing personal in the answer.
+        @path('/writers')
+        get authors() : auth(public) -> Array<AuthorCard> {
+            let Array<Author> active = Author.where(status: AuthorStatus.Active).orderBy(displayName: asc).all();
+            return active.map(a => toCard(a));
+        }
+
+        @path('/card/:userId')
+        get authorCard(String userId) : auth(public) -> AuthorCard {
+            let Author author = Author.where(userId: userId).firstOrFail();
+            return toCard(author);
+        }
+
+        // The signed-in person's own profile, created the first time it is opened.
+        @path('/me')
+        get me() : auth(required, providers: [identity]) -> Author {
+            let Author? existing = Author.where(userId: Auth.userId()).first();
+            if (existing != null) {
+                return existing;
+            }
+            return Author.create({
+                userId: Auth.userId(),
+                displayName: Auth.identity.fullName ?? Auth.identity.email.toString()
+            });
+        }
+
+        @path('/me')
+        put updateMe(UpdateProfileRequest request) : auth(required, providers: [identity]) -> Author {
+            let Author author = Author.where(userId: Auth.userId()).firstOrFail();
+            author.displayName = request.displayName;
+            author.bio = request.bio;
+            author.avatarUrl = request.avatarUrl;
+            author.save();
+            return author;
+        }
+
+        // Administration.
+        resource Author : only(list, get), auth(required, providers: [identity], roles: [admin]);
+
+        @path('/:id/suspend')
+        post suspend(UUID id) : auth(required, providers: [identity], roles: [admin]) -> Author {
+            let Author author = Author.findOrFail(id);
+            author.status = AuthorStatus.Suspended;
+            author.save();
+            return author;
+        }
+
+        @path('/:id/reinstate')
+        post reinstate(UUID id) : auth(required, providers: [identity], roles: [admin]) -> Author {
+            let Author author = Author.findOrFail(id);
+            author.status = AuthorStatus.Active;
+            author.save();
+            return author;
+        }
+    }
+
+    test("a new author is active") {
+        let Author author = authorDb.Author.create({ userId: "spec-user", displayName: "Mina Okafor" });
+        assert author.isActive;
+    }
+
+    test("suspending an author announces it") {
+        let Author author = authorDb.Author.create({ userId: "spec-user", displayName: "Mina Okafor" });
+        author.status = AuthorStatus.Suspended;
+        author.save();
+        assert !author.isActive;
+        assert emitted(AuthorStatusChanged(author.id, author.userId, AuthorStatus.Active, AuthorStatus.Suspended));
+    }
+}

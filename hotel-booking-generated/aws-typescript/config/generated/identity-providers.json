@@ -1,0 +1,135 @@
+{
+  "application": "application",
+  "environment": "development",
+  "providers": {
+    "channelKeys": {
+      "audience": "customer",
+      "consumesRateLimit": false,
+      "credential": "apiKey",
+      "header": "X-Channel-Api-Key",
+      "mode": "self",
+      "name": "channelKeys",
+      "principalType": "human",
+      "providerType": "apiKey",
+      "roleMappings": {},
+      "store": "hotel.ChannelMock",
+      "tenantMapped": false,
+      "verifyPath": "/internal/identity/api-keys/channelKeys/verify"
+    },
+    "emailKeys": {
+      "audience": "customer",
+      "consumesRateLimit": false,
+      "credential": "apiKey",
+      "header": "X-Email-Api-Key",
+      "mode": "self",
+      "name": "emailKeys",
+      "principalType": "human",
+      "providerType": "apiKey",
+      "roleMappings": {},
+      "store": "hotel.EmailMock",
+      "tenantMapped": false,
+      "verifyPath": "/internal/identity/api-keys/emailKeys/verify"
+    },
+    "identity": {
+      "allowedAlgorithms": [
+        "RS256"
+      ],
+      "allowedAudienceRefs": [],
+      "allowedAudiences": [
+        "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity"
+      ],
+      "attributeMappings": {
+        "email": {
+          "claimPath": "email",
+          "cruftfreeType": "Email",
+          "guarantee": "required",
+          "nullable": false
+        },
+        "fullName": {
+          "claimPath": "name",
+          "cruftfreeType": "String",
+          "guarantee": "optional",
+          "nullable": true
+        }
+      },
+      "audience": "customer",
+      "credential": "jwt",
+      "discoveryUri": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity/.well-known/openid-configuration",
+      "issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity",
+      "jwksCacheTtlSeconds": 3600,
+      "jwksUri": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity/.well-known/jwks.json",
+      "localIdentity": {
+        "mode": "deterministicUuid5",
+        "namespace": "c9a255a1-350b-4414-beb9-7f06f7dfd92d"
+      },
+      "mode": "platformManaged",
+      "name": "identity",
+      "principalType": "human",
+      "providerType": "cognito",
+      "publicClientMetadataRef": "identity-client-identity.development.json",
+      "revocation": {
+        "mode": "none",
+        "tokenIdClaim": "jti"
+      },
+      "roleMappings": {
+        "frontdesk": "frontDesk",
+        "operators": "operator"
+      },
+      "roleSource": {
+        "claimPath": "cognito:groups"
+      },
+      "secretRefs": {
+        "clientSecret": "IDENTITY_IDENTITY_CLIENT_SECRET_REF"
+      }
+    },
+    "machine": {
+      "allowedAlgorithms": [
+        "RS256"
+      ],
+      "allowedAudienceRefs": [],
+      "allowedAudiences": [
+        "https://machine-auth.marram.example.com"
+      ],
+      "attributeMappings": {},
+      "audience": "machine",
+      "credential": "jwt",
+      "issuer": "https://machine-auth.marram.example.com",
+      "jwksCacheTtlSeconds": 3600,
+      "jwksUri": "https://machine-auth.marram.example.com/discovery/v2.0/keys",
+      "localIdentity": {
+        "mode": "deterministicUuid5",
+        "namespace": "c9a255a1-350b-4414-beb9-7f06f7dfd92d"
+      },
+      "mode": "external",
+      "name": "machine",
+      "principalType": "machine",
+      "providerType": "external",
+      "revocation": {
+        "mode": "none",
+        "tokenIdClaim": "jti"
+      },
+      "roleMappings": {},
+      "roleSource": {
+        "claimPath": "roles"
+      },
+      "secretRefs": {
+        "clientSecret": "IDENTITY_MACHINE_CLIENT_SECRET_REF"
+      }
+    },
+    "paymentKeys": {
+      "audience": "customer",
+      "consumesRateLimit": false,
+      "credential": "apiKey",
+      "header": "X-Payment-Api-Key",
+      "mode": "self",
+      "name": "paymentKeys",
+      "principalType": "human",
+      "providerType": "apiKey",
+      "roleMappings": {},
+      "store": "hotel.PaymentMock",
+      "tenantMapped": false,
+      "verifyPath": "/internal/identity/api-keys/paymentKeys/verify"
+    }
+  },
+  "schemaVersion": 8
+}

@@ -1,0 +1,123 @@
+<form data-kind="filters" (submit)="__applyFilters(); $event.preventDefault()">
+  <label data-filter="search">
+    <span>{{ __messages.key(&#39;filter.ChannelList.roomType&#39;).text }}</span>
+    <input #filter_roomType type="search" [value]="__filterDraft().roomType" (input)="__setFilter('roomType', filter_roomType.value)" />
+
+  </label>
+  <label data-filter="date">
+    <span>{{ __messages.key(&#39;filter.ChannelList.night&#39;).text }}</span>
+    <input #filter_night type="date" [value]="__filterDraft().night" (input)="__setFilter('night', filter_night.value)" />
+
+  </label>
+  <button type="submit">{{ __messages.key(&#39;framework.search&#39;).text }}</button>
+  <button type="button" (click)="__clearFilters()">{{ __messages.key(&#39;framework.clear&#39;).text }}</button>
+</form>
+@if (__source.isLoaded) {
+@if (__source.error; as problem) {
+<div data-kind="callout" role="status" data-state="stale" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(problem, __source.site) ?? __messages.problemTitle(problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.isLoading || __source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+@if (__rows().length === 0) {
+@if (__hasFilters()) {
+<div data-state="filtered-empty">
+  <p>{{ __messages.key(&#39;empty.ChannelList.filtered&#39;).text }}</p>
+  <button type="button" (click)="__clearFilters()">{{ __messages.key(&#39;framework.clearFilters&#39;).text }}</button>
+</div>
+} @else {
+<div data-kind="emptyState" data-state="empty" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">inbox</span>
+  <p data-part="title">{{ __messages.key(&#39;empty.ChannelList&#39;).text }}</p>
+  @if (__messages.has('emptyDescription.ChannelList')) {
+  <p data-part="description">{{ __messages.key(&#39;emptyDescription.ChannelList&#39;).text }}</p>
+  }
+</div>
+
+}
+} @else {
+<div data-kind="table-scroll">
+<table data-kind="table">
+  <thead>
+    <tr>
+      <th scope="col">{{ __messages.key(&#39;field.PublishedNight.roomType&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.PublishedNight.night&#39;).text }}</th>
+      <th scope="col" data-numeric="true">{{ __messages.key(&#39;field.PublishedNight.left&#39;).text }}</th>
+      <th scope="col" data-numeric="true">{{ __messages.key(&#39;field.PublishedNight.nightlyRate&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.PublishedNight.receivedAt&#39;).text }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (row of __rows(); track $index) {
+    <tr>
+
+      <td>{{ __textOf(row.roomType) }}
+</td>
+      <td>{{ __textOf(__format.date(row.night)) }}
+</td>
+      <td data-numeric="true">{{ __textOf(__format.number(row.left)) }}
+</td>
+      <td data-numeric="true">{{ __textOf(__format.money(row.nightlyRate)) }}
+</td>
+      <td>{{ __textOf(__format.relative(row.receivedAt)) }}
+</td>
+    </tr>
+    }
+  </tbody>
+</table>
+</div>
+}
+<nav data-kind="pagination" [attr.aria-label]="__messages.key('framework.pagination').text">
+  @if (__source.range(); as range) {
+  <span data-kind="range">{{ __messages.key(&#39;framework.showingRangeOfTotal&#39;, &#123; from: range.from, to: range.to, total: range.total &#125;).text }}</span>
+  }
+  @if (__source.pageSizes().length > 0) {
+  <label data-part="page-size">
+    <span>{{ __messages.key(&#39;framework.pageSize&#39;).text }}</span>
+    <select (change)="__source.setPageSize(+$any($event.target).value)">
+      @for (size of __source.pageSizes(); track size) {
+      <option [value]="size" [selected]="size === __source.pageSize()">{{ size }}</option>
+      }
+    </select>
+  </label>
+  }
+  <button type="button" (click)="__source.previous()" [disabled]="!__source.hasPrevious()">{{ __messages.key(&#39;framework.previous&#39;).text }}</button>
+  @for (entry of __source.window(); track $index) {
+  @if (entry === null) {
+  <span data-part="ellipsis" aria-hidden="true">…</span>
+  } @else {
+  <button type="button" [attr.aria-label]="__messages.key('framework.pageNumber', { number: entry }).text" [attr.aria-current]="entry === __source.pageIndex() + 1 ? 'page' : null" (click)="__source.goTo(entry - 1)">{{ entry }}</button>
+  }
+  }
+  <button type="button" (click)="__source.next()" [disabled]="!__source.hasNext()">{{ __messages.key(&#39;framework.next&#39;).text }}</button>
+</nav>
+
+} @else if (__source.error; as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __source.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

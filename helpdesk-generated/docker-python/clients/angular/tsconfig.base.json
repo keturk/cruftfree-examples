@@ -1,0 +1,42 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "dom"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "paths": {
+      "@lanternpost/system-api-common": ["./libs/system-api-common/src/index.ts"],
+      "@lanternpost/ticket-service-api": ["./libs/ticket-service-api/src/index.ts"],
+      "@lanternpost/knowledge-service-api": ["./libs/knowledge-service-api/src/index.ts"],
+      "@lanternpost/notice-service-api": ["./libs/notice-service-api/src/index.ts"],
+      "@lanternpost/email-mock-api": ["./libs/email-mock-api/src/index.ts"],
+      "@lanternpost/system-api-state-common": ["./libs/system-api-state-common/src/index.ts"],
+      "@lanternpost/ticket-service-api-state": ["./libs/ticket-service-api-state/src/index.ts"],
+      "@lanternpost/knowledge-service-api-state": ["./libs/knowledge-service-api-state/src/index.ts"],
+      "@lanternpost/notice-service-api-state": ["./libs/notice-service-api-state/src/index.ts"],
+      "@lanternpost/email-mock-api-state": ["./libs/email-mock-api-state/src/index.ts"],
+      "@lanternpost/system-api-common/testing": ["./libs/system-api-common/src/testing/index.ts"],
+      "@lanternpost/ticket-service-api/testing": ["./libs/ticket-service-api/src/testing/index.ts"],
+      "@lanternpost/knowledge-service-api/testing": ["./libs/knowledge-service-api/src/testing/index.ts"],
+      "@lanternpost/notice-service-api/testing": ["./libs/notice-service-api/src/testing/index.ts"],
+      "@lanternpost/email-mock-api/testing": ["./libs/email-mock-api/src/testing/index.ts"],
+      "@lanternpost/ui-core": ["./libs/ui-core/src/index.ts"],
+      "@lanternpost/ui-core/testing": ["./libs/ui-core/src/testing/index.ts"]
+    }
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "apiBaseUrl": "http://localhost:8080",
+  "identity": {
+    "authority": "http://localhost:8085",
+    "clientId": "399790530566881285",
+    "flows": [
+      "authorization_code"
+    ],
+    "logoutUris": [
+      "com.example.cobblestone://oauth/logout"
+    ],
+    "redirectUris": [
+      "com.example.cobblestone://oauth/callback"
+    ],
+    "roleMappings": {
+      "agent": "agent",
+      "operator": "operator"
+    },
+    "rolesClaim": "urn:zitadel:iam:org:project:roles",
+    "scopes": [
+      "openid",
+      "profile",
+      "email"
+    ]
+  },
+  "map": {
+    "attribution": "OpenStreetMap contributors",
+    "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+  }
+}

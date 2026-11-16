@@ -1,0 +1,55 @@
+<header data-kind="pageHeader">
+<a data-part="back" [routerLink]="&quot;/&quot;" [attr.aria-label]="__messages.key('framework.back').text"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span></a>
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+</header>
+
+@if (__when0()) {
+<div data-kind="emptyState">
+<span class="material-symbols-outlined" aria-hidden="true">event_busy</span>
+<p data-part="title">{{ __arg2() }}</p>
+<div data-part="actions">
+<a data-kind="link" data-variant="primary" [routerLink]="&quot;/&quot;">
+{{ __arg3() }}
+</a>
+</div>
+</div>
+
+}
+<div data-kind="grid" class="style-cardGrid">
+@for (offer of __foreach0(); track $index) {
+<div data-kind="card">
+<div data-part="header">
+<h3 data-part="title">{{ this.__textOf(offer.name) }}</h3>
+</div>
+<span data-kind="text">
+{{ this.__textOf(offer.summary) }}
+</span>
+<div data-kind="row">
+<span data-kind="badge">
+{{ this.__textOf(this.__messages.key(&quot;nightsLine&quot;, &#123; &quot;count&quot;: this.__format.number(offer.nights) &#125;)) }}
+</span>
+<span data-kind="badge">
+{{ this.__textOf(this.__messages.key(&quot;sleepsLine&quot;, &#123; &quot;count&quot;: this.__format.number(offer.sleeps) &#125;)) }}
+</span>
+</div>
+@if ((offer.left < 3)) {
+<div data-kind="callout" role="status" data-tone="warning" [attr.aria-label]="__aname0()">
+<span data-part="text">{{ this.__textOf(this.__messages.key(&quot;fewLeft&quot;, &#123; &quot;count&quot;: this.__format.number(offer.left) &#125;)) }}</span>
+</div>
+
+}
+<h2 data-kind="heading">
+{{ this.__textOf(this.__format.money(offer.total)) }}
+</h2>
+<button data-kind="button" type="button" data-variant="primary" (click)="this.pick(offer)">
+<span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+{{ __arg4() }}
+</button>
+</div>
+
+}
+</div>
+

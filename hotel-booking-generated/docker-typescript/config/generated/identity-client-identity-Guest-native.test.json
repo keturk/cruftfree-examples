@@ -1,0 +1,36 @@
+{
+  "audience": "customer",
+  "authority": "http://localhost:8085",
+  "clientIdRef": "IdentityGuestNativePublicClientId",
+  "flows": [
+    "authorization_code"
+  ],
+  "issuer": "http://localhost:8085",
+  "logoutUris": [
+    "com.example.marram://oauth/logout"
+  ],
+  "providerName": "identity",
+  "redirectUris": [
+    "com.example.marram://oauth/callback"
+  ],
+  "roleMappings": {
+    "frontdesk": "frontDesk",
+    "operators": "operator"
+  },
+  "rolesClaim": "urn:zitadel:iam:org:project:roles",
+  "scopes": [
+    "openid",
+    "profile",
+    "email"
+  ],
+  "tokenValidation": {
+    "allowedAlgorithms": [
+      "RS256"
+    ],
+    "allowedAudiences": [
+      "http://localhost:8085"
+    ],
+    "issuer": "http://localhost:8085",
+    "jwksUri": "http://localhost:8085/oauth/v2/keys"
+  }
+}

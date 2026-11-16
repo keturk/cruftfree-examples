@@ -1,0 +1,358 @@
+from hr.common import Department, EmploymentType, generateEmployeeNumber;
+
+// Who works here, and who is away. Colleagues read a directory that holds only what colleagues may
+// see: it is a separate read model, kept up to date by events, so a query against it can never reach
+// a field that HR keeps to itself. Time off comes out of a balance, and a row lock stops two approvals
+// spending the same days.
+service hr.EmployeeService('config/employee-service.ccfg') : version('2.0.0'), description('People and time off') {
+
+    discovery { }
+
+    identity {
+        // Anyone can create a sign-in, but only a work address HR has on file finds an employee record.
+        // The hr, manager and operator roles are granted, never self-assigned. Sign-in belongs to the
+        // hosted identity provider, so nothing here handles a password.
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+
+            group "hr" as hr;
+            group "manager" as manager;
+            group "operator" as operator;
+        }
+
+        // Service-to-service callers.
+        provider machine config('config/identity/machine.ccfg') {
+        }
+
+        // API keys the mocks issue, the way a real vendor authenticates its API callers.
+        provider bankKeys config('config/identity/bank-keys.ccfg') {
+        }
+
+        provider checkKeys config('config/identity/check-keys.ccfg') {
+        }
+
+        provider signatureKeys config('config/identity/signature-keys.ccfg') {
+        }
+    }
+
+    exceptions {
+        NotAnEmployeeError : status(403), message("There is no employee with your work address. Ask HR to add you");
+        NotEnoughDaysError : status(409), message("This is more vacation than the employee has left");
+        AlreadyDecidedError : status(409), message("This request has already been decided");
+        BadDatesError : status(422), message("The last day cannot be before the first");
+    }
+
+    enum EmployeeStatus {
+        Active : tone(success),
+        OnLeave : tone(warning),
+        Left : tone(neutral)
+    }
+
+    enum TimeOffKind {
+        Vacation : tone(info),
+        Sick : tone(warning),
+        Parental : tone(success)
+    }
+
+    enum TimeOffStatus {
+        Pending : tone(warning),
+        Approved : tone(success),
+        Declined : tone(neutral)
+    }
+
+    rdbms employeeDb : audit {
+
+        entity Employee extends BaseEntity {
+            String(20) employeeNumber : unique, filterable;
+            String(200) fullName : filterable;
+            String(120) jobTitle;
+            Department department : filterable;
+            EmploymentType employmentType : filterable = EmploymentType.FullTime;
+            EmployeeStatus status : filterable = EmployeeStatus.Active;
+            Email workEmail : unique;
+            Date hiredOn;
+            Int vacationDaysLeft : min(0) = 25;
+
+            afterCreate {
+                dispatch EmployeeChanged(id, fullName, jobTitle, workEmail, department, status);
+            }
+
+            afterUpdate {
+                if (isChanged(fullName) || isChanged(jobTitle) || isChanged(department) || isChanged(status)) {
+                    dispatch EmployeeChanged(id, fullName, jobTitle, workEmail, department, status);
+                }
+            }
+        }
+
+        entity TimeOffRequest extends BaseEntity {
+            String(200) employeeName : filterable;
+            Department department : filterable;
+            TimeOffKind kind : filterable;
+            Date firstDay;
+            Date lastDay;
+            Int days : min(1);
+            String(300)? note;
+            TimeOffStatus status : filterable = TimeOffStatus.Pending;
+            String(200)? decidedBy;
+            UUID employeeId : index;
+        }
+    }
+
+    pubsub mq {
+        topic EmployeeEvents {
+            publish EmployeeChanged(UUID employeeId, String fullName, String jobTitle, Email workEmail, Department department, EmployeeStatus status);
+        }
+    }
+
+    cqrs {
+        /// The directory: what any colleague may see of anyone.
+        view EmployeeDirectoryView {
+            UUID id : primaryKey, server;
+            String fullName;
+            String jobTitle;
+            Email workEmail;
+            Department department;
+            EmployeeStatus status;
+
+            index department;
+            index status;
+        }
+
+        projection EmployeeDirectoryProjection {
+            on EmployeeChanged(UUID employeeId, String fullName, String jobTitle, Email workEmail, Department department, EmployeeStatus status) {
+                EmployeeDirectoryView.upsert(employeeId, {
+                    id: employeeId,
+                    fullName: fullName,
+                    jobTitle: jobTitle,
+                    workEmail: workEmail,
+                    department: department,
+                    status: status
+                });
+            }
+        }
+    }
+
+    struct RequestTimeOffRequest {
+        TimeOffKind kind;
+        Date firstDay;
+        Date lastDay;
+        Int days;
+        String(300)? note;
+    }
+
+    struct AddEmployeeRequest {
+        String(200) fullName;
+        String(120) jobTitle;
+        Department department;
+        EmploymentType employmentType;
+        Email workEmail;
+        Date hiredOn;
+    }
+
+    /// One colleague, as the directory shows them.
+    struct DirectoryEntry {
+        String(200) fullName;
+        String(120) jobTitle;
+        Email workEmail;
+        Department department;
+        EmployeeStatus status;
+    }
+
+    /// All the recruiting service needs back about someone it just hired.
+    struct HiredEmployee {
+        UUID id;
+    }
+
+    struct DepartmentCount {
+        String(40) department;
+        Int people;
+    }
+
+    struct PeopleSummary {
+        Int headcount;
+        Int onLeave;
+        Int pendingTimeOff;
+        Array<DepartmentCount> byDepartment;
+    }
+
+    fn employeeWithEmail(String email) -> employeeDb.Employee {
+        let employeeDb.Employee? employee = employeeDb.Employee.where(workEmail: email).first();
+        if (employee == null) {
+            throw NotAnEmployeeError();
+        }
+        return employee;
+    }
+
+    fn countIn(Array<employeeDb.Employee> people, Department department) -> Int {
+        return people.filter(p => p.department == department).length;
+    }
+
+    // What every employee has: themselves, their time off, and the directory.
+    rest_api SelfServiceAPI : basePath('/api/v1/self'), rdbms(employeeDb) {
+        @path('/me')
+        get me() : auth(required, providers: [identity]) -> Employee {
+            return employeeWithEmail(Auth.identity.email.toString());
+        }
+
+        @path('/time-off')
+        get myTimeOff() : auth(required, providers: [identity]) -> Array<TimeOffRequest> {
+            let Employee me = employeeWithEmail(Auth.identity.email.toString());
+            return TimeOffRequest.where(employeeId: me.id).orderBy(firstDay: desc).limit(50).all();
+        }
+
+        @path('/time-off')
+        post requestTimeOff(RequestTimeOffRequest request) : auth(required, providers: [identity]) -> TimeOffRequest {
+            let Employee me = employeeWithEmail(Auth.identity.email.toString());
+            if (request.lastDay < request.firstDay) {
+                throw BadDatesError();
+            }
+            return TimeOffRequest.create({
+                employeeId: me.id,
+                employeeName: me.fullName,
+                department: me.department,
+                kind: request.kind,
+                firstDay: request.firstDay,
+                lastDay: request.lastDay,
+                days: request.days,
+                note: request.note
+            });
+        }
+
+        @path('/directory')
+        get directory() : auth(required, providers: [identity]) -> Array<DirectoryEntry> {
+            let Array<EmployeeDirectoryView> rows = EmployeeDirectoryView.orderBy(fullName: asc).limit(500).all();
+            return rows.map(r => DirectoryEntry {
+                fullName: r.fullName,
+                jobTitle: r.jobTitle,
+                workEmail: r.workEmail,
+                department: r.department,
+                status: r.status
+            });
+        }
+    }
+
+    // What HR and managers work with.
+    rest_api PeopleAPI : basePath('/api/v1/people'), rdbms(employeeDb) {
+        resource Employee : only(list, get), auth(required, providers: [identity], roles: [hr, manager]);
+        resource TimeOffRequest : only(list), auth(required, providers: [identity], roles: [hr, manager]);
+
+        @path('/add')
+        post addEmployee(AddEmployeeRequest request) : auth(required, providers: [identity], roles: [hr]) -> Employee {
+            return Employee.create({
+                employeeNumber: generateEmployeeNumber(),
+                fullName: request.fullName,
+                jobTitle: request.jobTitle,
+                department: request.department,
+                employmentType: request.employmentType,
+                workEmail: request.workEmail,
+                hiredOn: request.hiredOn
+            });
+        }
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [hr, manager]) -> PeopleSummary {
+            let Array<Employee> people = Employee.limit(5000).all();
+            let Array<Employee> current = people.filter(p => p.status != EmployeeStatus.Left);
+            return PeopleSummary {
+                headcount: current.length,
+                onLeave: current.filter(p => p.status == EmployeeStatus.OnLeave).length,
+                pendingTimeOff: TimeOffRequest.where(status: TimeOffStatus.Pending).count(),
+                byDepartment: [
+                    DepartmentCount { department: "Engineering", people: countIn(current, Department.Engineering) },
+                    DepartmentCount { department: "Design", people: countIn(current, Department.Design) },
+                    DepartmentCount { department: "Sales", people: countIn(current, Department.Sales) },
+                    DepartmentCount { department: "People", people: countIn(current, Department.People) },
+                    DepartmentCount { department: "Finance", people: countIn(current, Department.Finance) },
+                    DepartmentCount { department: "Operations", people: countIn(current, Department.Operations) }
+                ]
+            };
+        }
+
+        @path('/time-off/calendar')
+        get timeOffCalendar() : auth(required, providers: [identity], roles: [hr, manager]) -> Array<TimeOffRequest> {
+            return TimeOffRequest.where(status: TimeOffStatus.Approved).orderBy(firstDay: desc).limit(500).all();
+        }
+
+        // Vacation comes out of the balance under a lock on the employee, so two approvals cannot
+        // spend the same days. Sick and parental leave do not touch it.
+        @path('/time-off/:id/approve')
+        post approveTimeOff(UUID id) : auth(required, providers: [identity], roles: [hr, manager]) -> TimeOffRequest {
+            transaction(employeeDb) {
+                let employeeDb.TimeOffRequest request = employeeDb.TimeOffRequest.where(id: id).forUpdate().firstOrFail();
+                if (request.status != TimeOffStatus.Pending) {
+                    throw AlreadyDecidedError();
+                }
+                if (request.kind == TimeOffKind.Vacation) {
+                    let employeeDb.Employee employee = employeeDb.Employee.where(id: request.employeeId).forUpdate().firstOrFail();
+                    if (employee.vacationDaysLeft < request.days) {
+                        throw NotEnoughDaysError();
+                    }
+                    employee.vacationDaysLeft = employee.vacationDaysLeft - request.days;
+                    employee.save();
+                }
+                request.status = TimeOffStatus.Approved;
+                request.decidedBy = (Auth.identity.fullName ?? Auth.identity.email).toString();
+                request.save();
+                return request;
+            }
+        }
+
+        @path('/time-off/:id/decline')
+        post declineTimeOff(UUID id) : auth(required, providers: [identity], roles: [hr, manager]) -> TimeOffRequest {
+            let TimeOffRequest request = TimeOffRequest.findOrFail(id);
+            if (request.status != TimeOffStatus.Pending) {
+                throw AlreadyDecidedError();
+            }
+            request.status = TimeOffStatus.Declined;
+            request.decidedBy = (Auth.identity.fullName ?? Auth.identity.email).toString();
+            request.save();
+            return request;
+        }
+    }
+
+    // What the recruiting service reports. Only a service with a machine credential reaches this.
+    rest_api HiringAPI : basePath('/api/v1/internal/employees'), rdbms(employeeDb) {
+        @path('/hire')
+        post hire(AddEmployeeRequest request) : auth(service, providers: [machine]) -> HiredEmployee {
+            let Employee? existing = Employee.where(workEmail: request.workEmail).first();
+            if (existing != null) {
+                return HiredEmployee { id: existing.id };
+            }
+            let Employee created = Employee.create({
+                employeeNumber: generateEmployeeNumber(),
+                fullName: request.fullName,
+                jobTitle: request.jobTitle,
+                department: request.department,
+                employmentType: request.employmentType,
+                workEmail: request.workEmail,
+                hiredOn: request.hiredOn
+            });
+            return HiredEmployee { id: created.id };
+        }
+    }
+
+    jobs {
+        // Seeded people were never announced by an event, so this announces everyone again. The
+        // projection stays the only thing that writes the directory.
+        job RebuildDirectory {
+            let Array<employeeDb.Employee> people = employeeDb.Employee.limit(5000).all();
+            foreach person in people {
+                dispatch EmployeeChanged(person.id, person.fullName, person.jobTitle, person.workEmail, person.department, person.status);
+            }
+        }
+    }
+
+    test("a new employee starts with a full vacation balance") {
+        let employeeDb.Employee created = employeeDb.Employee.create({
+            employeeNumber: "AB-000001",
+            fullName: "Ana Ferreira",
+            jobTitle: "Engineer",
+            department: Department.Engineering,
+            workEmail: "ana@alderbrook.example",
+            hiredOn: "2024-01-15"
+        });
+        assert created.vacationDaysLeft == 25;
+        assert created.status == EmployeeStatus.Active;
+    }
+}

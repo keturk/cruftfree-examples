@@ -1,0 +1,12 @@
+{
+  "connections": {
+    "deal_db_database": "realestate_deal",
+    "deal_db_port": 5432,
+    "email_provider_base_url": "http://realestate-email-mock:8092",
+    "mortgage_provider_base_url": "http://realestate-mortgage-mock:8090",
+    "signature_provider_base_url": "http://realestate-signature-mock:8091"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

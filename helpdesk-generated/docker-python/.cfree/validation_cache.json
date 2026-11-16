@@ -1,0 +1,7 @@
+{
+  "version": "2",
+  "verdicts": {
+    "python": "4e763af8a90032c03531d15b30eeef63a22c4b8a580ecfdceccf713adb9a0f25",
+    "clients/angular": "845af76929e99e8a573a35c1fd01879976261ca6d3e784c26ca53fe37fa15346"
+  }
+}

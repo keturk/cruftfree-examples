@@ -1,0 +1,175 @@
+@if (__loadProblem(); as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" (click)="__retryLoad()">{{ __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else if (!__loaded()) {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+} @else {
+<form [formGroup]="__form" (ngSubmit)="__submit()">
+  <ol data-part="stepper">
+    <li [attr.data-state]="__stepState(0)" [attr.aria-current]="__step() === 0 ? 'step' : null">
+      <button type="button" [disabled]="__step() <= 0" (click)="__goTo(0)">
+        <span data-part="marker">
+          @if (__step() > 0) {
+          <span class="material-symbols-outlined" aria-hidden="true">check</span>
+          } @else {
+          1
+          }
+        </span>
+        <span data-part="title">{{ __messages.key(&#39;step.ReportProblem.problem&#39;).text }}</span>
+      </button>
+    </li>
+    <li [attr.data-state]="__stepState(1)" [attr.aria-current]="__step() === 1 ? 'step' : null">
+      <button type="button" [disabled]="__step() <= 1" (click)="__goTo(1)">
+        <span data-part="marker">
+          @if (__step() > 1) {
+          <span class="material-symbols-outlined" aria-hidden="true">check</span>
+          } @else {
+          2
+          }
+        </span>
+        <span data-part="title">{{ __messages.key(&#39;step.ReportProblem.place&#39;).text }}</span>
+      </button>
+    </li>
+    <li [attr.data-state]="__stepState(2)" [attr.aria-current]="__step() === 2 ? 'step' : null">
+      <button type="button" [disabled]="__step() <= 2" (click)="__goTo(2)">
+        <span data-part="marker">
+          @if (__step() > 2) {
+          <span class="material-symbols-outlined" aria-hidden="true">check</span>
+          } @else {
+          3
+          }
+        </span>
+        <span data-part="title">{{ __messages.key(&#39;step.ReportProblem.check&#39;).text }}</span>
+      </button>
+    </li>
+  </ol>
+  @if (__step() === 0) {
+  <fieldset>
+    <legend>{{ __messages.key(&#39;step.ReportProblem.problem&#39;).text }}</legend>
+<label>
+  <span>{{ __messages.key(&#39;field.ReportRequest.category&#39;).text }}</span>
+  <select [formControlName]="&#39;category&#39;" required [attr.aria-invalid]="__invalid(__form.get(&#39;category&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;category&#39;))">
+    <option [ngValue]="null"></option>
+    <option [ngValue]="'Pothole'">{{ __messages.key(&#39;enum.RequestCategory.Pothole&#39;).text }}</option>
+    <option [ngValue]="'Streetlight'">{{ __messages.key(&#39;enum.RequestCategory.Streetlight&#39;).text }}</option>
+    <option [ngValue]="'Graffiti'">{{ __messages.key(&#39;enum.RequestCategory.Graffiti&#39;).text }}</option>
+    <option [ngValue]="'Flooding'">{{ __messages.key(&#39;enum.RequestCategory.Flooding&#39;).text }}</option>
+    <option [ngValue]="'FallenTree'">{{ __messages.key(&#39;enum.RequestCategory.FallenTree&#39;).text }}</option>
+    <option [ngValue]="'Other'">{{ __messages.key(&#39;enum.RequestCategory.Other&#39;).text }}</option>
+  </select>
+</label>
+@if (__serverError(__form.get('category')) ?? __fieldError(__form.get('category')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;category&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.ReportRequest.title&#39;).text }}</span>
+  <input type="text" [formControlName]="&#39;title&#39;" name="title" required [attr.aria-invalid]="__invalid(__form.get(&#39;title&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;title&#39;))" />
+</label>
+@if (__serverError(__form.get('title')) ?? __fieldError(__form.get('title')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;title&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.ReportRequest.description&#39;).text }}</span>
+  <textarea [formControlName]="&#39;description&#39;" name="description" required [attr.aria-invalid]="__invalid(__form.get(&#39;description&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;description&#39;))"></textarea>
+</label>
+@if (__serverError(__form.get('description')) ?? __fieldError(__form.get('description')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;description&#39;))">{{ message }}</span>
+}
+
+
+  </fieldset>
+  }
+  @if (__step() === 1) {
+  <fieldset>
+    <legend>{{ __messages.key(&#39;step.ReportProblem.place&#39;).text }}</legend>
+<label>
+  <span>{{ __messages.key(&#39;field.ReportRequest.address&#39;).text }}</span>
+  <input type="text" [formControlName]="&#39;address&#39;" name="address" required [attr.aria-invalid]="__invalid(__form.get(&#39;address&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;address&#39;))" />
+</label>
+@if (__serverError(__form.get('address')) ?? __fieldError(__form.get('address')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;address&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.ReportRequest.phone&#39;).text }} <span data-part="hint">{{ __messages.key(&#39;framework.optional&#39;).text }}</span></span>
+  <input type="tel" [formControlName]="&#39;phone&#39;" name="phone" inputmode="tel" autocomplete="tel" [attr.aria-invalid]="__invalid(__form.get(&#39;phone&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;phone&#39;))" />
+</label>
+@if (__serverError(__form.get('phone')) ?? __fieldError(__form.get('phone')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;phone&#39;))">{{ message }}</span>
+}
+
+
+  </fieldset>
+  }
+  @if (__step() === 2) {
+  <fieldset>
+    <legend>{{ __messages.key(&#39;step.ReportProblem.check&#39;).text }}</legend>
+    <dl data-part="review">
+<div data-part="row">
+  <dt>{{ __messages.key(&#39;field.ReportRequest.category&#39;).text }}</dt>
+  <dd>{{ __reviewText(__form.get(&#39;category&#39;)?.value, &#39;enum&#39;, &#123; &#39;Pothole&#39;: &#39;enum.RequestCategory.Pothole&#39;, &#39;Streetlight&#39;: &#39;enum.RequestCategory.Streetlight&#39;, &#39;Graffiti&#39;: &#39;enum.RequestCategory.Graffiti&#39;, &#39;Flooding&#39;: &#39;enum.RequestCategory.Flooding&#39;, &#39;FallenTree&#39;: &#39;enum.RequestCategory.FallenTree&#39;, &#39;Other&#39;: &#39;enum.RequestCategory.Other&#39; &#125;) }}</dd>
+</div>
+
+<div data-part="row">
+  <dt>{{ __messages.key(&#39;field.ReportRequest.title&#39;).text }}</dt>
+  <dd>{{ __reviewText(__form.get(&#39;title&#39;)?.value, &#39;text&#39;) }}</dd>
+</div>
+
+<div data-part="row">
+  <dt>{{ __messages.key(&#39;field.ReportRequest.description&#39;).text }}</dt>
+  <dd>{{ __reviewText(__form.get(&#39;description&#39;)?.value, &#39;text&#39;) }}</dd>
+</div>
+
+<div data-part="row">
+  <dt>{{ __messages.key(&#39;field.ReportRequest.address&#39;).text }}</dt>
+  <dd>{{ __reviewText(__form.get(&#39;address&#39;)?.value, &#39;text&#39;) }}</dd>
+</div>
+
+<div data-part="row">
+  <dt>{{ __messages.key(&#39;field.ReportRequest.phone&#39;).text }}</dt>
+  <dd>{{ __reviewText(__form.get(&#39;phone&#39;)?.value, &#39;text&#39;) }}</dd>
+</div>
+
+    </dl>
+  </fieldset>
+  }
+  @if (__formError(); as message) {
+  <div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">{{ message }}</span>
+</div>
+
+  }
+  <div data-part="actions">
+    @if (__step() > 0) {
+    <button type="button" (click)="__back()">{{ __messages.key(&#39;framework.back&#39;).text }}</button>
+    }
+    @if (__step() < 2) {
+    <button type="button" (click)="__next()">{{ __messages.key(&#39;framework.next&#39;).text }}</button>
+    } @else {
+    <button type="submit" data-kind="button" [disabled]="__submitting()" [attr.aria-busy]="__submitting() ? 'true' : null" [attr.data-busy]="__submitting() ? 'true' : null">{{ __messages.key(&#39;framework.submit&#39;).text }}</button>
+    }
+  </div>
+</form>
+}

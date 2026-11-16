@@ -1,0 +1,94 @@
+{
+  "target": "docker",
+  "generated_at": "2026-11-16T02:37:42Z",
+  "files": [
+    "realestate_deal_service/.dockerignore",
+    "realestate_deal_service/Dockerfile",
+    "realestate_email_mock/.dockerignore",
+    "realestate_email_mock/Dockerfile",
+    "realestate_listing_service/.dockerignore",
+    "realestate_listing_service/Dockerfile",
+    "realestate_mortgage_mock/.dockerignore",
+    "realestate_mortgage_mock/Dockerfile",
+    "realestate_signature_mock/.dockerignore",
+    "realestate_signature_mock/Dockerfile",
+    "realestate_viewing_service/.dockerignore",
+    "realestate_viewing_service/Dockerfile",
+    "typescript-base/Dockerfile",
+    "typescript-base/package.json"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    "realestate_deal_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_deal_service/Dockerfile": "448ebc8795b901a692ae567697012ba65bce8979e559476c07e28b8516dc0cef",
+    "realestate_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_email_mock/Dockerfile": "76b3003f2aec60b916130e3624011a2bfc247e8f4f6249f9475535a65c690dff",
+    "realestate_listing_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_listing_service/Dockerfile": "9e604e13b666d91f0589c8bf4b1df1e55df1082f6b6369485188b3218d3de128",
+    "realestate_mortgage_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_mortgage_mock/Dockerfile": "6112c91d5110b7941f34a675db1dad587a458d7cb05375d4feca08fa6adc202b",
+    "realestate_signature_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_signature_mock/Dockerfile": "10b88fc47f1f7dbbd31afe80d4c1681b3e6d187802334c46fc826ea0a8de7c70",
+    "realestate_viewing_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_viewing_service/Dockerfile": "981e83ff5bcea239fdeb09734773e1d94d333b678edabfa315187713c7920a08",
+    "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
+    "typescript-base/package.json": "b11f0bd795324e4b74364c7e8199a3964fcff3d846e4817bf9b5034a7d4a8a87"
+  },
+  "output_hashes": {
+    "realestate_deal_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_deal_service/Dockerfile": "448ebc8795b901a692ae567697012ba65bce8979e559476c07e28b8516dc0cef",
+    "realestate_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_email_mock/Dockerfile": "76b3003f2aec60b916130e3624011a2bfc247e8f4f6249f9475535a65c690dff",
+    "realestate_listing_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_listing_service/Dockerfile": "9e604e13b666d91f0589c8bf4b1df1e55df1082f6b6369485188b3218d3de128",
+    "realestate_mortgage_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_mortgage_mock/Dockerfile": "6112c91d5110b7941f34a675db1dad587a458d7cb05375d4feca08fa6adc202b",
+    "realestate_signature_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_signature_mock/Dockerfile": "10b88fc47f1f7dbbd31afe80d4c1681b3e6d187802334c46fc826ea0a8de7c70",
+    "realestate_viewing_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
+    "realestate_viewing_service/Dockerfile": "981e83ff5bcea239fdeb09734773e1d94d333b678edabfa315187713c7920a08",
+    "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
+    "typescript-base/package.json": "9e26092d662fae31a7bdfe4b2071f29820c63515295623e772bebec9c79ebbc6"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "realestate_deal_service/.dockerignore": [
+      "realestate.DealService"
+    ],
+    "realestate_deal_service/Dockerfile": [
+      "realestate.DealService"
+    ],
+    "realestate_email_mock/.dockerignore": [
+      "realestate.EmailMock"
+    ],
+    "realestate_email_mock/Dockerfile": [
+      "realestate.EmailMock"
+    ],
+    "realestate_listing_service/.dockerignore": [
+      "realestate.ListingService"
+    ],
+    "realestate_listing_service/Dockerfile": [
+      "realestate.ListingService"
+    ],
+    "realestate_mortgage_mock/.dockerignore": [
+      "realestate.MortgageMock"
+    ],
+    "realestate_mortgage_mock/Dockerfile": [
+      "realestate.MortgageMock"
+    ],
+    "realestate_signature_mock/.dockerignore": [
+      "realestate.SignatureMock"
+    ],
+    "realestate_signature_mock/Dockerfile": [
+      "realestate.SignatureMock"
+    ],
+    "realestate_viewing_service/.dockerignore": [
+      "realestate.ViewingService"
+    ],
+    "realestate_viewing_service/Dockerfile": [
+      "realestate.ViewingService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

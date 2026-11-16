@@ -1,0 +1,160 @@
+{
+  "application": "application",
+  "environment": "test",
+  "providers": {
+    "geocoderKeys": {
+      "audience": "workforce",
+      "consumesRateLimit": false,
+      "credential": "apiKey",
+      "header": "X-Geocoder-Api-Key",
+      "mode": "self",
+      "name": "geocoderKeys",
+      "principalType": "human",
+      "providerType": "apiKey",
+      "roleMappings": {},
+      "store": "cityservices.GeocoderMock",
+      "tenantMapped": false,
+      "verifyPath": "/internal/identity/api-keys/geocoderKeys/verify"
+    },
+    "identity": {
+      "allowedAlgorithms": [
+        "RS256"
+      ],
+      "allowedAudienceRefs": [],
+      "allowedAudiences": [
+        "zitadel-project-audience:portalder-identity"
+      ],
+      "attributeMappings": {
+        "email": {
+          "claimPath": "email",
+          "cruftfreeType": "Email",
+          "guarantee": "required",
+          "nullable": false
+        },
+        "fullName": {
+          "claimPath": "name",
+          "cruftfreeType": "String",
+          "guarantee": "optional",
+          "nullable": true
+        }
+      },
+      "audience": "workforce",
+      "credential": "jwt",
+      "discoveryUri": "http://localhost:8085/.well-known/openid-configuration",
+      "issuer": "http://localhost:8085",
+      "jwksCacheTtlSeconds": 3600,
+      "jwksFetch": {
+        "hostHeader": "localhost:8085",
+        "url": "http://cityservices-system-zitadel:8080/oauth/v2/keys"
+      },
+      "jwksUri": "http://localhost:8085/oauth/v2/keys",
+      "localIdentity": {
+        "mode": "deterministicUuid5",
+        "namespace": "c9a255a1-350b-4414-beb9-7f06f7dfd92d"
+      },
+      "mode": "platformManaged",
+      "name": "identity",
+      "principalType": "human",
+      "providerType": "zitadel",
+      "publicClientMetadataRef": "identity-client-identity.test.json",
+      "revocation": {
+        "mode": "none",
+        "tokenIdClaim": "jti"
+      },
+      "roleMappings": {
+        "admin": "admin",
+        "dispatcher": "dispatcher",
+        "operator": "operator"
+      },
+      "roleSource": {
+        "claimPath": "urn:zitadel:iam:org:project:roles"
+      },
+      "secretRefs": {
+        "clientSecret": "IDENTITY_IDENTITY_CLIENT_SECRET_REF"
+      }
+    },
+    "machine": {
+      "allowedAlgorithms": [
+        "RS256"
+      ],
+      "allowedAudienceRefs": [],
+      "allowedAudiences": [
+        "zitadel-project-audience:portalder-machine"
+      ],
+      "attributeMappings": {},
+      "audience": "machine",
+      "credential": "jwt",
+      "discoveryUri": "http://localhost:8085/.well-known/openid-configuration",
+      "issuer": "http://localhost:8085",
+      "jwksCacheTtlSeconds": 3600,
+      "jwksFetch": {
+        "hostHeader": "localhost:8085",
+        "url": "http://cityservices-system-zitadel:8080/oauth/v2/keys"
+      },
+      "jwksUri": "http://localhost:8085/oauth/v2/keys",
+      "localIdentity": {
+        "mode": "deterministicUuid5",
+        "namespace": "c9a255a1-350b-4414-beb9-7f06f7dfd92d"
+      },
+      "mode": "platformManaged",
+      "name": "machine",
+      "principalType": "machine",
+      "providerType": "zitadel",
+      "revocation": {
+        "mode": "none",
+        "tokenIdClaim": "jti"
+      },
+      "roleMappings": {},
+      "roleSource": {
+        "claimPath": "urn:zitadel:iam:org:project:roles"
+      },
+      "secretRefs": {
+        "clientSecret": "IDENTITY_MACHINE_CLIENT_SECRET_REF"
+      }
+    },
+    "smsKeys": {
+      "audience": "workforce",
+      "consumesRateLimit": false,
+      "credential": "apiKey",
+      "header": "X-Sms-Api-Key",
+      "mode": "self",
+      "name": "smsKeys",
+      "principalType": "human",
+      "providerType": "apiKey",
+      "roleMappings": {},
+      "store": "cityservices.SmsMock",
+      "tenantMapped": false,
+      "verifyPath": "/internal/identity/api-keys/smsKeys/verify"
+    },
+    "test_auth": {
+      "allowedAlgorithms": [
+        "RS256"
+      ],
+      "allowedAudienceRefs": [],
+      "allowedAudiences": [],
+      "attributeMappings": {},
+      "audience": "customer",
+      "credential": "jwt",
+      "issuer": "http://cruftfree-test-jwks:8080",
+      "jwksCacheTtlSeconds": 300,
+      "jwksUri": "http://cruftfree-test-jwks:8080/.well-known/jwks.json",
+      "localIdentity": {
+        "mode": "subjectText"
+      },
+      "mode": "self",
+      "name": "test_auth",
+      "principalType": "human",
+      "providerType": "zitadel",
+      "revocation": {
+        "mode": "none",
+        "tokenIdClaim": "jti"
+      },
+      "roleMappings": {},
+      "roleSource": {
+        "claimPath": "roles"
+      },
+      "secretRefs": {}
+    }
+  },
+  "schemaVersion": 8
+}

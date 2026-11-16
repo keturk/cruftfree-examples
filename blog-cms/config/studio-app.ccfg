@@ -1,0 +1,22 @@
+config app blog.Studio {
+  base {
+    targets = ["angular"];
+    clients {
+      angular {
+        scope = "@fieldnotes";
+      }
+    }
+    strings = ["config/strings/studio.en-US.ccfg"];
+  }
+  profile test as "test" extends base {
+    web { port = 4300; }
+  }
+  profile azure as "azure" extends base {
+    web { domain { name = "studio.fieldnotes.example.com"; } }
+  }
+  profile development as "dev" extends azure {
+  }
+  profile production as "prod" extends base {
+    web { port = 4300; }
+  }
+}

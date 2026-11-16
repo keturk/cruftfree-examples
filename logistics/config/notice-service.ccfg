@@ -1,0 +1,97 @@
+config service logistics.NoticeService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8004;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms noticeDb from postgresContainer(id: "87b71561-e3d7-46f2-8114-fbbe457dcba6", database: "logistics_notice");
+    httpSecurity from localHttpSecurity(host: "logistics-notice-service");
+    queueOps from queuePolling();
+    messagingOps from rabbitPrefetch();
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // The default only exists on a local stack, where it matches the hash seeded in seed/, so the
+      // example runs with nothing to configure. Any other deployment must supply the handle's value.
+      secret sms_provider_api_key {
+        required = true;
+        purpose = "API key for the text message vendor (SmsProvider contract).";
+        localDefault = "dev-only-sms-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    remoteConfigOps {
+      appconfigMinPollSeconds = 15;
+    }
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+    // The text queue's worker runs as an SQS-triggered Lambda, not inside the service process.
+    runtime { consumers = "decoupled"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms noticeDb from rdsPostgres(id: "87b71561-e3d7-46f2-8114-fbbe457dcba6", database: "logistics_notice", poolSize: 20, maxOverflow: 10);
+    replace queues {
+      engine = "sqs";
+      flavor = "sqs";
+      region = "us-east-1";
+    }
+    // The machine identity is an operator-managed OIDC issuer on AWS, so its client secret is a handle
+    // here: the value lives in the platform vault under this name, never in a generated artifact.
+    secrets {
+      secret machine_identity_client_secret {
+        required = true;
+        purpose = "OIDC client secret for the machine identity provider (external issuer on AWS).";
+      }
+    }
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

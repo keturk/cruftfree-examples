@@ -1,0 +1,89 @@
+config service iot.FirmwareService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8003;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms firmwareDb from postgresContainer(id: "0be780a9-9fae-44c6-8912-9133d3391815", database: "iot_firmware");
+    httpSecurity from localHttpSecurity(host: "iot-firmware-service");
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    jobs {
+      jobs {
+        AdvanceRollouts {
+          schedule = "* * * * *";
+          timeout = "50s";
+        }
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // The default only exists on a local stack, where it matches the hash seeded in
+      // seed/fleet-mock.cseed, so the example runs with nothing to configure. Any other deployment must
+      // supply the handle's value.
+      secret fleet_provider_api_key {
+        required = true;
+        purpose = "API key for the device command gateway (FleetProvider contract).";
+        localDefault = "dev-only-fleet-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    remoteConfigOps {
+      appconfigMinPollSeconds = 15;
+    }
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms firmwareDb from rdsPostgres(id: "0be780a9-9fae-44c6-8912-9133d3391815", database: "iot_firmware", poolSize: 20, maxOverflow: 10);
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

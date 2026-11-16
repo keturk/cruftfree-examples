@@ -1,0 +1,17 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/chat-provider.cfree';
+include 'providers/email-provider.cfree';
+include 'project-service.cfree';
+include 'task-service.cfree';
+include 'notice-service.cfree';
+include 'mocks/chat-mock.cfree';
+include 'mocks/email-mock.cfree';
+include 'workspace-app.cfree';
+include 'desk-app.cfree';
+
+/// Millrace: a team's projects on a board. Tasks move across columns, a task cannot start while another one
+/// blocks it, and whoever needs to know hears about it in chat and by email. The chat and email vendors run
+/// as mocks in the same stack.
+system taskapp.System('config/system.ccfg') : version('2.0.0') {
+}

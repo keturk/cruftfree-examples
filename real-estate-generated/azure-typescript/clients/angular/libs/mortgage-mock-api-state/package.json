@@ -1,0 +1,15 @@
+{
+  "name": "@cobblestone/mortgage-mock-api-state",
+  "private": true,
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/core": "22.1.7",
+    "@cobblestone/mortgage-mock-api": "*",
+    "@cobblestone/system-api-common": "*",
+    "@cobblestone/system-api-state-common": "*",
+    "@ngrx/effects": "22.0.1",
+    "@ngrx/entity": "22.0.1",
+    "@ngrx/store": "22.0.1",
+    "rxjs": "7.8.2"
+  }
+}

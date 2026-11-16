@@ -1,0 +1,10 @@
+// What every Fieldnotes service shares.
+module blog.common {
+
+    /// Roughly how long an article takes to read, at 200 words a minute, and never under a minute.
+    fn minutesToRead(String text) -> Int {
+        let Int words = text.trim().split(" ").length;
+        let Int minutes = (words / 200).toInteger();
+        return minutes < 1 ? 1 : minutes;
+    }
+}

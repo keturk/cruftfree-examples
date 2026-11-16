@@ -1,0 +1,79 @@
+config service fooddelivery.OrderService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8002;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms orderDb from postgresContainer(id: "8ecce4c7-ee2f-4df1-b849-6f60b40ff190", database: "fooddelivery_order");
+    pubsub mq from kafkaContainer();
+    httpSecurity from localHttpSecurity(host: "fooddelivery-order-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // Each default only exists on a local stack, where it matches the hash seeded in that mock's
+      // seed file, so the example runs with nothing to configure. Any other deployment must supply
+      // the handle's value.
+      secret payment_provider_api_key {
+        required = true;
+        purpose = "API key for the card payment vendor (PaymentProvider contract).";
+        localDefault = "dev-only-payment-key-not-a-credential";
+      }
+      secret sms_provider_api_key {
+        required = true;
+        purpose = "API key for the text vendor (SmsProvider contract).";
+        localDefault = "dev-only-sms-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile azure as "azure" extends base {
+    alias env = "AZURE";
+    alias resource = "azure";
+
+    // Consumers run inside the web app, not in separate compute.
+    runtime { consumers = "in-process"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms orderDb from azurePostgres(id: "8ecce4c7-ee2f-4df1-b849-6f60b40ff190", database: "fooddelivery_order", poolSize: 20, maxOverflow: 10);
+    replace pubsub mq from azureEventHubs();
+  }
+
+  profile development as "dev" extends azure {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

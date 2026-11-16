@@ -1,0 +1,146 @@
+<form data-kind="filters" (submit)="__applyFilters(); $event.preventDefault()">
+  <label data-filter="search">
+    <span>{{ __messages.key(&#39;filter.OfferList.listingTitle&#39;).text }}</span>
+    <input #filter_listingTitle type="search" [value]="__filterDraft().listingTitle" (input)="__setFilter('listingTitle', filter_listingTitle.value)" />
+
+  </label>
+  <label data-filter="select">
+    <span>{{ __messages.key(&#39;filter.OfferList.financing&#39;).text }}</span>
+    <select #filter_financing (change)="__setFilter('financing', filter_financing.value)">
+      <option value="" [selected]="__filterDraft().financing === ''">{{ __messages.key(&#39;framework.all&#39;).text }}</option>
+      <option [value]="'Cash'" [selected]="__filterDraft().financing === 'Cash'">{{ __messages.key(&#39;enum.Financing.Cash&#39;).text }}</option>
+      <option [value]="'Mortgage'" [selected]="__filterDraft().financing === 'Mortgage'">{{ __messages.key(&#39;enum.Financing.Mortgage&#39;).text }}</option>
+    </select>
+
+  </label>
+  <label data-filter="select">
+    <span>{{ __messages.key(&#39;filter.OfferList.status&#39;).text }}</span>
+    <select #filter_status (change)="__setFilter('status', filter_status.value)">
+      <option value="" [selected]="__filterDraft().status === ''">{{ __messages.key(&#39;framework.all&#39;).text }}</option>
+      <option [value]="'Submitted'" [selected]="__filterDraft().status === 'Submitted'">{{ __messages.key(&#39;enum.OfferStatus.Submitted&#39;).text }}</option>
+      <option [value]="'Accepted'" [selected]="__filterDraft().status === 'Accepted'">{{ __messages.key(&#39;enum.OfferStatus.Accepted&#39;).text }}</option>
+      <option [value]="'Rejected'" [selected]="__filterDraft().status === 'Rejected'">{{ __messages.key(&#39;enum.OfferStatus.Rejected&#39;).text }}</option>
+      <option [value]="'Withdrawn'" [selected]="__filterDraft().status === 'Withdrawn'">{{ __messages.key(&#39;enum.OfferStatus.Withdrawn&#39;).text }}</option>
+    </select>
+
+  </label>
+  <button type="submit">{{ __messages.key(&#39;framework.search&#39;).text }}</button>
+  <button type="button" (click)="__clearFilters()">{{ __messages.key(&#39;framework.clear&#39;).text }}</button>
+</form>
+@if (__source.isLoaded) {
+@if (__source.error; as problem) {
+<div data-kind="callout" role="status" data-state="stale" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(problem, __source.site) ?? __messages.problemTitle(problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.isLoading || __source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+@if (__rows().length === 0) {
+@if (__hasFilters()) {
+<div data-state="filtered-empty">
+  <p>{{ __messages.key(&#39;empty.OfferList.filtered&#39;).text }}</p>
+  <button type="button" (click)="__clearFilters()">{{ __messages.key(&#39;framework.clearFilters&#39;).text }}</button>
+</div>
+} @else {
+<div data-kind="emptyState" data-state="empty" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">inbox</span>
+  <p data-part="title">{{ __messages.key(&#39;empty.OfferList&#39;).text }}</p>
+  @if (__messages.has('emptyDescription.OfferList')) {
+  <p data-part="description">{{ __messages.key(&#39;emptyDescription.OfferList&#39;).text }}</p>
+  }
+</div>
+
+}
+} @else {
+<div data-kind="table-scroll">
+<table data-kind="table">
+  <thead>
+    <tr>
+      <th scope="col">{{ __messages.key(&#39;field.Offer.createdAt&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Offer.listingTitle&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Offer.buyerName&#39;).text }}</th>
+      <th scope="col" data-numeric="true">{{ __messages.key(&#39;field.Offer.amount&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Offer.financing&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.Offer.status&#39;).text }}</th>
+      <th scope="col">
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (row of __rows(); track $index) {
+    <tr>
+
+      <td>{{ __textOf(__format.relative(row.createdAt)) }}
+</td>
+      <td>{{ __textOf(row.listingTitle) }}
+</td>
+      <td>{{ __textOf(row.buyerName) }}
+</td>
+      <td data-numeric="true">{{ __textOf(__format.money(row.amount)) }}
+</td>
+      <td>{{ __textOf(__messages.key(__financingLabels[row.financing])) }}
+</td>
+      <td><span data-kind="badge" [attr.data-tone]="__enumTone(__statusTones, row.status)">{{ __textOf(__messages.key(__statusLabels[row.status])) }}</span></td>
+      <td>
+        <button type="button" (click)="this.__ui.settle(this.__app.acceptOffer(row.id))">{{ __messages.key(&#39;action.OfferList.accept&#39;).text }}</button>
+        <button type="button" (click)="this.__ui.settle(this.__app.rejectOffer(row.id))">{{ __messages.key(&#39;action.OfferList.reject&#39;).text }}</button>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
+</div>
+}
+<nav data-kind="pagination" [attr.aria-label]="__messages.key('framework.pagination').text">
+  @if (__source.range(); as range) {
+  <span data-kind="range">{{ __messages.key(&#39;framework.showingRangeOfTotal&#39;, &#123; from: range.from, to: range.to, total: range.total &#125;).text }}</span>
+  }
+  @if (__source.pageSizes().length > 0) {
+  <label data-part="page-size">
+    <span>{{ __messages.key(&#39;framework.pageSize&#39;).text }}</span>
+    <select (change)="__source.setPageSize(+$any($event.target).value)">
+      @for (size of __source.pageSizes(); track size) {
+      <option [value]="size" [selected]="size === __source.pageSize()">{{ size }}</option>
+      }
+    </select>
+  </label>
+  }
+  <button type="button" (click)="__source.previous()" [disabled]="!__source.hasPrevious()">{{ __messages.key(&#39;framework.previous&#39;).text }}</button>
+  @for (entry of __source.window(); track $index) {
+  @if (entry === null) {
+  <span data-part="ellipsis" aria-hidden="true">…</span>
+  } @else {
+  <button type="button" [attr.aria-label]="__messages.key('framework.pageNumber', { number: entry }).text" [attr.aria-current]="entry === __source.pageIndex() + 1 ? 'page' : null" (click)="__source.goTo(entry - 1)">{{ entry }}</button>
+  }
+  }
+  <button type="button" (click)="__source.next()" [disabled]="!__source.hasNext()">{{ __messages.key(&#39;framework.next&#39;).text }}</button>
+</nav>
+
+} @else if (__source.error; as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __source.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

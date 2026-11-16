@@ -1,0 +1,73 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "ClusterArn": {
+      "Description": "The ECS cluster ARN.",
+      "Export": {
+        "Name": "hotel-system-ecs-ClusterArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "Cluster",
+          "Arn"
+        ]
+      }
+    },
+    "ClusterName": {
+      "Description": "The ECS cluster.",
+      "Export": {
+        "Name": "hotel-system-ecs-ClusterName"
+      },
+      "Value": {
+        "Ref": "Cluster"
+      }
+    },
+    "NamespaceArn": {
+      "Description": "The service-discovery namespace ARN.",
+      "Export": {
+        "Name": "hotel-system-ecs-NamespaceArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "Namespace",
+          "Arn"
+        ]
+      }
+    },
+    "NamespaceId": {
+      "Description": "The service-discovery namespace services register in.",
+      "Export": {
+        "Name": "hotel-system-ecs-NamespaceId"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "Namespace",
+          "Id"
+        ]
+      }
+    }
+  },
+  "Resources": {
+    "Cluster": {
+      "Properties": {
+        "ClusterName": "hotel-system-cluster",
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "enabled"
+          }
+        ]
+      },
+      "Type": "AWS::ECS::Cluster"
+    },
+    "Namespace": {
+      "Properties": {
+        "Name": "hotel-system.local",
+        "Vpc": {
+          "Fn::ImportValue": "hotel-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace"
+    }
+  }
+}

@@ -1,0 +1,1028 @@
+{
+  "geojson": {
+    "bboxLengths": [
+      4,
+      6
+    ],
+    "coordinates": {
+      "LineString": "line",
+      "MultiLineString": "lines",
+      "MultiPoint": "positions",
+      "MultiPolygon": "polygons",
+      "Point": "position",
+      "Polygon": "polygon"
+    },
+    "feature": "Feature",
+    "featureCollection": "FeatureCollection",
+    "geometryCollection": "GeometryCollection",
+    "latitudeBound": 90.0,
+    "lineMinPositions": 2,
+    "longitudeBound": 180.0,
+    "members": {
+      "bbox": "bbox",
+      "coordinates": "coordinates",
+      "features": "features",
+      "geometries": "geometries",
+      "geometry": "geometry",
+      "id": "id",
+      "properties": "properties",
+      "type": "type"
+    },
+    "positionLengths": [
+      2,
+      3
+    ],
+    "ringMinPositions": 4
+  },
+  "identity": {
+    "algorithm": "RS256",
+    "issuer": "http://cruftfree-test-jwks:8080",
+    "keyId": "cruftfree-test-key-1",
+    "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDYdlPhKmFsrAXa\nlmNWHP9Dh7DH+wWWI9MvIp/ZdtXj+oLus9TrqvWAoSB9Rjqn4JlQGxv/4mp3dIU+\n/VgWVHqW/h/GpTPMOr37ILVDsANdv9YkZcqBUB1pFly14L1Ipbzeal/BHwVYO3+z\njToq0z7nmiW4WqDZ5QvcpBB1al6kjtXnLZBuzAdI3a0BDFxeo8Sl2HDR38vNvvS3\nOmYDyRYzFCC77+K6bRbMTgf6xFCAjlsAmWuRRZvFtwgUOYZgshNfvpxNsSklbvVE\nTARBvgOIwNwPeH0bK8SctN37z86w8QjTsbLqe1oNDSwjvg+p+lXgPD6HCdtmQC50\nTpo7g3cpAgMBAAECggEAE4qDF1WjG+i0/T8MUq7QIIGJulP1SiY2dLqJzFudAuAP\nnTWg0sbz3hvYT1bdXrW47BwLvWBBlO0bm6HKp6FoEQ95643oYix/ZWyreyPS+fii\ngACsdQYNfE9808fTw/t/qbiCp8WBea34C6Euj2/TQvHjK9m1TFZlaWgU5Z9SUe/k\ncN5enaxvlj4XWOZWDQ7DA8GikOWI6mQ2DpKiSEOPdIuV1azwfYpiGzJVfgCkTfoO\ni/qMmEhsJZkPwOPfc/yw9Qc1i1o693JueVS4ZidROw8ro4xH6DARvQfcz3XaLC3G\nOVdgAQITPoCFNBazb0AV+Vy2Bm2D7msfYEdVDUEIXQKBgQD/vrYmaByt0+j0EXwi\n56astQnaZRAlreJxb0upkHoXRj5C5pRJTI5ybvZu9IeAxtQC4dlxmXHMN4i7N+gM\nHcXSSXbnMKiaPBh64+EN/Io8GitUpUQoHCWNRzYMfauGHLFCyYUE5L+VczxB+fZR\nGmPamClwM8otl7IYH/Xt4H154wKBgQDYrZZ2CfTx+7Z5fOWkRF7siGWogNrvpLlJ\nONDbc1vQ3efOomU9ypLy/XN91hJ647LZq0lvWkBmZNWjnoBldF/RB55pCOh+6l+c\nhufDtSATFJ9sCX/VPiRSJIQ75Ow0/ahA2Xv24xIcEWGjC07PkXC52FXBvfVIPZG3\nZF5xVrUIgwKBgQCiuNKm/0l4JMQtP07P2rsHWq1pQzKR9uCEsn7e5el5E52b7aBe\nPxLHpuiv0nDBNEFDkDZNfIeWm6MpFDpWMz9iPJImKaStdh1RW9sfjhbahQAa/Iiw\nSLBwAuZV7kQLsgfradN0OKPZ0Jd/ly7tjbAJLxX2qU0z0zhi9zsAXv0XZwKBgDnC\nXD9u/AqdbNEJyDV3vE4VNfQrFTGYmYO5T4OQRsNww+BDTfWg0HdRtL2wmRCFLiH0\nFQlH567j5kdNczCYSwpvm3yoUUGzvHT/STzURY6QisbD6X2wqQH0lgNZTNX7YCSZ\nVQBFG4i74WkTFJkkTgZccs/IkWAGeZeHe91+nZd9AoGBAO/Xsuj4pUR0CeT3UAJ8\nG/O5AfrKRyFsw3uQibrWZYLebDXaWhqZ0jraPZ130ym6Go0+s1wjANuB+KZ6n2Ps\nKrG2ITUUjq9BkhjkTlNDpahgbhRBCOh5110Ir2a/DoP5OGsaCtm3dhfP9Mxpkq6q\nyfJQn2d9wRvjMLHz7X+tFyOW\n-----END PRIVATE KEY-----",
+    "rolesClaim": "roles",
+    "tokenLifetimeSeconds": 3600
+  },
+  "page": {
+    "counts": [
+      "total",
+      "offset",
+      "limit",
+      "maxLimit"
+    ],
+    "defaultSize": 20,
+    "items": "items",
+    "maxSize": 100,
+    "members": {
+      "maxSize": "maxLimit",
+      "position": "offset",
+      "size": "limit",
+      "total": "total"
+    },
+    "query": {
+      "position": "skip",
+      "size": "limit"
+    }
+  },
+  "problem": {
+    "conflict": [
+      {
+        "status": 409,
+        "title": "Conflict",
+        "type": "urn:cruftfree:error:conflict"
+      },
+      {
+        "status": 409,
+        "title": "Conflict",
+        "type": "urn:cruftfree:error:cascade-restriction"
+      }
+    ],
+    "fieldErrors": {
+      "body": "body",
+      "codes": [
+        "required",
+        "unknown_field",
+        "repeated",
+        "invalid"
+      ],
+      "invalid": "invalid",
+      "locations": [
+        "path",
+        "query",
+        "body"
+      ],
+      "member": "errors",
+      "query": "query"
+    },
+    "mediaType": "application/problem+json",
+    "notFound": [
+      {
+        "status": 404,
+        "title": "Not Found",
+        "type": "urn:cruftfree:error:not-found"
+      },
+      {
+        "status": 404,
+        "title": "Entity Not Found",
+        "type": "urn:cruftfree:error:entity-not-found"
+      }
+    ],
+    "refusals": {
+      "401": {
+        "title": "Unauthorized",
+        "type": "urn:cruftfree:error:unauthorized"
+      },
+      "403": {
+        "title": "Forbidden",
+        "type": "urn:cruftfree:error:forbidden"
+      }
+    },
+    "requestValidation": [
+      {
+        "status": 422,
+        "title": "Validation Error",
+        "type": "urn:cruftfree:error:request-validation"
+      }
+    ]
+  },
+  "resources": {},
+  "routes": {
+    "QueueAPI.get_by_id": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {
+            "id": {
+              "literal": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            }
+          },
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "GET",
+      "path": "/api/v1/queue/requests/{id}",
+      "pathParams": {
+        "id": {
+          "literal": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        }
+      },
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {
+        "id": {
+          "literal": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        }
+      },
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "object": "entity:cityservices.RequestService.requestDb.ServiceRequest"
+        },
+        "status": 200
+      },
+      "tenantClaim": false
+    },
+    "QueueAPI.get_by_id_history": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {
+            "id": {
+              "literal": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+            }
+          },
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "GET",
+      "path": "/api/v1/queue/requests/{id}/history",
+      "pathParams": {
+        "id": {
+          "literal": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+        }
+      },
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {
+        "id": {
+          "literal": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+        }
+      },
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "array": {
+            "object": "entity:cityservices.RequestService.requestDb.RequestUpdate"
+          }
+        },
+        "status": 200
+      },
+      "tenantClaim": false
+    },
+    "QueueAPI.get_map": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {},
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "GET",
+      "path": "/api/v1/queue/requests/map",
+      "pathParams": {},
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {},
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "array": {
+            "object": "struct:RequestPin"
+          }
+        },
+        "status": 200
+      },
+      "tenantClaim": false
+    },
+    "QueueAPI.get_summary": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {},
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "GET",
+      "path": "/api/v1/queue/requests/summary",
+      "pathParams": {},
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {},
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "object": "struct:QueueSummary"
+        },
+        "status": 200
+      },
+      "tenantClaim": false
+    },
+    "QueueAPI.list_service_requests": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "pageDefaultWindow": {
+          "kind": "pageDefaultWindow",
+          "position": 0
+        },
+        "pageNegativePosition": {
+          "kind": "pageNegativePosition",
+          "position": -1
+        },
+        "pageOversize": {
+          "kind": "pageOversize",
+          "size": 101
+        },
+        "pageWindow": {
+          "kind": "pageWindow",
+          "position": 0,
+          "size": 10
+        },
+        "sortUnknown": {
+          "key": "sortBy",
+          "kind": "sortUnknown",
+          "value": "unlistedField"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {},
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "exact",
+      "kind": "list",
+      "method": "GET",
+      "path": "/api/v1/queue/requests/service_requests",
+      "pathParams": {},
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {},
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "page": {
+            "object": "entity:cityservices.RequestService.requestDb.ServiceRequest"
+          }
+        },
+        "status": 200
+      },
+      "tenantClaim": false
+    },
+    "QueueAPI.post_by_id_assign": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {
+            "id": {
+              "literal": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            }
+          },
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "POST",
+      "path": "/api/v1/queue/requests/{id}/assign",
+      "pathParams": {
+        "id": {
+          "literal": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        }
+      },
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {
+        "id": {
+          "literal": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        }
+      },
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "object": "entity:cityservices.RequestService.requestDb.ServiceRequest"
+        },
+        "status": 201
+      },
+      "tenantClaim": false
+    },
+    "QueueAPI.post_by_id_close": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {
+            "id": {
+              "literal": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+            }
+          },
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "POST",
+      "path": "/api/v1/queue/requests/{id}/close",
+      "pathParams": {
+        "id": {
+          "literal": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+        }
+      },
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {
+        "id": {
+          "literal": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
+        }
+      },
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "object": "entity:cityservices.RequestService.requestDb.ServiceRequest"
+        },
+        "status": 201
+      },
+      "tenantClaim": false
+    },
+    "QueueAPI.post_by_id_priority": {
+      "auth": "required",
+      "body": {
+        "encoding": "json",
+        "value": {
+          "object": {
+            "priority": {
+              "literal": "Low"
+            }
+          }
+        }
+      },
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {
+            "id": {
+              "literal": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            }
+          },
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "POST",
+      "path": "/api/v1/queue/requests/{id}/priority",
+      "pathParams": {
+        "id": {
+          "literal": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        }
+      },
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {
+        "id": {
+          "literal": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        }
+      },
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "object": "entity:cityservices.RequestService.requestDb.ServiceRequest"
+        },
+        "status": 201
+      },
+      "tenantClaim": false
+    },
+    "QueueAPI.post_by_id_resolve": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {
+            "id": {
+              "literal": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            }
+          },
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "POST",
+      "path": "/api/v1/queue/requests/{id}/resolve",
+      "pathParams": {
+        "id": {
+          "literal": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        }
+      },
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {
+        "id": {
+          "literal": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        }
+      },
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "object": "entity:cityservices.RequestService.requestDb.ServiceRequest"
+        },
+        "status": 201
+      },
+      "tenantClaim": false
+    },
+    "QueueAPI.post_by_id_start": {
+      "auth": "required",
+      "body": null,
+      "cases": {
+        "invalidToken": {
+          "kind": "invalidToken"
+        },
+        "wrongRole": {
+          "kind": "wrongRole",
+          "pathParams": {
+            "id": {
+              "literal": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+            }
+          },
+          "role": "UnlistedRole"
+        }
+      },
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "POST",
+      "path": "/api/v1/queue/requests/{id}/start",
+      "pathParams": {
+        "id": {
+          "literal": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        }
+      },
+      "providers": [
+        "identity"
+      ],
+      "query": {},
+      "refusalPathParams": {
+        "id": {
+          "literal": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        }
+      },
+      "roles": [
+        "dispatcher",
+        "admin"
+      ],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "object": "entity:cityservices.RequestService.requestDb.ServiceRequest"
+        },
+        "status": 201
+      },
+      "tenantClaim": false
+    },
+    "ReportAPI.get_nearby": {
+      "auth": "public",
+      "body": null,
+      "cases": {},
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "GET",
+      "path": "/api/v1/reports/nearby",
+      "pathParams": {},
+      "providers": [],
+      "query": {
+        "latitude": {
+          "literal": 1.0
+        },
+        "longitude": {
+          "literal": 1.0
+        },
+        "radiusMeters": {
+          "literal": 0.5
+        }
+      },
+      "roles": [],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "array": {
+            "object": "struct:RequestView"
+          }
+        },
+        "status": 200
+      },
+      "tenantClaim": false
+    },
+    "ReportAPI.get_track_by_request_number": {
+      "auth": "public",
+      "body": null,
+      "cases": {},
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "GET",
+      "path": "/api/v1/reports/track/{requestNumber}",
+      "pathParams": {
+        "requestNumber": {
+          "literal": "foo_bar"
+        }
+      },
+      "providers": [],
+      "query": {},
+      "roles": [],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "object": "struct:RequestView"
+        },
+        "status": 200
+      },
+      "tenantClaim": false
+    },
+    "ReportAPI.post_endpoint": {
+      "auth": "public",
+      "body": {
+        "encoding": "json",
+        "value": {
+          "object": {
+            "address": {
+              "literal": "hello"
+            },
+            "category": {
+              "literal": "Pothole"
+            },
+            "description": {
+              "literal": "The quick brown fox jumps over the lazy dog"
+            },
+            "phone": {
+              "literal": "15559876543"
+            },
+            "title": {
+              "literal": "sample_text"
+            }
+          }
+        }
+      },
+      "cases": {},
+      "expect": "successOrProblem",
+      "kind": "custom",
+      "method": "POST",
+      "path": "/api/v1/reports",
+      "pathParams": {},
+      "providers": [],
+      "query": {},
+      "roles": [],
+      "success": {
+        "mediaType": null,
+        "shape": {
+          "object": "struct:RequestView"
+        },
+        "status": 201
+      },
+      "tenantClaim": false
+    }
+  },
+  "service": "cityservices.RequestService",
+  "shapes": {
+    "entity:cityservices.RequestService.requestDb.RequestUpdate": {
+      "fields": {
+        "createdAt": {
+          "required": true,
+          "shape": {
+            "scalar": "date-time"
+          }
+        },
+        "id": {
+          "required": true,
+          "shape": {
+            "scalar": "uuid"
+          }
+        },
+        "note": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "requestId": {
+          "required": true,
+          "shape": {
+            "scalar": "uuid"
+          }
+        },
+        "status": {
+          "required": true,
+          "shape": {
+            "enum": [
+              "Open",
+              "Assigned",
+              "InProgress",
+              "Resolved",
+              "Closed"
+            ]
+          }
+        },
+        "updatedAt": {
+          "required": true,
+          "shape": {
+            "scalar": "date-time"
+          }
+        }
+      }
+    },
+    "entity:cityservices.RequestService.requestDb.ServiceRequest": {
+      "fields": {
+        "address": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "category": {
+          "required": true,
+          "shape": {
+            "enum": [
+              "Pothole",
+              "Streetlight",
+              "Graffiti",
+              "Flooding",
+              "FallenTree",
+              "Other"
+            ]
+          }
+        },
+        "createdAt": {
+          "required": true,
+          "shape": {
+            "scalar": "date-time"
+          }
+        },
+        "description": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "districtId": {
+          "required": false,
+          "shape": {
+            "nullable": {
+              "scalar": "uuid"
+            }
+          }
+        },
+        "districtName": {
+          "required": false,
+          "shape": {
+            "nullable": {
+              "scalar": "string"
+            }
+          }
+        },
+        "id": {
+          "required": true,
+          "shape": {
+            "scalar": "uuid"
+          }
+        },
+        "latitude": {
+          "required": false,
+          "shape": {
+            "nullable": {
+              "scalar": "number"
+            }
+          }
+        },
+        "location": {
+          "required": false,
+          "shape": {
+            "nullable": {
+              "scalar": "present"
+            }
+          }
+        },
+        "longitude": {
+          "required": false,
+          "shape": {
+            "nullable": {
+              "scalar": "number"
+            }
+          }
+        },
+        "needsLocation": {
+          "required": true,
+          "shape": {
+            "scalar": "boolean"
+          }
+        },
+        "priority": {
+          "required": true,
+          "shape": {
+            "enum": [
+              "Low",
+              "Medium",
+              "High",
+              "Critical"
+            ]
+          }
+        },
+        "requestNumber": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "status": {
+          "required": true,
+          "shape": {
+            "enum": [
+              "Open",
+              "Assigned",
+              "InProgress",
+              "Resolved",
+              "Closed"
+            ]
+          }
+        },
+        "title": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "updatedAt": {
+          "required": true,
+          "shape": {
+            "scalar": "date-time"
+          }
+        }
+      }
+    },
+    "struct:GeoPoint": {
+      "fields": {
+        "accuracyM": {
+          "required": false,
+          "shape": {
+            "nullable": {
+              "scalar": "number"
+            }
+          }
+        },
+        "latitude": {
+          "required": true,
+          "shape": {
+            "scalar": "number"
+          }
+        },
+        "longitude": {
+          "required": true,
+          "shape": {
+            "scalar": "number"
+          }
+        }
+      }
+    },
+    "struct:QueueSummary": {
+      "fields": {
+        "assigned": {
+          "required": true,
+          "shape": {
+            "scalar": "integer"
+          }
+        },
+        "inProgress": {
+          "required": true,
+          "shape": {
+            "scalar": "integer"
+          }
+        },
+        "needsLocation": {
+          "required": true,
+          "shape": {
+            "scalar": "integer"
+          }
+        },
+        "open": {
+          "required": true,
+          "shape": {
+            "scalar": "integer"
+          }
+        }
+      }
+    },
+    "struct:RequestPin": {
+      "fields": {
+        "id": {
+          "required": true,
+          "shape": {
+            "scalar": "uuid"
+          }
+        },
+        "point": {
+          "required": true,
+          "shape": {
+            "object": "struct:GeoPoint"
+          }
+        },
+        "priority": {
+          "required": true,
+          "shape": {
+            "enum": [
+              "Low",
+              "Medium",
+              "High",
+              "Critical"
+            ]
+          }
+        },
+        "requestNumber": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "title": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        }
+      }
+    },
+    "struct:RequestView": {
+      "fields": {
+        "address": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "createdAt": {
+          "required": true,
+          "shape": {
+            "scalar": "date-time"
+          }
+        },
+        "districtName": {
+          "required": false,
+          "shape": {
+            "nullable": {
+              "scalar": "string"
+            }
+          }
+        },
+        "requestNumber": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        },
+        "status": {
+          "required": true,
+          "shape": {
+            "enum": [
+              "Open",
+              "Assigned",
+              "InProgress",
+              "Resolved",
+              "Closed"
+            ]
+          }
+        },
+        "title": {
+          "required": true,
+          "shape": {
+            "scalar": "string"
+          }
+        }
+      }
+    }
+  },
+  "tenant": null
+}

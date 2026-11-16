@@ -1,0 +1,372 @@
+from finance.common import AccountType, AccountStatus, TransferStatus, REVIEW_THRESHOLD, generateTransferReference;
+
+// The ledger. Money only moves as a balanced pair of entries in one database transaction, the
+// entries cannot be changed or deleted, and the database itself refuses to commit a posting whose
+// debits and credits differ, whichever code path wrote it. A balance is locked while it changes,
+// so two transfers at once can never spend the same money.
+service finance.TransactionService('config/transaction-service.ccfg') : version('2.0.0'), description('The double-entry ledger and transfers') {
+
+    discovery { }
+
+    uses AccountService;
+    uses BankProvider;
+    uses SanctionsProvider;
+
+    exceptions {
+        NotYourAccountError : status(404), message("Account not found");
+        AccountNotActiveError : status(409), message("This account cannot move money right now");
+        NoSuchPayeeError : status(404), message("There is no account with that number");
+        SameAccountError : status(422), message("Choose two different accounts");
+        InsufficientFundsError : status(422), message("There is not enough money in this account");
+        PaymentNotSentError : status(502), message("The payment network refused this payment");
+    }
+
+    enum EntrySide {
+        Debit,
+        Credit
+    }
+
+    enum TransferKind {
+        Internal,
+        Outbound,
+        Deposit
+    }
+
+    /// The bank's own account that money crosses when it enters or leaves.
+    const CLEARING_ACCOUNT_NUMBER = "QB0000000000";
+
+    rdbms ledgerDb {
+
+        /// One account's balance. Always changed under a row lock, beside its ledger entries.
+        entity LedgerAccount extends BaseEntity {
+            UUID accountId : unique;
+            String(20) accountNumber : unique, filterable;
+            String(64)? ownerUserId : index;
+            AccountType type : filterable;
+            AccountStatus status : filterable = AccountStatus.Active;
+            String(3) currency = "USD";
+            Money balance;
+        }
+
+        /// Money moving. Read by people; the entries beside it are what counts.
+        entity Transfer extends BaseEntity {
+            String(30) reference : unique, filterable;
+            TransferKind kind : filterable;
+            TransferStatus status : filterable = TransferStatus.Posted;
+            UUID fromAccountId : index;
+            UUID toAccountId : index;
+            String(20) fromNumber : filterable;
+            String(20) toNumber : filterable;
+            Money amount : positive, sortable;
+            String(200)? memo;
+            String(200)? payeeName : filterable;
+            String(34)? payeeIban;
+            String(40)? paymentId;
+            String(200)? holdReason;
+        }
+
+        /// One side of a posting. The database refuses every change and delete, and refuses to
+        /// commit a posting whose debits and credits differ.
+        entity LedgerEntry extends BaseEntity : appendOnly {
+            UUID transferId : index;
+            UUID accountId : index;
+            String(20) accountNumber : filterable;
+            String(30) reference : filterable;
+            /// What a customer reads on their statement.
+            String(200) description;
+            String(3) currency;
+            EntrySide side : filterable;
+            Decimal(14, 2) amount : positive;
+
+            invariant balanced : group(transferId, currency) sum(side == EntrySide.Debit ? amount : -amount) == 0;
+        }
+
+        /// What the nightly job found: did all postings balance, and how much moved.
+        entity Reconciliation extends BaseEntity : appendOnly {
+            DateTime day : unique, sortable;
+            Int transferCount;
+            Money postedAmount;
+            Boolean balanced : filterable;
+        }
+    }
+
+    pubsub mq {
+        topic TransferEvents {
+            publish TransferPosted(UUID transferId, String reference, UUID fromAccountId, Money amount, Boolean needsReview) {
+                ensure amount > 0;
+            }
+
+            publish TransferHeld(UUID transferId, String reference, UUID fromAccountId, Money amount, String reason) {
+                ensure amount > 0;
+            }
+        }
+    }
+
+    subscribe AccountEvents {
+        on AccountOpened(UUID accountId, String accountNumber, String ownerUserId, AccountType type) {
+            if (ledgerDb.LedgerAccount.where(accountId: accountId).first() == null) {
+                ledgerDb.LedgerAccount.create({
+                    accountId: accountId,
+                    accountNumber: accountNumber,
+                    ownerUserId: ownerUserId,
+                    type: type,
+                    balance: 0.00
+                });
+            }
+        }
+
+        on AccountStatusChanged(UUID accountId, String accountNumber, AccountStatus oldStatus, AccountStatus newStatus) {
+            let ledgerDb.LedgerAccount? account = ledgerDb.LedgerAccount.where(accountId: accountId).first();
+            if (account != null) {
+                account.status = newStatus;
+                account.save();
+            }
+        }
+    }
+
+    struct TransferRequest {
+        UUID fromAccountId;
+        String(20) toAccountNumber;
+        Money amount;
+        String(200)? memo;
+    }
+
+    struct PayoutRequest {
+        UUID fromAccountId;
+        String(200) payeeName;
+        String(34) payeeIban;
+        Money amount;
+        String(200)? memo;
+    }
+
+    struct DepositRequest {
+        String(20) accountNumber;
+        Money amount;
+        String(200)? memo;
+    }
+
+    struct Statement {
+        ledgerDb.LedgerAccount account;
+        Array<ledgerDb.LedgerEntry> entries;
+    }
+
+    struct LedgerSummary {
+        Int accounts;
+        Int postedTransfers;
+        Int heldTransfers;
+    }
+
+    /// Debits one account and credits the other under locks taken in a fixed order, so two
+    /// opposite transfers cannot deadlock.
+    fn post(ledgerDb.Transfer transfer) {
+        transaction(ledgerDb) {
+            let UUID firstId = transfer.fromAccountId.toString() < transfer.toAccountId.toString() ? transfer.fromAccountId : transfer.toAccountId;
+            let UUID secondId = firstId == transfer.fromAccountId ? transfer.toAccountId : transfer.fromAccountId;
+            let ledgerDb.LedgerAccount first = ledgerDb.LedgerAccount.where(id: firstId).forUpdate().firstOrFail();
+            let ledgerDb.LedgerAccount second = ledgerDb.LedgerAccount.where(id: secondId).forUpdate().firstOrFail();
+            let ledgerDb.LedgerAccount from = first.id == transfer.fromAccountId ? first : second;
+            let ledgerDb.LedgerAccount to = first.id == transfer.toAccountId ? first : second;
+            if (from.status != AccountStatus.Active || to.status != AccountStatus.Active) {
+                throw AccountNotActiveError();
+            }
+            if (from.accountNumber != CLEARING_ACCOUNT_NUMBER && from.balance < transfer.amount) {
+                throw InsufficientFundsError();
+            }
+            from.balance = from.balance - transfer.amount;
+            from.save();
+            to.balance = to.balance + transfer.amount;
+            to.save();
+            let String debitLine = transfer.memo ?? (transfer.payeeName ?? #"To {to.accountNumber}");
+            let String creditLine = transfer.memo ?? #"From {from.accountNumber}";
+            ledgerDb.LedgerEntry.create({ transferId: transfer.id, accountId: from.id, accountNumber: from.accountNumber, reference: transfer.reference, description: debitLine, currency: from.currency, side: EntrySide.Debit, amount: transfer.amount });
+            ledgerDb.LedgerEntry.create({ transferId: transfer.id, accountId: to.id, accountNumber: to.accountNumber, reference: transfer.reference, description: creditLine, currency: to.currency, side: EntrySide.Credit, amount: transfer.amount });
+        }
+    }
+
+    fn announcePosted(ledgerDb.Transfer transfer) {
+        dispatch TransferPosted(transfer.id, transfer.reference, transfer.fromAccountId, transfer.amount, transfer.amount >= REVIEW_THRESHOLD);
+    }
+
+    fn ownedAccount(UUID id, String userId) -> ledgerDb.LedgerAccount {
+        let ledgerDb.LedgerAccount account = ledgerDb.LedgerAccount.findOrFail(id);
+        if (account.ownerUserId != userId) {
+            throw NotYourAccountError();
+        }
+        return account;
+    }
+
+    // A signed-in customer's own money. Every route checks the account belongs to them.
+    rest_api BankingAPI : basePath('/api/v1/banking'), rdbms(ledgerDb) {
+        @path('/accounts')
+        get myAccounts() : auth(required, providers: [identity]) -> Array<LedgerAccount> {
+            return LedgerAccount.where(ownerUserId: Auth.userId()).orderBy(createdAt: asc).all();
+        }
+
+        @path('/accounts/:id/statement')
+        get statement(UUID id) : auth(required, providers: [identity]) -> Statement {
+            let LedgerAccount account = ownedAccount(id, Auth.userId());
+            let Array<LedgerEntry> entries = LedgerEntry.where(accountId: account.id).orderBy(createdAt: desc).limit(100).all();
+            return Statement { account: account, entries: entries };
+        }
+
+        @path('/transfers')
+        post transfer(TransferRequest request) : auth(required, providers: [identity]) -> Transfer {
+            let LedgerAccount from = ownedAccount(request.fromAccountId, Auth.userId());
+            let LedgerAccount? to = LedgerAccount.where(accountNumber: request.toAccountNumber).first();
+            if (to == null) {
+                throw NoSuchPayeeError();
+            }
+            if (to.id == from.id) {
+                throw SameAccountError();
+            }
+            let Transfer created = Transfer.create({
+                reference: generateTransferReference(),
+                kind: TransferKind.Internal,
+                fromAccountId: from.id,
+                toAccountId: to.id,
+                fromNumber: from.accountNumber,
+                toNumber: to.accountNumber,
+                amount: request.amount,
+                memo: request.memo
+            });
+            post(created);
+            announcePosted(created);
+            return created;
+        }
+
+        // A hit on the sanctions list holds the payment for an officer: no money moves.
+        @path('/payouts')
+        post payout(PayoutRequest request) : auth(required, providers: [identity]) -> Transfer {
+            let LedgerAccount from = ownedAccount(request.fromAccountId, Auth.userId());
+            if (from.balance < request.amount) {
+                throw InsufficientFundsError();
+            }
+            let LedgerAccount clearing = LedgerAccount.where(accountNumber: CLEARING_ACCOUNT_NUMBER).firstOrFail();
+            let Transfer created = Transfer.create({
+                reference: generateTransferReference(),
+                kind: TransferKind.Outbound,
+                status: TransferStatus.Held,
+                fromAccountId: from.id,
+                toAccountId: clearing.id,
+                fromNumber: from.accountNumber,
+                toNumber: clearing.accountNumber,
+                amount: request.amount,
+                memo: request.memo,
+                payeeName: request.payeeName,
+                payeeIban: request.payeeIban
+            });
+            let Screening screening = SanctionsProvider.SanctionsAPI.post.screen(ScreenRequest { name: request.payeeName, reference: created.reference });
+            if (screening.hit) {
+                created.holdReason = #"The payee matches the sanctions entry {screening.matchedName ?? request.payeeName}";
+                created.save();
+                dispatch TransferHeld(created.id, created.reference, from.id, created.amount, created.holdReason ?? "");
+                return created;
+            }
+            post(created);
+            let Payment payment = BankProvider.BankAPI.post.createPayment(CreatePaymentRequest {
+                iban: request.payeeIban,
+                beneficiaryName: request.payeeName,
+                amount: request.amount,
+                currency: from.currency,
+                reference: created.reference,
+                idempotencyKey: created.id.toString()
+            });
+            if (payment.status == PaymentStatus.Rejected) {
+                let Transfer refund = Transfer.create({
+                    reference: generateTransferReference(),
+                    kind: TransferKind.Deposit,
+                    fromAccountId: clearing.id,
+                    toAccountId: from.id,
+                    fromNumber: clearing.accountNumber,
+                    toNumber: from.accountNumber,
+                    amount: request.amount,
+                    memo: #"Returned: {created.reference}"
+                });
+                post(refund);
+                created.status = TransferStatus.Rejected;
+                created.holdReason = payment.failureReason;
+                created.save();
+                return created;
+            }
+            created.status = TransferStatus.Posted;
+            created.paymentId = payment.id;
+            created.save();
+            announcePosted(created);
+            return created;
+        }
+    }
+
+    // What staff work with.
+    rest_api LedgerAPI : basePath('/api/v1/ledger'), rdbms(ledgerDb) {
+        resource LedgerAccount : only(list), auth(required, providers: [identity], roles: [teller, officer]);
+        resource Transfer : only(list, get), auth(required, providers: [identity], roles: [teller, officer]);
+        resource LedgerEntry : only(list), auth(required, providers: [identity], roles: [officer]);
+        resource Reconciliation : only(list), auth(required, providers: [identity], roles: [officer]);
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [teller, officer]) -> LedgerSummary {
+            return LedgerSummary {
+                accounts: LedgerAccount.where().count(),
+                postedTransfers: Transfer.where(status: TransferStatus.Posted).count(),
+                heldTransfers: Transfer.where(status: TransferStatus.Held).count()
+            };
+        }
+
+        // Cash paid in at a counter: money enters through the bank's clearing account.
+        @path('/deposits')
+        post deposit(DepositRequest request) : auth(required, providers: [identity], roles: [teller]) -> Transfer {
+            let LedgerAccount? to = LedgerAccount.where(accountNumber: request.accountNumber).first();
+            if (to == null) {
+                throw NoSuchPayeeError();
+            }
+            let LedgerAccount clearing = LedgerAccount.where(accountNumber: CLEARING_ACCOUNT_NUMBER).firstOrFail();
+            let Transfer created = Transfer.create({
+                reference: generateTransferReference(),
+                kind: TransferKind.Deposit,
+                fromAccountId: clearing.id,
+                toAccountId: to.id,
+                fromNumber: clearing.accountNumber,
+                toNumber: to.accountNumber,
+                amount: request.amount,
+                memo: request.memo
+            });
+            post(created);
+            announcePosted(created);
+            return created;
+        }
+    }
+
+    jobs {
+        // Checks every posting of the last day against its entries, and keeps the result.
+        job ReconcileYesterday {
+            let DateTime until = DateTime.now().startOfDay();
+            let DateTime since = until.addDays(-1);
+            if (ledgerDb.Reconciliation.where(day: since).first() == null) {
+                let Array<ledgerDb.Transfer> posted = ledgerDb.Transfer.where(status: TransferStatus.Posted).where(createdAt: gte(since)).where(createdAt: lt(until)).all();
+                let Money total = 0.00;
+                let Boolean balanced = true;
+                foreach transfer in posted {
+                    total = total + transfer.amount;
+                    if (ledgerDb.LedgerEntry.where(transferId: transfer.id).count() != 2) {
+                        balanced = false;
+                    }
+                }
+                ledgerDb.Reconciliation.create({ day: since, transferCount: posted.length, postedAmount: total, balanced: balanced });
+            }
+        }
+    }
+
+    test("a transfer starts posted with a generated reference") {
+        let Transfer transfer = ledgerDb.Transfer.create({
+            reference: generateTransferReference(),
+            kind: TransferKind.Internal,
+            fromAccountId: uuid(),
+            toAccountId: uuid(),
+            fromNumber: "QB1000000001",
+            toNumber: "QB1000000002",
+            amount: 25.00
+        });
+        assert transfer.status == TransferStatus.Posted;
+        assert transfer.reference.startsWith("TR-");
+    }
+}

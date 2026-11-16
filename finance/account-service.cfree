@@ -1,0 +1,268 @@
+from finance.common import AccountType, AccountStatus, generateAccountNumber;
+
+// Customers and their accounts, and the application's identity block. A customer's own routes read
+// the signed-in user's rows and nothing else, and staff routes need a staff role. The identity
+// document goes to the vendor and is never stored: only its last four characters stay here.
+service finance.AccountService('config/account-service.ccfg') : version('2.0.0'), description('Customers and accounts') {
+
+    discovery { }
+
+    uses KycProvider;
+
+    identity {
+        // Customers register themselves; staff roles are granted, never self-assigned. Sign-in
+        // belongs to the hosted identity provider, so nothing here handles a password.
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+
+            group "teller" as teller;
+            group "officer" as officer;
+            group "operator" as operator;
+        }
+
+        // Service-to-service callers.
+        provider machine config('config/identity/machine.ccfg') {
+        }
+
+        // API keys the mocks issue, the way a real vendor authenticates its API callers.
+        provider bankKeys config('config/identity/bank-keys.ccfg') {
+        }
+
+        provider kycKeys config('config/identity/kyc-keys.ccfg') {
+        }
+
+        provider sanctionsKeys config('config/identity/sanctions-keys.ccfg') {
+        }
+    }
+
+    exceptions {
+        NotRegisteredError : status(409), message("Finish your identity check first");
+        AlreadyRegisteredError : status(409), message("You have already registered");
+        KycNotClearError : status(403), message("An account can be opened once your identity check is clear");
+        KycUnavailableError : status(503), message("The identity check is not available right now. Please try again shortly");
+    }
+
+    enum KycStatus {
+        Pending : tone(warning),
+        Clear : tone(success),
+        Declined : tone(danger)
+    }
+
+    rdbms accountDb {
+
+        /// A person the bank knows. One signed-in user has at most one.
+        entity Customer extends BaseEntity {
+            String(64) userId : unique;
+            String(200) fullName : trim, filterable, sortable;
+            Email email;
+            Date dateOfBirth : hidden;
+            String(4) documentLast4;
+            KycStatus kycStatus : filterable = KycStatus.Pending;
+            String(40)? kycCheckId;
+            String(200)? kycReason;
+
+            hasMany Account;
+        }
+
+        entity Account extends BaseEntity {
+            String(20) accountNumber : unique, filterable;
+            /// Beside the key, so a list of accounts reads as people.
+            String(200) customerName : filterable;
+            AccountType type : filterable;
+            AccountStatus status : filterable = AccountStatus.Active;
+
+            belongsTo Customer : index;
+
+            afterUpdate {
+                if (isChanged(status)) {
+                    dispatch AccountStatusChanged(id, accountNumber, oldValue(status), status);
+                }
+            }
+        }
+    }
+
+    pubsub mq {
+        topic AccountEvents {
+            publish AccountOpened(UUID accountId, String accountNumber, String ownerUserId, AccountType type);
+
+            publish AccountStatusChanged(UUID accountId, String accountNumber, AccountStatus oldStatus, AccountStatus newStatus) {
+                ensure oldStatus != newStatus;
+            }
+        }
+    }
+
+    struct RegisterRequest {
+        String(200) fullName;
+        Date dateOfBirth;
+        /// Sent to the vendor for the check, and not kept.
+        String(40) documentNumber;
+    }
+
+    struct OpenAccountRequest {
+        AccountType type;
+    }
+
+    struct Profile {
+        Boolean registered;
+        String? fullName;
+        KycStatus? kycStatus;
+        String? kycReason;
+    }
+
+    struct ReviewRequest {
+        UUID customerId;
+        String(200) reason;
+    }
+
+    fn outcomeOf(Check check) -> KycStatus {
+        return check.outcome == CheckOutcome.Clear
+            ? KycStatus.Clear
+            : (check.outcome == CheckOutcome.Declined ? KycStatus.Declined : KycStatus.Pending);
+    }
+
+    /// No answer from the vendor means no customer yet: nothing is kept, and they can try again.
+    fn runCheck(RegisterRequest request) -> Check {
+        try {
+            return KycProvider.KycAPI.post.createCheck(CreateCheckRequest {
+                fullName: request.fullName,
+                dateOfBirth: request.dateOfBirth,
+                documentNumber: request.documentNumber
+            });
+        } catch (Exception e) {
+            Log.warn("The identity check could not be reached", { fullName: "withheld" });
+            throw KycUnavailableError();
+        }
+    }
+
+    // A signed-in customer's own record.
+    rest_api MeAPI : basePath('/api/v1/me'), rdbms(accountDb) {
+        @path('/profile')
+        get profile() : auth(required, providers: [identity]) -> Profile {
+            let Customer? customer = Customer.where(userId: Auth.userId()).first();
+            if (customer == null) {
+                return Profile { registered: false };
+            }
+            return Profile {
+                registered: true,
+                fullName: customer.fullName,
+                kycStatus: customer.kycStatus,
+                kycReason: customer.kycReason
+            };
+        }
+
+        @path('/register')
+        post register(RegisterRequest request) : auth(required, providers: [identity]) -> Profile {
+            if (Customer.where(userId: Auth.userId()).first() != null) {
+                throw AlreadyRegisteredError();
+            }
+            let Check check = runCheck(request);
+            let Customer created = Customer.create({
+                userId: Auth.userId(),
+                fullName: request.fullName,
+                email: Auth.identity.email,
+                dateOfBirth: request.dateOfBirth,
+                documentLast4: request.documentNumber.substring(request.documentNumber.length - 4),
+                kycStatus: outcomeOf(check),
+                kycCheckId: check.id,
+                kycReason: check.reason
+            });
+            return Profile { registered: true, fullName: created.fullName, kycStatus: created.kycStatus, kycReason: created.kycReason };
+        }
+
+        @path('/accounts')
+        get myAccounts() : auth(required, providers: [identity]) -> Array<Account> {
+            let Customer? customer = Customer.where(userId: Auth.userId()).first();
+            if (customer == null) {
+                return [];
+            }
+            return Account.where(customerId: customer.id).all();
+        }
+
+        @path('/accounts')
+        post openAccount(OpenAccountRequest request) : auth(required, providers: [identity]) -> Account {
+            let Customer? customer = Customer.where(userId: Auth.userId()).first();
+            if (customer == null) {
+                throw NotRegisteredError();
+            }
+            if (customer.kycStatus != KycStatus.Clear) {
+                throw KycNotClearError();
+            }
+            let Account created = Account.create({ accountNumber: generateAccountNumber(), customerName: customer.fullName, customerId: customer.id, type: request.type });
+            dispatch AccountOpened(created.id, created.accountNumber, customer.userId, created.type);
+            return created;
+        }
+    }
+
+    // What staff work with.
+    rest_api StaffAPI : basePath('/api/v1/staff'), rdbms(accountDb) {
+        resource Customer : only(list, get), auth(required, providers: [identity], roles: [teller, officer]);
+        resource Account : only(list, get), auth(required, providers: [identity], roles: [teller, officer]);
+
+        @path('/customers/clear')
+        post clearCustomer(ReviewRequest request) : auth(required, providers: [identity], roles: [officer]) -> Customer {
+            let Customer customer = Customer.findOrFail(request.customerId);
+            customer.kycStatus = KycStatus.Clear;
+            customer.kycReason = request.reason;
+            customer.save();
+            return customer;
+        }
+
+        @path('/customers/decline')
+        post declineCustomer(ReviewRequest request) : auth(required, providers: [identity], roles: [officer]) -> Customer {
+            let Customer customer = Customer.findOrFail(request.customerId);
+            customer.kycStatus = KycStatus.Declined;
+            customer.kycReason = request.reason;
+            customer.save();
+            return customer;
+        }
+
+        @path('/accounts/:id/freeze')
+        post freeze(UUID id) : auth(required, providers: [identity], roles: [officer]) -> Account {
+            let Account account = Account.findOrFail(id);
+            account.status = AccountStatus.Frozen;
+            account.save();
+            return account;
+        }
+
+        @path('/accounts/:id/unfreeze')
+        post unfreeze(UUID id) : auth(required, providers: [identity], roles: [officer]) -> Account {
+            let Account account = Account.findOrFail(id);
+            account.status = AccountStatus.Active;
+            account.save();
+            return account;
+        }
+    }
+
+    struct FreezeOrder {
+        UUID accountId;
+    }
+
+    struct FreezeDone {
+        AccountStatus status;
+    }
+
+    // What compliance reaches once a second officer approved a freeze the analyst proposed.
+    rest_api AccountInternalAPI : basePath('/api/v1/internal/accounts'), rdbms(accountDb) {
+        @path('/freeze')
+        post freezeOnApproval(FreezeOrder request) : auth(service, providers: [machine]) -> FreezeDone {
+            let Account account = Account.findOrFail(request.accountId);
+            account.status = AccountStatus.Frozen;
+            account.save();
+            return FreezeDone { status: account.status };
+        }
+    }
+
+    test("a new account starts active with a generated number") {
+        let Customer customer = accountDb.Customer.create({
+            userId: "spec-user",
+            fullName: "Mina Okafor",
+            email: "mina@example.com",
+            dateOfBirth: Date.parse("1990-04-12"),
+            documentLast4: "1234"
+        });
+        let Account account = accountDb.Account.create({ accountNumber: generateAccountNumber(), customerName: customer.fullName, customerId: customer.id, type: AccountType.Checking });
+        assert account.status == AccountStatus.Active;
+        assert account.accountNumber.startsWith("QB");
+    }
+}

@@ -1,0 +1,165 @@
+<form data-kind="filters" (submit)="__applyFilters(); $event.preventDefault()">
+  <label data-filter="select">
+    <span>{{ __messages.key(&#39;filter.Requests.status&#39;).text }}</span>
+    <select #filter_status (change)="__setFilter('status', filter_status.value)">
+      <option value="" [selected]="__filterDraft().status === ''">{{ __messages.key(&#39;framework.all&#39;).text }}</option>
+      <option [value]="'Open'" [selected]="__filterDraft().status === 'Open'">{{ __messages.key(&#39;enum.RequestStatus.Open&#39;).text }}</option>
+      <option [value]="'Assigned'" [selected]="__filterDraft().status === 'Assigned'">{{ __messages.key(&#39;enum.RequestStatus.Assigned&#39;).text }}</option>
+      <option [value]="'InProgress'" [selected]="__filterDraft().status === 'InProgress'">{{ __messages.key(&#39;enum.RequestStatus.InProgress&#39;).text }}</option>
+      <option [value]="'Resolved'" [selected]="__filterDraft().status === 'Resolved'">{{ __messages.key(&#39;enum.RequestStatus.Resolved&#39;).text }}</option>
+      <option [value]="'Closed'" [selected]="__filterDraft().status === 'Closed'">{{ __messages.key(&#39;enum.RequestStatus.Closed&#39;).text }}</option>
+    </select>
+
+  </label>
+  <label data-filter="select">
+    <span>{{ __messages.key(&#39;filter.Requests.priority&#39;).text }}</span>
+    <select #filter_priority (change)="__setFilter('priority', filter_priority.value)">
+      <option value="" [selected]="__filterDraft().priority === ''">{{ __messages.key(&#39;framework.all&#39;).text }}</option>
+      <option [value]="'Low'" [selected]="__filterDraft().priority === 'Low'">{{ __messages.key(&#39;enum.RequestPriority.Low&#39;).text }}</option>
+      <option [value]="'Medium'" [selected]="__filterDraft().priority === 'Medium'">{{ __messages.key(&#39;enum.RequestPriority.Medium&#39;).text }}</option>
+      <option [value]="'High'" [selected]="__filterDraft().priority === 'High'">{{ __messages.key(&#39;enum.RequestPriority.High&#39;).text }}</option>
+      <option [value]="'Critical'" [selected]="__filterDraft().priority === 'Critical'">{{ __messages.key(&#39;enum.RequestPriority.Critical&#39;).text }}</option>
+    </select>
+
+  </label>
+  <label data-filter="select">
+    <span>{{ __messages.key(&#39;filter.Requests.category&#39;).text }}</span>
+    <select #filter_category (change)="__setFilter('category', filter_category.value)">
+      <option value="" [selected]="__filterDraft().category === ''">{{ __messages.key(&#39;framework.all&#39;).text }}</option>
+      <option [value]="'Pothole'" [selected]="__filterDraft().category === 'Pothole'">{{ __messages.key(&#39;enum.RequestCategory.Pothole&#39;).text }}</option>
+      <option [value]="'Streetlight'" [selected]="__filterDraft().category === 'Streetlight'">{{ __messages.key(&#39;enum.RequestCategory.Streetlight&#39;).text }}</option>
+      <option [value]="'Graffiti'" [selected]="__filterDraft().category === 'Graffiti'">{{ __messages.key(&#39;enum.RequestCategory.Graffiti&#39;).text }}</option>
+      <option [value]="'Flooding'" [selected]="__filterDraft().category === 'Flooding'">{{ __messages.key(&#39;enum.RequestCategory.Flooding&#39;).text }}</option>
+      <option [value]="'FallenTree'" [selected]="__filterDraft().category === 'FallenTree'">{{ __messages.key(&#39;enum.RequestCategory.FallenTree&#39;).text }}</option>
+      <option [value]="'Other'" [selected]="__filterDraft().category === 'Other'">{{ __messages.key(&#39;enum.RequestCategory.Other&#39;).text }}</option>
+    </select>
+
+  </label>
+  <label data-filter="search">
+    <span>{{ __messages.key(&#39;filter.Requests.title&#39;).text }}</span>
+    <input #filter_title type="search" [value]="__filterDraft().title" (input)="__setFilter('title', filter_title.value)" />
+
+  </label>
+  <button type="submit">{{ __messages.key(&#39;framework.search&#39;).text }}</button>
+  <button type="button" (click)="__clearFilters()">{{ __messages.key(&#39;framework.clear&#39;).text }}</button>
+</form>
+@if (__source.isLoaded) {
+@if (__source.error; as problem) {
+<div data-kind="callout" role="status" data-state="stale" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(problem, __source.site) ?? __messages.problemTitle(problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.isLoading || __source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+@if (__rows().length === 0) {
+@if (__hasFilters()) {
+<div data-state="filtered-empty">
+  <p>{{ __messages.key(&#39;empty.Requests.filtered&#39;).text }}</p>
+  <button type="button" (click)="__clearFilters()">{{ __messages.key(&#39;framework.clearFilters&#39;).text }}</button>
+</div>
+} @else {
+<div data-kind="emptyState" data-state="empty" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">inbox</span>
+  <p data-part="title">{{ __messages.key(&#39;empty.Requests&#39;).text }}</p>
+  @if (__messages.has('emptyDescription.Requests')) {
+  <p data-part="description">{{ __messages.key(&#39;emptyDescription.Requests&#39;).text }}</p>
+  }
+</div>
+
+}
+} @else {
+<div data-kind="table-scroll">
+<table data-kind="table">
+  <thead>
+    <tr>
+      <th scope="col">{{ __messages.key(&#39;field.ServiceRequest.createdAt&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.ServiceRequest.requestNumber&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.ServiceRequest.title&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.ServiceRequest.category&#39;).text }}</th>
+      <th scope="col" [attr.aria-sort]="__source.ariaSort('priority')">
+        <button type="button" data-part="sort" (click)="__source.toggleSort('priority')">{{ __messages.key(&#39;field.ServiceRequest.priority&#39;).text }}</button>
+      </th>
+      <th scope="col">{{ __messages.key(&#39;field.ServiceRequest.status&#39;).text }}</th>
+      <th scope="col">{{ __messages.key(&#39;field.ServiceRequest.districtName&#39;).text }}</th>
+      <th scope="col">
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (row of __rows(); track $index) {
+    <tr>
+
+      <td>{{ __textOf(__format.relative(row.createdAt)) }}
+</td>
+      <td>{{ __textOf(row.requestNumber) }}
+</td>
+      <td>{{ __textOf(row.title) }}
+</td>
+      <td>{{ __textOf(__messages.key(__categoryLabels[row.category])) }}
+</td>
+      <td><span data-kind="badge" [attr.data-tone]="__enumTone(__priorityTones, row.priority)">{{ __textOf(__messages.key(__priorityLabels[row.priority])) }}</span></td>
+      <td><span data-kind="badge" [attr.data-tone]="__enumTone(__statusTones, row.status)">{{ __textOf(__messages.key(__statusLabels[row.status])) }}</span></td>
+      <td>{{ __textOf(row.districtName) }}
+</td>
+      <td>
+        <button type="button" (click)="this.__nav.to(&quot;/requests/:id&quot;, &#123; &quot;id&quot;: row.id &#125;)">{{ __messages.key(&#39;action.Requests.open&#39;).text }}</button>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
+</div>
+}
+<nav data-kind="pagination" [attr.aria-label]="__messages.key('framework.pagination').text">
+  @if (__source.range(); as range) {
+  <span data-kind="range">{{ __messages.key(&#39;framework.showingRangeOfTotal&#39;, &#123; from: range.from, to: range.to, total: range.total &#125;).text }}</span>
+  }
+  @if (__source.pageSizes().length > 0) {
+  <label data-part="page-size">
+    <span>{{ __messages.key(&#39;framework.pageSize&#39;).text }}</span>
+    <select (change)="__source.setPageSize(+$any($event.target).value)">
+      @for (size of __source.pageSizes(); track size) {
+      <option [value]="size" [selected]="size === __source.pageSize()">{{ size }}</option>
+      }
+    </select>
+  </label>
+  }
+  <button type="button" (click)="__source.previous()" [disabled]="!__source.hasPrevious()">{{ __messages.key(&#39;framework.previous&#39;).text }}</button>
+  @for (entry of __source.window(); track $index) {
+  @if (entry === null) {
+  <span data-part="ellipsis" aria-hidden="true">…</span>
+  } @else {
+  <button type="button" [attr.aria-label]="__messages.key('framework.pageNumber', { number: entry }).text" [attr.aria-current]="entry === __source.pageIndex() + 1 ? 'page' : null" (click)="__source.goTo(entry - 1)">{{ entry }}</button>
+  }
+  }
+  <button type="button" (click)="__source.next()" [disabled]="!__source.hasNext()">{{ __messages.key(&#39;framework.next&#39;).text }}</button>
+</nav>
+
+} @else if (__source.error; as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __source.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="__source.pausedForMs &gt; 0" (click)="__source.refresh()">{{ __source.pausedForMs &gt; 0 ? __messages.retryIn(__source.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

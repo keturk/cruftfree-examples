@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "email_db_database": "helpdesk_email_mock",
+    "email_db_host": "helpdesk-system-postgresql",
+    "email_db_port": 5432,
+    "email_db_user": "helpdesk_email_mock_email_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

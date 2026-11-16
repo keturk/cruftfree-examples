@@ -1,0 +1,100 @@
+config service social.NoticeService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8003;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms noticeDb from postgresContainer(id: "43023774-611c-4781-adc9-37bdb075ccb3", database: "social_notice");
+    pubsub mq from kafkaContainer();
+    httpSecurity from localHttpSecurity(host: "social-notice-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    jobs {
+      jobs {
+        SendWeeklyDigest {
+          schedule = "0 8 * * 1";
+          timeout = "300s";
+        }
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // The defaults only exist on a local stack, where they match the hashes seeded in seed/, so the
+      // example runs with nothing to configure. Any other deployment must supply the handles' values.
+      secret push_provider_api_key {
+        required = true;
+        purpose = "API key for the push vendor (PushProvider contract).";
+        localDefault = "dev-only-push-key-not-a-credential";
+      }
+      secret email_provider_api_key {
+        required = true;
+        purpose = "API key for the email vendor (EmailProvider contract).";
+        localDefault = "dev-only-email-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    remoteConfigOps {
+      appconfigMinPollSeconds = 15;
+    }
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+    // Consumers run as SQS-triggered Lambdas: the `mq` topics cross service boundaries, which on AWS
+    // means SNS/SQS, and no language target runs an SQS pubsub consumer inside the service process.
+    runtime { consumers = "decoupled"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms noticeDb from rdsPostgres(id: "43023774-611c-4781-adc9-37bdb075ccb3", database: "social_notice", poolSize: 20, maxOverflow: 10);
+    replace pubsub mq from snsSqs();
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

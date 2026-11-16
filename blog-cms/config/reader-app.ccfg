@@ -1,0 +1,33 @@
+config app blog.Reader {
+  base {
+    targets = ["angular", "flutter"];
+    clients {
+      angular {
+        scope = "@fieldnotes";
+      }
+    }
+    appId = "com.example.fieldnotes";
+    strings = ["config/strings/reader.en-US.ccfg"];
+  }
+  profile test as "test" extends base {
+    web { port = 4200; }
+  }
+  // The deployed profile also ships the mobile app, so it declares how the release is signed. Each
+  // Android value names a logical secret handle the operator supplies at build time, never the secret
+  // itself. The iOS team id is a public Apple Developer identifier.
+  profile azure as "azure" extends base {
+    android {
+      keystore = "android_keystore";
+      keyAlias = "android_key_alias";
+      storePassword = "android_store_password";
+      keyPassword = "android_key_password";
+    }
+    ios { teamId = "ABCDE12345"; }
+    web { domain { name = "fieldnotes.example.com"; } }
+  }
+  profile development as "dev" extends azure {
+  }
+  profile production as "prod" extends base {
+    web { port = 4200; }
+  }
+}

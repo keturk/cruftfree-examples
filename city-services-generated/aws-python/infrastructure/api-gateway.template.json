@@ -1,0 +1,2474 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "KeyAuthorizerCodeKey": {
+      "AllowedPattern": "[0-9A-Za-z!_.*'()/-]{1,1024}",
+      "ConstraintDescription": "an S3 object key of unreserved characters, 1-1024 long",
+      "Description": "Deployment-bucket key of the uploaded gateway authorizer function package.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "CityservicesDistrictServiceRoute0HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/districts",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesDistrictServiceRoute0Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesDistrictServiceRoute0Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesDistrictServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesDistrictServiceRoute1HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/districts/zoning",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesDistrictServiceRoute1Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesDistrictServiceRoute1Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesDistrictServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesDistrictServiceRoute28HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/districts/health",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesDistrictServiceRoute28Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesDistrictServiceRoute28Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesDistrictServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesDistrictServiceRoute2HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/districts/facts",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesDistrictServiceRoute2Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesDistrictServiceRoute2Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesDistrictServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesDistrictServiceRoute33HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/cityservices-district-service",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesDistrictServiceRoute33Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesDistrictServiceRoute33Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesDistrictServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesFacilityServiceRoute29HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/facilities/health",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesFacilityServiceRoute29Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesFacilityServiceRoute29Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesFacilityServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesFacilityServiceRoute34HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/cityservices-facility-service",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesFacilityServiceRoute34Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesFacilityServiceRoute34Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesFacilityServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesFacilityServiceRoute3HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/facilities",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesFacilityServiceRoute3Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesFacilityServiceRoute3Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesFacilityServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesFacilityServiceRoute4HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/facilities/map",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesFacilityServiceRoute4Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesFacilityServiceRoute4Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesFacilityServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesFacilityServiceRoute5HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/facilities/nearby",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesFacilityServiceRoute5Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesFacilityServiceRoute5Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesFacilityServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesFacilityServiceRoute6HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/facilities/parks",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesFacilityServiceRoute6Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesFacilityServiceRoute6Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesFacilityServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesFacilityServiceRoute7HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/facilities/{p4}/operational",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesFacilityServiceRoute7Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesFacilityServiceRoute7Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesFacilityServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesGeocoderMockRoute23HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /v1/geocode",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesGeocoderMockRoute23Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesGeocoderMockRoute23Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesGeocoderMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesGeocoderMockRoute24HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/geocoder/lookups",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesGeocoderMockRoute24Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesGeocoderMockRoute24Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesGeocoderMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesGeocoderMockRoute25HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/geocoder/known_addresses",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesGeocoderMockRoute25Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesGeocoderMockRoute25Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesGeocoderMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesGeocoderMockRoute26HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/desk/geocoder/known_addresses",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesGeocoderMockRoute26Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesGeocoderMockRoute26Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesGeocoderMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesGeocoderMockRoute27HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "DELETE /api/v1/desk/geocoder/known_addresses/{p6}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesGeocoderMockRoute27Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesGeocoderMockRoute27Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesGeocoderMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesGeocoderMockRoute32HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /v1/__cruftfree_gateway_health__/cityservices-geocoder-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesGeocoderMockRoute32Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesGeocoderMockRoute32Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesGeocoderMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesGeocoderMockRoute37HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/cityservices-geocoder-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesGeocoderMockRoute37Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesGeocoderMockRoute37Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesGeocoderMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute10HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/reports/nearby",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute10Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute10Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute11HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/queue/requests/service_requests",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute11Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute11Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute12HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/queue/requests/summary",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute12Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute12Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute13HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/queue/requests/map",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute13Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute13Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute14HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/queue/requests/{p5}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute14Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute14Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute15HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/queue/requests/{p5}/history",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute15Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute15Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute16HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/queue/requests/{p5}/assign",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute16Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute16Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute17HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/queue/requests/{p5}/start",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute17Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute17Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute18HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/queue/requests/{p5}/resolve",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute18Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute18Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute19HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/queue/requests/{p5}/close",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute19Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute19Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute20HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/queue/requests/{p5}/priority",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute20Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute20Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute30HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/queue/requests/health",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute30Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute30Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute35HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/cityservices-request-service",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute35Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute35Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute8HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /api/v1/reports",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute8Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute8Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesRequestServiceRoute9HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/reports/track/{p5}",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesRequestServiceRoute9Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesRequestServiceRoute9Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesSmsMockRoute21HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "POST /v1/messages",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesSmsMockRoute21Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesSmsMockRoute21Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesSmsMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesSmsMockRoute22HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /api/v1/desk/sms/sent_sms",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesSmsMockRoute22Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesSmsMockRoute22Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesSmsMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesSmsMockRoute31HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /v1/__cruftfree_gateway_health__/cityservices-sms-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesSmsMockRoute31Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesSmsMockRoute31Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesSmsMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/health"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "CityservicesSmsMockRoute36HttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "CUSTOM",
+        "AuthorizerId": {
+          "Ref": "GatewayKeyAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__/cityservices-sms-mock",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "CityservicesSmsMockRoute36Integration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "CityservicesSmsMockRoute36Integration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "ConnectionId": {
+          "Ref": "VpcLink"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-CityservicesSmsMockNlbListenerArn"
+        },
+        "PayloadFormatVersion": "1.0",
+        "RequestParameters": {
+          "overwrite:header.x-cruftfree-caller-token": "$context.authorizer.callerToken",
+          "overwrite:header.x-cruftfree-client-address": "$context.identity.sourceIp",
+          "overwrite:path": "/openapi.json"
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "DefaultStage": {
+      "DependsOn": [
+        "HttpDomainName"
+      ],
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AutoDeploy": true,
+        "DefaultRouteSettings": {
+          "ThrottlingBurstLimit": 200,
+          "ThrottlingRateLimit": 100
+        },
+        "StageName": "$default"
+      },
+      "Type": "AWS::ApiGatewayV2::Stage"
+    },
+    "DefaultStageDomainMapping": {
+      "DependsOn": [
+        "HttpDomainName",
+        "DefaultStage"
+      ],
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "DomainName": {
+          "Ref": "HttpDomainName"
+        },
+        "Stage": "$default"
+      },
+      "Type": "AWS::ApiGatewayV2::ApiMapping"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayFn": {
+      "DependsOn": [
+        "GatewayCruftfreeInfraHealthApiGatewayFnServiceRole"
+      ],
+      "Properties": {
+        "Code": {
+          "ZipFile": "def handler(event, context):\n    return {\n        'statusCode': 200,\n        'headers': {'Content-Type': 'application/json'},\n        'body': '{\"status\":\"healthy\"}',\n    }\n"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeInfraHealthApiGatewayFnServiceRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 5
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayFnServiceRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayHttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "NONE",
+        "RouteKey": "GET /__cruftfree_infra_health__/api-gateway",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "GatewayCruftfreeInfraHealthApiGatewayIntegration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayIntegration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeInfraHealthApiGatewayFn",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "GatewayCruftfreeInfraHealthApiGatewayIntegrationPermission": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeInfraHealthApiGatewayFn",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*/__cruftfree_infra_health__/api-gateway"
+        }
+      },
+      "Type": "AWS::Lambda::Permission"
+    },
+    "GatewayCruftfreeOpenapiFn": {
+      "DependsOn": [
+        "GatewayCruftfreeOpenapiFnServiceRole"
+      ],
+      "Properties": {
+        "Code": {
+          "ZipFile": "def handler(event, context):\n    return {\n        'statusCode': 200,\n        'headers': {'Content-Type': 'application/json'},\n        'body': '{\"services\":[\"cityservices-district-service\",\"cityservices-facility-service\",\"cityservices-geocoder-mock\",\"cityservices-request-service\",\"cityservices-sms-mock\"]}',\n    }\n"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeOpenapiFnServiceRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 5
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "GatewayCruftfreeOpenapiFnServiceRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "GatewayCruftfreeOpenapiHttpRoute": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizationType": "JWT",
+        "AuthorizerId": {
+          "Ref": "GatewayJwtAuthorizer"
+        },
+        "RouteKey": "GET /__cruftfree_openapi__",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "GatewayCruftfreeOpenapiIntegration"
+              }
+            ]
+          ]
+        }
+      },
+      "Type": "AWS::ApiGatewayV2::Route"
+    },
+    "GatewayCruftfreeOpenapiIntegration": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeOpenapiFn",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      },
+      "Type": "AWS::ApiGatewayV2::Integration"
+    },
+    "GatewayCruftfreeOpenapiIntegrationPermission": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GatewayCruftfreeOpenapiFn",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*/*/__cruftfree_openapi__"
+        }
+      },
+      "Type": "AWS::Lambda::Permission"
+    },
+    "GatewayJwtAuthorizer": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizerType": "JWT",
+        "IdentitySource": [
+          "$request.header.Authorization"
+        ],
+        "JwtConfiguration": {
+          "Audience": [
+            "portalder-identity-app",
+            {
+              "Fn::ImportValue": "cityservices-system-identity-DistrictServiceAppClientId"
+            },
+            {
+              "Fn::ImportValue": "cityservices-system-identity-FacilityServiceAppClientId"
+            },
+            {
+              "Fn::ImportValue": "cityservices-system-identity-RequestServiceAppClientId"
+            },
+            {
+              "Fn::ImportValue": "cityservices-system-identity-SmsMockAppClientId"
+            },
+            {
+              "Fn::ImportValue": "cityservices-system-identity-GeocoderMockAppClientId"
+            },
+            {
+              "Fn::ImportValue": "cityservices-system-identity-IdentityOperationsBrowserPublicClientId"
+            }
+          ],
+          "Issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PortalderIdentity"
+        },
+        "Name": "GatewayJwtAuthorizer"
+      },
+      "Type": "AWS::ApiGatewayV2::Authorizer"
+    },
+    "GatewayKeyAuthorizer": {
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "AuthorizerPayloadFormatVersion": "2.0",
+        "AuthorizerResultTtlInSeconds": 0,
+        "AuthorizerType": "REQUEST",
+        "AuthorizerUri": {
+          "Fn::Sub": [
+            "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Function}/invocations",
+            {
+              "Function": {
+                "Fn::GetAtt": [
+                  "GatewayKeyAuthorizerFn",
+                  "Arn"
+                ]
+              }
+            }
+          ]
+        },
+        "EnableSimpleResponses": true,
+        "IdentitySource": [],
+        "Name": "GatewayKeyAuthorizer"
+      },
+      "Type": "AWS::ApiGatewayV2::Authorizer"
+    },
+    "GatewayKeyAuthorizerFn": {
+      "DependsOn": [
+        "GatewayKeyAuthorizerRoleDefaultPolicy",
+        "GatewayKeyAuthorizerRole"
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::ImportValue": "cityservices-system-bootstrap-DeploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "KeyAuthorizerCodeKey"
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "GATEWAY_CLIENT_AUDIENCES": {
+              "Fn::Join": [
+                ",",
+                [
+                  {
+                    "Fn::ImportValue": "cityservices-system-identity-DistrictServiceAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "cityservices-system-identity-FacilityServiceAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "cityservices-system-identity-RequestServiceAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "cityservices-system-identity-SmsMockAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "cityservices-system-identity-GeocoderMockAppClientId"
+                  },
+                  {
+                    "Fn::ImportValue": "cityservices-system-identity-IdentityOperationsBrowserPublicClientId"
+                  }
+                ]
+              ]
+            }
+          }
+        },
+        "Handler": "index.handler",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "GatewayKeyAuthorizerLogGroup"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "GatewayKeyAuthorizerRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 10
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "GatewayKeyAuthorizerLogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "GatewayKeyAuthorizerPermissions": {
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "GatewayKeyAuthorizerFn",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Sub": "arn:${AWS::Partition}:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/authorizers/${GatewayKeyAuthorizer}"
+        }
+      },
+      "Type": "AWS::Lambda::Permission"
+    },
+    "GatewayKeyAuthorizerRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::ImportValue": "cityservices-system-trusted-caller-MintPolicyArn"
+          }
+        ],
+        "RoleName": "cityservices-system-gateway-minter"
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "GatewayKeyAuthorizerRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "GatewayKeyAuthorizerLogGroup",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${GatewayKeyAuthorizerLogGroup.Arn}:*"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "GatewayKeyAuthorizerRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "GatewayKeyAuthorizerRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    },
+    "HttpApi": {
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowCredentials": false,
+          "AllowHeaders": [
+            "Authorization",
+            "Content-Type"
+          ],
+          "AllowMethods": [
+            "DELETE",
+            "GET",
+            "POST"
+          ],
+          "AllowOrigins": [
+            "https://operations.portalder.example.com",
+            "https://portalder.example.com"
+          ],
+          "ExposeHeaders": [
+            "Retry-After"
+          ]
+        },
+        "Name": "cityservices.System-api",
+        "ProtocolType": "HTTP"
+      },
+      "Type": "AWS::ApiGatewayV2::Api"
+    },
+    "HttpApiCert": {
+      "Properties": {
+        "DomainName": "api.portalder.example.com",
+        "ValidationMethod": "DNS"
+      },
+      "Type": "AWS::CertificateManager::Certificate"
+    },
+    "HttpDomainName": {
+      "Properties": {
+        "DomainName": "api.portalder.example.com",
+        "DomainNameConfigurations": [
+          {
+            "CertificateArn": {
+              "Ref": "HttpApiCert"
+            },
+            "EndpointType": "REGIONAL",
+            "SecurityPolicy": "TLS_1_2"
+          }
+        ]
+      },
+      "Type": "AWS::ApiGatewayV2::DomainName"
+    },
+    "VpcLink": {
+      "Properties": {
+        "Name": "cityservices.System-vpc-link",
+        "SecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "VpcLinkSecurityGroup",
+              "GroupId"
+            ]
+          }
+        ],
+        "SubnetIds": [
+          {
+            "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet1Id"
+          },
+          {
+            "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet2Id"
+          }
+        ]
+      },
+      "Type": "AWS::ApiGatewayV2::VpcLink"
+    },
+    "VpcLinkSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Security group for cityservices.System API gateway VPC link",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "VpcLinkSecurityGroupToCityservicesDistrictServiceNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-district-service",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8001,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8001
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToCityservicesDistrictServiceNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-district-service",
+        "FromPort": 8001,
+        "GroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8001
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "VpcLinkSecurityGroupToCityservicesFacilityServiceNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-facility-service",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8002,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8002
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToCityservicesFacilityServiceNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-facility-service",
+        "FromPort": 8002,
+        "GroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8002
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "VpcLinkSecurityGroupToCityservicesGeocoderMockNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-geocoder-mock",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8091,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8091
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToCityservicesGeocoderMockNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-geocoder-mock",
+        "FromPort": 8091,
+        "GroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8091
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "VpcLinkSecurityGroupToCityservicesRequestServiceNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-request-service",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8003,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8003
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToCityservicesRequestServiceNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-request-service",
+        "FromPort": 8003,
+        "GroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8003
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    },
+    "VpcLinkSecurityGroupToCityservicesSmsMockNlbEgress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-sms-mock",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "FromPort": 8090,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8090
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "VpcLinkSecurityGroupToCityservicesSmsMockNlbIngress": {
+      "Properties": {
+        "Description": "API gateway VPC link to the NLB listener of cityservices-sms-mock",
+        "FromPort": 8090,
+        "GroupId": {
+          "Fn::ImportValue": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "VpcLinkSecurityGroup",
+            "GroupId"
+          ]
+        },
+        "ToPort": 8090
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    }
+  }
+}

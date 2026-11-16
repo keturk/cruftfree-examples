@@ -1,0 +1,15 @@
+{
+  "name": "@portalder/sms-mock-api-state",
+  "private": true,
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/core": "22.1.7",
+    "@ngrx/effects": "22.0.1",
+    "@ngrx/entity": "22.0.1",
+    "@ngrx/store": "22.0.1",
+    "@portalder/sms-mock-api": "*",
+    "@portalder/system-api-common": "*",
+    "@portalder/system-api-state-common": "*",
+    "rxjs": "7.8.2"
+  }
+}

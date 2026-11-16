@@ -1,0 +1,292 @@
+// Who the customers are. Sign-in belongs to the identity provider, so this service holds no password: a
+// customer row appears the first time someone signed in asks for their account.
+service ecommerce.UserService('config/user-service.ccfg') : version('2.0.0'), description('Customer accounts and API keys') {
+
+    discovery { }
+
+    identity {
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+            group "admins" as admin;
+            group "operators" as operator;
+        }
+        provider platform config('config/identity/platform.ccfg') {
+        }
+        // Keys a customer issues to read their own orders from a script. Only a hash is stored.
+        provider customerKeys config('config/identity/customer-keys.ccfg') {
+        }
+        // The keys the three vendors issue to this shop. The mocks verify them as a vendor would.
+        provider paymentKeys config('config/identity/payment-keys.ccfg') {
+        }
+        provider carrierKeys config('config/identity/carrier-keys.ccfg') {
+        }
+        provider emailKeys config('config/identity/email-keys.ccfg') {
+        }
+    }
+
+    exceptions {
+        NotYourKeyError : status(404), message("That key is not yours");
+    }
+
+    enum CustomerStatus {
+        Active : tone(success),
+        Suspended : tone(danger)
+    }
+
+    struct UpdateProfileRequest {
+        String(200) fullName;
+        Phone? phoneNumber;
+        Address? defaultAddress;
+        Boolean emailNotifications;
+    }
+
+    struct SetStatusRequest {
+        CustomerStatus status;
+    }
+
+    struct IssueApiKeyRequest {
+        /// What the key is for, so its owner can tell it from the others.
+        String(100) label;
+    }
+
+    /// The raw key appears once, in this response. Only its hash is kept.
+    struct IssuedApiKey {
+        UUID id;
+        String apiKey;
+        String keyPrefix;
+    }
+
+    /// Whose sign-in a customer row belongs to, for a service holding one of their API keys.
+    struct CustomerFacts {
+        String subject;
+    }
+
+    struct CustomerSummary {
+        Int customers;
+        Int suspended;
+        Int joinedThisWeek;
+    }
+
+    rdbms userDb {
+
+        entity Customer extends BaseEntity {
+            String(64) subject : unique;
+            Email email : index, filterable;
+            String(200) fullName : trim, filterable;
+            Phone? phoneNumber;
+            Address? defaultAddress;
+            CustomerStatus status : filterable = CustomerStatus.Active;
+
+            Boolean isActive := status == CustomerStatus.Active;
+
+            hasOne CustomerPreferences as preferences;
+
+            afterCreate {
+                dispatch CustomerJoined(id, email, fullName);
+            }
+
+            afterUpdate {
+                if (isChanged(status)) {
+                    dispatch CustomerStatusChanged(id, oldValue(status), status);
+                }
+            }
+        }
+
+        entity CustomerPreferences extends BaseEntity {
+            String(10) language = "en-US";
+            Boolean emailNotifications = true;
+
+            belongsTo Customer : unique;
+        }
+
+        /// Keys a customer issued. Only the SHA-256 hash of a key is stored; keyPrefix is for display.
+        entity ApiKey extends BaseEntity {
+            String(64) keyHash : unique;
+            UUID ownerId : index;
+            String(100) label;
+            String(12) keyPrefix;
+            Array<String> scopes = [];
+            Boolean isActive = true;
+            DateTime? expiresAt;
+            DateTime? lastUsedAt;
+            Integer rateLimit = 100;
+        }
+    }
+
+    cache redis {
+        counter KeysIssuedToday : prefix('keys:issued:'), ttl(86400);
+    }
+
+    pubsub mq {
+        topic UserEvents {
+            publish CustomerJoined(UUID customerId, Email email, String fullName) {
+                ensure fullName.length > 0;
+            }
+
+            publish CustomerStatusChanged(UUID customerId, CustomerStatus oldStatus, CustomerStatus newStatus) {
+                ensure oldStatus != newStatus;
+            }
+        }
+    }
+
+    subscribe UserEvents {
+        // Every customer gets preferences, with email on, the moment they join.
+        on CustomerJoined(UUID customerId, Email email, String fullName) {
+            if (userDb.CustomerPreferences.where(customerId: customerId).first() == null) {
+                userDb.CustomerPreferences.create({ customerId: customerId });
+            }
+        }
+
+        // A suspended customer's keys stop working at once, and do not come back with the account.
+        on CustomerStatusChanged(UUID customerId, CustomerStatus oldStatus, CustomerStatus newStatus) {
+            if (newStatus == CustomerStatus.Suspended) {
+                foreach key in userDb.ApiKey.where(ownerId: customerId, isActive: true).all() {
+                    key.isActive = false;
+                    key.save();
+                }
+            }
+        }
+    }
+
+    fn currentCustomer() -> userDb.Customer {
+        let String subject = Auth.userId();
+        let Customer? existing = userDb.Customer.where(subject: subject).first();
+        if (existing != null) {
+            return existing;
+        }
+        // A new customer's first page asks for the account several times at once: each call finds no
+        // row and creates one, and the unique subject lets only one succeed. The others read that row.
+        try {
+            return userDb.Customer.create({
+                subject: subject,
+                email: Auth.identity.email,
+                fullName: Auth.identity.fullName ?? Auth.identity.email.toString()
+            });
+        } catch (Exception e) {
+            let Customer? winner = userDb.Customer.where(subject: subject).first();
+            if (winner == null) {
+                throw e;
+            }
+            return winner;
+        }
+    }
+
+    rest_api UserAPI : basePath('/api/v1/account'), rdbms(userDb) {
+
+        @path('/me')
+        get me() : auth(required, providers: [identity]) -> userDb.Customer {
+            return currentCustomer();
+        }
+
+        @path('/me')
+        put updateMe(UpdateProfileRequest request) : auth(required, providers: [identity]) -> userDb.Customer {
+            let Customer customer = currentCustomer();
+            customer.fullName = request.fullName;
+            customer.phoneNumber = request.phoneNumber;
+            customer.defaultAddress = request.defaultAddress;
+            customer.save();
+            let CustomerPreferences? preferences = userDb.CustomerPreferences.where(customerId: customer.id).first();
+            if (preferences != null) {
+                preferences.emailNotifications = request.emailNotifications;
+                preferences.save();
+            }
+            return customer;
+        }
+
+        @path('/me/api-keys')
+        get myApiKeys() : auth(required, providers: [identity]) -> Array<userDb.ApiKey> {
+            let Customer customer = currentCustomer();
+            return userDb.ApiKey.where(ownerId: customer.id, isActive: true).orderBy(createdAt: desc).all();
+        }
+
+        // Issues a 256-bit key. Its scopes are fixed here: a customer's key can only read that customer's orders.
+        @path('/me/api-keys')
+        post issueApiKey(IssueApiKeyRequest request) : auth(required, providers: [identity]) -> IssuedApiKey {
+            let Customer customer = currentCustomer();
+            let String rawKey = Crypto.randomBytes(32);
+            let String prefix = rawKey.substring(0, 12);
+            let ApiKey key = userDb.ApiKey.create({
+                keyHash: Crypto.sha256(rawKey),
+                ownerId: customer.id,
+                label: request.label,
+                keyPrefix: prefix,
+                scopes: ["orders:read"]
+            });
+            redis.KeysIssuedToday.incr(DateTime.now().format('YYYY-MM-DD'));
+            return IssuedApiKey { id: key.id, apiKey: rawKey, keyPrefix: prefix };
+        }
+
+        @path('/me/api-keys/:id/revoke')
+        post revokeApiKey(UUID id) : auth(required, providers: [identity]) -> userDb.ApiKey {
+            let Customer customer = currentCustomer();
+            let ApiKey key = userDb.ApiKey.findOrFail(id);
+            if (key.ownerId != customer.id) {
+                throw NotYourKeyError();
+            }
+            key.isActive = false;
+            key.save();
+            return key;
+        }
+    }
+
+    // What another service asks. Hidden: no client gets this.
+    rest_api UserInternalAPI : basePath('/api/v1/internal/customers'), rdbms(userDb) {
+        @path('/:id/facts')
+        get customerFacts(UUID id) : auth(service, providers: [platform]), hidden, idempotent -> CustomerFacts {
+            let Customer customer = userDb.Customer.findOrFail(id);
+            return CustomerFacts { subject: customer.subject };
+        }
+    }
+
+    // What the Admin app shows.
+    rest_api UserAdminAPI: basePath('/api/v1/admin/customers'), rdbms(userDb) {
+        resource userDb.Customer : only(list, get), auth(required, providers: [identity], roles: [admin]);
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [admin]) -> CustomerSummary {
+            return CustomerSummary {
+                customers: userDb.Customer.count(),
+                suspended: userDb.Customer.where(status: CustomerStatus.Suspended).count(),
+                joinedThisWeek: userDb.Customer.where(createdAt: gte(DateTime.now().addDays(-7))).count()
+            };
+        }
+
+        @path('/:id/status')
+        post setStatus(UUID id, SetStatusRequest request) : auth(required, providers: [identity], roles: [admin]) -> userDb.Customer {
+            let Customer customer = userDb.Customer.findOrFail(id);
+            customer.status = request.status;
+            customer.save();
+            return customer;
+        }
+    }
+
+    test("a new customer is active") {
+        let userDb.Customer customer = userDb.Customer.create({
+            subject: "spec-subject-1",
+            email: "ana@example.com",
+            fullName: "Ana Reed"
+        });
+        assert customer.isActive == true;
+    }
+
+    test("joining announces the customer") {
+        let userDb.Customer customer = userDb.Customer.create({
+            subject: "spec-subject-2",
+            email: "bo@example.com",
+            fullName: "Bo Finch"
+        });
+        assert emitted(CustomerJoined(customer.id, customer.email, customer.fullName));
+    }
+
+    test("suspending a customer announces the change") {
+        let userDb.Customer customer = userDb.Customer.create({
+            subject: "spec-subject-3",
+            email: "cy@example.com",
+            fullName: "Cy Wren"
+        });
+        customer.status = CustomerStatus.Suspended;
+        customer.save();
+        assert emitted(CustomerStatusChanged(customer.id, CustomerStatus.Active, CustomerStatus.Suspended));
+    }
+}

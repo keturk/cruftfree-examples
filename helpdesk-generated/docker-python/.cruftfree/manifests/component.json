@@ -1,0 +1,364 @@
+{
+  "target": "component",
+  "generated_at": "2026-11-16T02:07:59Z",
+  "files": [
+    "config/generated/client-api.console.json",
+    "config/generated/client-api.help-centre.json",
+    "config/generated/client-runtime-console-angular.test.json",
+    "config/generated/client-runtime-help-centre-angular.test.json",
+    "config/generated/identity-client-identity-Console-browser.test.json",
+    "config/generated/identity-client-identity-HelpCentre-browser.test.json",
+    "config/generated/identity-providers.json",
+    "config/generated/identity/IDENTITY.md",
+    "helpdesk_email_mock/.gitignore",
+    "helpdesk_email_mock/README.md",
+    "helpdesk_email_mock/scripts/dev.sh",
+    "helpdesk_email_mock/scripts/install.sh",
+    "helpdesk_email_mock/scripts/lint.sh",
+    "helpdesk_email_mock/scripts/seed.sh",
+    "helpdesk_email_mock/scripts/test.sh",
+    "helpdesk_email_mock/tests/contract/README.md",
+    "helpdesk_email_mock/tests/contract/contract.json",
+    "helpdesk_email_mock/tests/contract/contract_routes.py",
+    "helpdesk_email_mock/tests/contract/contract_support.py",
+    "helpdesk_email_mock/tests/contract/pytest.ini",
+    "helpdesk_email_mock/tests/contract/requirements.txt",
+    "helpdesk_knowledge_service/.gitignore",
+    "helpdesk_knowledge_service/README.md",
+    "helpdesk_knowledge_service/scripts/dev.sh",
+    "helpdesk_knowledge_service/scripts/install.sh",
+    "helpdesk_knowledge_service/scripts/lint.sh",
+    "helpdesk_knowledge_service/scripts/seed.sh",
+    "helpdesk_knowledge_service/scripts/test.sh",
+    "helpdesk_knowledge_service/tests/contract/README.md",
+    "helpdesk_knowledge_service/tests/contract/contract.json",
+    "helpdesk_knowledge_service/tests/contract/contract_routes.py",
+    "helpdesk_knowledge_service/tests/contract/contract_support.py",
+    "helpdesk_knowledge_service/tests/contract/pytest.ini",
+    "helpdesk_knowledge_service/tests/contract/requirements.txt",
+    "helpdesk_notice_service/.gitignore",
+    "helpdesk_notice_service/README.md",
+    "helpdesk_notice_service/scripts/dev.sh",
+    "helpdesk_notice_service/scripts/install.sh",
+    "helpdesk_notice_service/scripts/lint.sh",
+    "helpdesk_notice_service/scripts/test.sh",
+    "helpdesk_notice_service/tests/contract/README.md",
+    "helpdesk_notice_service/tests/contract/contract.json",
+    "helpdesk_notice_service/tests/contract/contract_routes.py",
+    "helpdesk_notice_service/tests/contract/contract_support.py",
+    "helpdesk_notice_service/tests/contract/pytest.ini",
+    "helpdesk_notice_service/tests/contract/requirements.txt",
+    "helpdesk_ticket_service/.gitignore",
+    "helpdesk_ticket_service/README.md",
+    "helpdesk_ticket_service/scripts/dev.sh",
+    "helpdesk_ticket_service/scripts/install.sh",
+    "helpdesk_ticket_service/scripts/lint.sh",
+    "helpdesk_ticket_service/scripts/seed.sh",
+    "helpdesk_ticket_service/scripts/test.sh",
+    "helpdesk_ticket_service/tests/contract/README.md",
+    "helpdesk_ticket_service/tests/contract/contract.json",
+    "helpdesk_ticket_service/tests/contract/contract_routes.py",
+    "helpdesk_ticket_service/tests/contract/contract_support.py",
+    "helpdesk_ticket_service/tests/contract/pytest.ini",
+    "helpdesk_ticket_service/tests/contract/requirements.txt",
+    "scripts/prepare-clients.ps1",
+    "scripts/prepare-clients.py",
+    "scripts/prepare-clients.sh",
+    "scripts/sync-angular-client.ps1",
+    "scripts/sync-angular-client.py",
+    "scripts/sync-angular-client.sh"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    "config/generated/client-api.console.json": "934644e8d55443c9165513639123add1e51f399c61b73f9c3ffb288f0abba06f",
+    "config/generated/client-api.help-centre.json": "934644e8d55443c9165513639123add1e51f399c61b73f9c3ffb288f0abba06f",
+    "config/generated/client-runtime-console-angular.test.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "config/generated/client-runtime-help-centre-angular.test.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "config/generated/identity-client-identity-Console-browser.test.json": "f31be562381b25fb3b00fd9016854514d41bb2512e4b54ed7434796f1c25659d",
+    "config/generated/identity-client-identity-HelpCentre-browser.test.json": "e1dbb72b9e8c47c566cbe8c5e147ca5cda3be36db870a902e097fda78a2cd1f0",
+    "config/generated/identity-providers.json": "786575510b65198e1007ae9018ff3664c6544117f0dcc7a2b32a81019ccaa689",
+    "config/generated/identity/IDENTITY.md": "85de1a40202401185cdba8a289045f4e94510e1414168bc76af663172499e11f",
+    "helpdesk_email_mock/.gitignore": "cf08801a7698d9589cffa807a29e736cb6a681edeed7f944b96ce31ee923b519",
+    "helpdesk_email_mock/README.md": "c7b152452cee76209d7305800d40ec3726f2163df4f4d443baab13388a40a252",
+    "helpdesk_email_mock/scripts/dev.sh": "2a2df357e6fbd63c5c07a83664b8958b8956bf26f32efda97dc468b61676eaaf",
+    "helpdesk_email_mock/scripts/install.sh": "e68635b1a994e1d997bd1042cd04f1bb8ebc1d976d8c68efef3a63a52172dce4",
+    "helpdesk_email_mock/scripts/lint.sh": "eee179443d9967df7c3abf4f626f1418a429b26a7fad383c12dc1bf7c1323ec0",
+    "helpdesk_email_mock/scripts/seed.sh": "360e17f1f6c1763e78e06e35b5fb75524f42802ed493aef20cae8aa567f6f5c1",
+    "helpdesk_email_mock/scripts/test.sh": "ec22db35f4552f0804485b38486af17673ca5b6e83d8994c6f05e174c3ffab61",
+    "helpdesk_email_mock/tests/contract/README.md": "b60d6c74fde99d8000344fc7fcffa15354838d1dc843f42ea374932d81d3ed66",
+    "helpdesk_email_mock/tests/contract/contract.json": "40cfeb82fff5727fdc0cbdcff1a4dbda50e229c583eb0179c8570c68ce55f670",
+    "helpdesk_email_mock/tests/contract/contract_routes.py": "5ec1b074e017953242b27cdbaadf78e81cc2996196fa1d103965abf9070fd64d",
+    "helpdesk_email_mock/tests/contract/contract_support.py": "f31b4792a74990ef8b870d2a7b27acc7b23d8a481cf67517287315436aa5e80b",
+    "helpdesk_email_mock/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "helpdesk_email_mock/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "helpdesk_knowledge_service/.gitignore": "cf08801a7698d9589cffa807a29e736cb6a681edeed7f944b96ce31ee923b519",
+    "helpdesk_knowledge_service/README.md": "f729ab3c3e8b6b47a2b1d7c7148b20c359af5fa8a5365b99b76ec5fd78beb87d",
+    "helpdesk_knowledge_service/scripts/dev.sh": "b2b4b3b3be34fe09b9e65a0f106a5ffa14273b7814fd54c9330a65d246ba2243",
+    "helpdesk_knowledge_service/scripts/install.sh": "0f92f08a9fb8fb9fd95dc43cd51e6b9a9e8e92f1b29e9a7f6262db2b5a58d7bc",
+    "helpdesk_knowledge_service/scripts/lint.sh": "c015bc281d36d3f8bcfccd701f77746f83f445020edab9e848491e6bd4c0afe3",
+    "helpdesk_knowledge_service/scripts/seed.sh": "57ca24c364c8eaa83edcb015a4f9c2268bd1a96f8a63b83c5548738c1b4006df",
+    "helpdesk_knowledge_service/scripts/test.sh": "dca5c3e056c240e876b44fbd8434ccdec00116251c4cb7d8929355f79363b8ed",
+    "helpdesk_knowledge_service/tests/contract/README.md": "f8adfb68784dc1e42d9bc5801bf3778390f28c56aeb2b0683104b55d5f0affc2",
+    "helpdesk_knowledge_service/tests/contract/contract.json": "d2b748d1ab8ab11bceecb564cf4496da792cbe4f478631fa9880b8e4e571cced",
+    "helpdesk_knowledge_service/tests/contract/contract_routes.py": "d6f01bcdaaab63900a5738956512a66ecd0339e0cb7412d99db49d44a7012c42",
+    "helpdesk_knowledge_service/tests/contract/contract_support.py": "ad609d73447044188af3c4fc3c953818de0e9e03e3f56c3ec46013e63aa0585c",
+    "helpdesk_knowledge_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "helpdesk_knowledge_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "helpdesk_notice_service/.gitignore": "cf08801a7698d9589cffa807a29e736cb6a681edeed7f944b96ce31ee923b519",
+    "helpdesk_notice_service/README.md": "c35e5943d4acac15b1e2a44097d892df0a117f5b54a9461dad3b7bdca14285b9",
+    "helpdesk_notice_service/scripts/dev.sh": "ba91fa0b2aa0e6ed1ec16d9a354ff788a3ac41d60bf393bd3b69d23e175cc458",
+    "helpdesk_notice_service/scripts/install.sh": "851fd9841f474e5a65e8e5f8664e200697bb1db6abc26b99d11c7f62787bb0b8",
+    "helpdesk_notice_service/scripts/lint.sh": "a5bcff234f89569d230cd2a493e42c310ec8abf7d924ff8dd68ce5ee0c981d63",
+    "helpdesk_notice_service/scripts/test.sh": "97c45f498aab26b7de76347e7688a66870ca1b7e75424b901dd3e123aa080b5d",
+    "helpdesk_notice_service/tests/contract/README.md": "ce8d9c3d560374861aeab133338c7ee479e20a71a539fb17e9a12b0b48d71a0c",
+    "helpdesk_notice_service/tests/contract/contract.json": "4c538310102f599ceeb744d5311de8029b9b00e750dc5468c21e70da4fa10a12",
+    "helpdesk_notice_service/tests/contract/contract_routes.py": "2ec400ff1fdbd0979a63bc289cc916034c51452bd428de2c9e80ff5d0b775fe9",
+    "helpdesk_notice_service/tests/contract/contract_support.py": "3b468dffb56e9dda28218a01bd60a25cc98081fb1f82716f7369783de1815059",
+    "helpdesk_notice_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "helpdesk_notice_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "helpdesk_ticket_service/.gitignore": "cf08801a7698d9589cffa807a29e736cb6a681edeed7f944b96ce31ee923b519",
+    "helpdesk_ticket_service/README.md": "f5c3c59c89b7ed749f501bef8dd264074839dfbf14f93d9f239fd5671c7e5974",
+    "helpdesk_ticket_service/scripts/dev.sh": "88dd9bef8d03fedb0b6aee4f6da520373f303a4220b5b041c9351e33ba038399",
+    "helpdesk_ticket_service/scripts/install.sh": "99f8c80ba6fcefbb2e7925b56f346522aa669aee1e594eb81e56a0567e2dc6a8",
+    "helpdesk_ticket_service/scripts/lint.sh": "9c52f77870817324297d36b839c09587af2027f8d80ed3e0d4cb21bbe08ff8ea",
+    "helpdesk_ticket_service/scripts/seed.sh": "3656714f1fa22861ef868792d780cb6b4bf23a88244e43d34dffdef8ac3f87de",
+    "helpdesk_ticket_service/scripts/test.sh": "1e3162ef6b72a700b3d24916720e84c56c8451950a17f88bcc19cd1ebbe788a3",
+    "helpdesk_ticket_service/tests/contract/README.md": "fd5e161c9db540374f379e149e89c93b348954fc6240edc8a1f7d923b9a32fb8",
+    "helpdesk_ticket_service/tests/contract/contract.json": "a28299b51de71c31cb7581adc84ddacf2568db3950b09fe0fa6d8384ff87c026",
+    "helpdesk_ticket_service/tests/contract/contract_routes.py": "dbdd7fb07b6efd4fc19dfaa5e8fefd7c9e2e8ae09c0fd5b5f3ca69c7b3ae70ec",
+    "helpdesk_ticket_service/tests/contract/contract_support.py": "c86a70445eb45011c208b299df7c199b89aa18462f707a93d6f8ddc240592b51",
+    "helpdesk_ticket_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "helpdesk_ticket_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "scripts/prepare-clients.ps1": "2e8106805b2f18d26a36f4ae7d2c7d5c7c7c0214aa0e3a14ebfdb5c56b224319",
+    "scripts/prepare-clients.py": "579dbfd9f6d2eba710c5406c5e8e97133d7f94d2d545f5c2eadecdb8a65bc7c6",
+    "scripts/prepare-clients.sh": "824a4bf0b676eb5982b0d78767dd7a5d78b2a1836d3ce01003ed5d13e721936a",
+    "scripts/sync-angular-client.ps1": "7cfecc2cbcefa7060637c5a0e0ccf3054934e9e10721ae2b3775eb0d28811236",
+    "scripts/sync-angular-client.py": "86959caaafa6ee8d751d286c7f65770a08ce308cec0d7b9144278ee190ee14d7",
+    "scripts/sync-angular-client.sh": "7a1d7744b9b5097dd916ef4f2393ac6a1e64b6ce1cf5d2d28333ca71400f8e23"
+  },
+  "output_hashes": {
+    "config/generated/client-api.console.json": "934644e8d55443c9165513639123add1e51f399c61b73f9c3ffb288f0abba06f",
+    "config/generated/client-api.help-centre.json": "934644e8d55443c9165513639123add1e51f399c61b73f9c3ffb288f0abba06f",
+    "config/generated/client-runtime-console-angular.test.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "config/generated/client-runtime-help-centre-angular.test.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "config/generated/identity-client-identity-Console-browser.test.json": "5d47493fe355a68a365df0c2b16913a84abe7bbae3570f51f80e6a53aaa7c58b",
+    "config/generated/identity-client-identity-HelpCentre-browser.test.json": "e5f729d468371bee719043d0d3fb4ea249245c2339e145ede32883c466422239",
+    "config/generated/identity-providers.json": "179e3cbc08e810524bbb452691e543647f1523219ce45df80c28bec52f0e4f5f",
+    "config/generated/identity/IDENTITY.md": "85de1a40202401185cdba8a289045f4e94510e1414168bc76af663172499e11f",
+    "helpdesk_email_mock/.gitignore": "cf08801a7698d9589cffa807a29e736cb6a681edeed7f944b96ce31ee923b519",
+    "helpdesk_email_mock/README.md": "c7b152452cee76209d7305800d40ec3726f2163df4f4d443baab13388a40a252",
+    "helpdesk_email_mock/scripts/dev.sh": "2a2df357e6fbd63c5c07a83664b8958b8956bf26f32efda97dc468b61676eaaf",
+    "helpdesk_email_mock/scripts/install.sh": "e68635b1a994e1d997bd1042cd04f1bb8ebc1d976d8c68efef3a63a52172dce4",
+    "helpdesk_email_mock/scripts/lint.sh": "eee179443d9967df7c3abf4f626f1418a429b26a7fad383c12dc1bf7c1323ec0",
+    "helpdesk_email_mock/scripts/seed.sh": "360e17f1f6c1763e78e06e35b5fb75524f42802ed493aef20cae8aa567f6f5c1",
+    "helpdesk_email_mock/scripts/test.sh": "ec22db35f4552f0804485b38486af17673ca5b6e83d8994c6f05e174c3ffab61",
+    "helpdesk_email_mock/tests/contract/README.md": "b60d6c74fde99d8000344fc7fcffa15354838d1dc843f42ea374932d81d3ed66",
+    "helpdesk_email_mock/tests/contract/contract.json": "40cfeb82fff5727fdc0cbdcff1a4dbda50e229c583eb0179c8570c68ce55f670",
+    "helpdesk_email_mock/tests/contract/contract_routes.py": "b2271b2143ba28fde64753fd0ba5ff40a9f466d0e3b04ed0bda8db4a7f1a8175",
+    "helpdesk_email_mock/tests/contract/contract_support.py": "8d7d3d6e09a21a53a3e83ffa49c6afe64e124b04eefe2c1ae8860bfa30dbf91c",
+    "helpdesk_email_mock/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "helpdesk_email_mock/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "helpdesk_knowledge_service/.gitignore": "cf08801a7698d9589cffa807a29e736cb6a681edeed7f944b96ce31ee923b519",
+    "helpdesk_knowledge_service/README.md": "f729ab3c3e8b6b47a2b1d7c7148b20c359af5fa8a5365b99b76ec5fd78beb87d",
+    "helpdesk_knowledge_service/scripts/dev.sh": "b2b4b3b3be34fe09b9e65a0f106a5ffa14273b7814fd54c9330a65d246ba2243",
+    "helpdesk_knowledge_service/scripts/install.sh": "0f92f08a9fb8fb9fd95dc43cd51e6b9a9e8e92f1b29e9a7f6262db2b5a58d7bc",
+    "helpdesk_knowledge_service/scripts/lint.sh": "c015bc281d36d3f8bcfccd701f77746f83f445020edab9e848491e6bd4c0afe3",
+    "helpdesk_knowledge_service/scripts/seed.sh": "57ca24c364c8eaa83edcb015a4f9c2268bd1a96f8a63b83c5548738c1b4006df",
+    "helpdesk_knowledge_service/scripts/test.sh": "dca5c3e056c240e876b44fbd8434ccdec00116251c4cb7d8929355f79363b8ed",
+    "helpdesk_knowledge_service/tests/contract/README.md": "f8adfb68784dc1e42d9bc5801bf3778390f28c56aeb2b0683104b55d5f0affc2",
+    "helpdesk_knowledge_service/tests/contract/contract.json": "d2b748d1ab8ab11bceecb564cf4496da792cbe4f478631fa9880b8e4e571cced",
+    "helpdesk_knowledge_service/tests/contract/contract_routes.py": "7548a30e74a336168d30772f602eec62a35bf7e391f1f66cc12cb47de6594d1d",
+    "helpdesk_knowledge_service/tests/contract/contract_support.py": "851de43415dc5eeccd885631a87a108d8162ec56bcb9d739938c92627bd782d7",
+    "helpdesk_knowledge_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "helpdesk_knowledge_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "helpdesk_notice_service/.gitignore": "cf08801a7698d9589cffa807a29e736cb6a681edeed7f944b96ce31ee923b519",
+    "helpdesk_notice_service/README.md": "c35e5943d4acac15b1e2a44097d892df0a117f5b54a9461dad3b7bdca14285b9",
+    "helpdesk_notice_service/scripts/dev.sh": "ba91fa0b2aa0e6ed1ec16d9a354ff788a3ac41d60bf393bd3b69d23e175cc458",
+    "helpdesk_notice_service/scripts/install.sh": "851fd9841f474e5a65e8e5f8664e200697bb1db6abc26b99d11c7f62787bb0b8",
+    "helpdesk_notice_service/scripts/lint.sh": "a5bcff234f89569d230cd2a493e42c310ec8abf7d924ff8dd68ce5ee0c981d63",
+    "helpdesk_notice_service/scripts/test.sh": "97c45f498aab26b7de76347e7688a66870ca1b7e75424b901dd3e123aa080b5d",
+    "helpdesk_notice_service/tests/contract/README.md": "ce8d9c3d560374861aeab133338c7ee479e20a71a539fb17e9a12b0b48d71a0c",
+    "helpdesk_notice_service/tests/contract/contract.json": "4c538310102f599ceeb744d5311de8029b9b00e750dc5468c21e70da4fa10a12",
+    "helpdesk_notice_service/tests/contract/contract_routes.py": "cac1743f3acac058e05a8767db10cd848293573f939c6847359a2e316e85b22d",
+    "helpdesk_notice_service/tests/contract/contract_support.py": "9e9c25359e530c226694182eb7a4c5f603bb55328327d3f2a8ab6f4911439fd6",
+    "helpdesk_notice_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "helpdesk_notice_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "helpdesk_ticket_service/.gitignore": "cf08801a7698d9589cffa807a29e736cb6a681edeed7f944b96ce31ee923b519",
+    "helpdesk_ticket_service/README.md": "f5c3c59c89b7ed749f501bef8dd264074839dfbf14f93d9f239fd5671c7e5974",
+    "helpdesk_ticket_service/scripts/dev.sh": "88dd9bef8d03fedb0b6aee4f6da520373f303a4220b5b041c9351e33ba038399",
+    "helpdesk_ticket_service/scripts/install.sh": "99f8c80ba6fcefbb2e7925b56f346522aa669aee1e594eb81e56a0567e2dc6a8",
+    "helpdesk_ticket_service/scripts/lint.sh": "9c52f77870817324297d36b839c09587af2027f8d80ed3e0d4cb21bbe08ff8ea",
+    "helpdesk_ticket_service/scripts/seed.sh": "3656714f1fa22861ef868792d780cb6b4bf23a88244e43d34dffdef8ac3f87de",
+    "helpdesk_ticket_service/scripts/test.sh": "1e3162ef6b72a700b3d24916720e84c56c8451950a17f88bcc19cd1ebbe788a3",
+    "helpdesk_ticket_service/tests/contract/README.md": "fd5e161c9db540374f379e149e89c93b348954fc6240edc8a1f7d923b9a32fb8",
+    "helpdesk_ticket_service/tests/contract/contract.json": "a28299b51de71c31cb7581adc84ddacf2568db3950b09fe0fa6d8384ff87c026",
+    "helpdesk_ticket_service/tests/contract/contract_routes.py": "d5806ba99738c84f891f875363d0b822c5a780234ec7343aef9b2f42af3f74e3",
+    "helpdesk_ticket_service/tests/contract/contract_support.py": "d172bb7e57fc95de70018e8b0f06bf0bd54d2900a11c9c54c75d0c23e82c1ab6",
+    "helpdesk_ticket_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "helpdesk_ticket_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "scripts/prepare-clients.ps1": "2e8106805b2f18d26a36f4ae7d2c7d5c7c7c0214aa0e3a14ebfdb5c56b224319",
+    "scripts/prepare-clients.py": "b11158ba379f6cdf687402b2e95a04ff120c49c1f072a993052cb05292be8fdd",
+    "scripts/prepare-clients.sh": "824a4bf0b676eb5982b0d78767dd7a5d78b2a1836d3ce01003ed5d13e721936a",
+    "scripts/sync-angular-client.ps1": "7cfecc2cbcefa7060637c5a0e0ccf3054934e9e10721ae2b3775eb0d28811236",
+    "scripts/sync-angular-client.py": "fd97fdb99ecb380d60fd1257908316130fe8e125d111dbb9867a888e864b0bc1",
+    "scripts/sync-angular-client.sh": "7a1d7744b9b5097dd916ef4f2393ac6a1e64b6ce1cf5d2d28333ca71400f8e23"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "helpdesk_email_mock/.gitignore": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/README.md": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/scripts/dev.sh": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/scripts/install.sh": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/scripts/lint.sh": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/scripts/seed.sh": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/scripts/test.sh": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/tests/contract/README.md": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/tests/contract/contract.json": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/tests/contract/contract_routes.py": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/tests/contract/contract_support.py": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/tests/contract/pytest.ini": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_email_mock/tests/contract/requirements.txt": [
+      "helpdesk.EmailMock"
+    ],
+    "helpdesk_knowledge_service/.gitignore": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/README.md": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/scripts/dev.sh": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/scripts/install.sh": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/scripts/lint.sh": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/scripts/seed.sh": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/scripts/test.sh": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/tests/contract/README.md": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/tests/contract/contract.json": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/tests/contract/contract_routes.py": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/tests/contract/contract_support.py": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/tests/contract/pytest.ini": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_knowledge_service/tests/contract/requirements.txt": [
+      "helpdesk.KnowledgeService"
+    ],
+    "helpdesk_notice_service/.gitignore": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/README.md": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/scripts/dev.sh": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/scripts/install.sh": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/scripts/lint.sh": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/scripts/test.sh": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/tests/contract/README.md": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/tests/contract/contract.json": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/tests/contract/contract_routes.py": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/tests/contract/contract_support.py": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/tests/contract/pytest.ini": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_notice_service/tests/contract/requirements.txt": [
+      "helpdesk.NoticeService"
+    ],
+    "helpdesk_ticket_service/.gitignore": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/README.md": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/scripts/dev.sh": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/scripts/install.sh": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/scripts/lint.sh": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/scripts/seed.sh": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/scripts/test.sh": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/tests/contract/README.md": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/tests/contract/contract.json": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/tests/contract/contract_routes.py": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/tests/contract/contract_support.py": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/tests/contract/pytest.ini": [
+      "helpdesk.TicketService"
+    ],
+    "helpdesk_ticket_service/tests/contract/requirements.txt": [
+      "helpdesk.TicketService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

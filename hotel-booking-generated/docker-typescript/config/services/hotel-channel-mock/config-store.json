@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "channel_db_database": "hotel_channel_mock",
+    "channel_db_host": "hotel-system-postgresql",
+    "channel_db_port": 5432,
+    "channel_db_user": "hotel_channel_mock_channel_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

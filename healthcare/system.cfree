@@ -1,0 +1,19 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/insurer-provider.cfree';
+include 'providers/pharmacy-provider.cfree';
+include 'providers/sms-provider.cfree';
+include 'patient-service.cfree';
+include 'appointment-service.cfree';
+include 'record-service.cfree';
+include 'mocks/insurer-mock.cfree';
+include 'mocks/pharmacy-mock.cfree';
+include 'mocks/sms-mock.cfree';
+include 'portal-app.cfree';
+include 'clinic-app.cfree';
+
+/// Ferncrest Clinic: a patient books a visit, the clinic runs the day from a board, a clinician signs
+/// the note and sends the prescription, and the insurer settles the claim. The insurer, the pharmacy
+/// and the text message vendor are outside the clinic, played here by mocks in the same stack.
+system healthcare.System('config/system.ccfg') : version('2.0.0') {
+}

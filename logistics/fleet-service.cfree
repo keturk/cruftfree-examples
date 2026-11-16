@@ -1,0 +1,183 @@
+// The vans and the people who drive them. A van comes off the road when its next service falls due, and a
+// finished route adds to its odometer, so nobody has to remember to look.
+service logistics.FleetService('config/fleet-service.ccfg') : version('2.0.0'), description('Vans and drivers') {
+
+    discovery { }
+
+    exceptions {
+        NotAvailableError : status(409), message("That driver or van is not available");
+    }
+
+    enum DriverStatus {
+        Active : tone(success),
+        OnLeave : tone(neutral)
+    }
+
+    enum VehicleStatus {
+        InService : tone(success),
+        ServiceDue : tone(warning),
+        OffRoad : tone(danger)
+    }
+
+    const SERVICE_INTERVAL_KM = 15000;
+
+    rdbms fleetDb {
+
+        entity Vehicle extends BaseEntity {
+            String(60) name : filterable;
+            String(12) registration : unique, filterable;
+            Float capacityKg;
+            VehicleStatus status : filterable = VehicleStatus.InService;
+            Int odometerKm = 0;
+            Int nextServiceKm = 15000;
+        }
+
+        entity Driver extends BaseEntity {
+            String(200) name : filterable;
+            /// A driver's sign-in address. It is how the Driver app knows whose route to show.
+            Email email : unique;
+            DriverStatus status : filterable = DriverStatus.Active;
+        }
+
+        /// What was done to a van. Never changed once written.
+        entity ServiceRecord extends BaseEntity : appendOnly {
+            String(60) vehicleName : filterable;
+            UUID vehicleId : index;
+            String(300) workDone;
+            Money cost;
+            Int atOdometerKm;
+        }
+    }
+
+    struct NewVehicle {
+        String(60) name;
+        String(12) registration;
+        Float capacityKg;
+    }
+
+    struct NewDriver {
+        String(200) name;
+        Email email;
+    }
+
+    struct ServiceRequest {
+        UUID vehicleId;
+        String(300) workDone;
+        Money cost;
+    }
+
+    struct FleetSummary {
+        Int vansOnTheRoad;
+        Int serviceDue;
+        Int driversActive;
+    }
+
+    struct Assignment {
+        String driverName;
+        Email driverEmail;
+        String vehicleName;
+        Float capacityKg;
+    }
+
+    struct DistanceReport {
+        UUID vehicleId;
+        Int distanceKm;
+    }
+
+    struct DistanceAck {
+        Int odometerKm;
+    }
+
+    rest_api FleetDeskAPI : basePath('/api/v1/desk/fleet'), rdbms(fleetDb) {
+        resource Vehicle : only(list), auth(required, providers: [identity], roles: [dispatcher]);
+        resource Driver : only(list), auth(required, providers: [identity], roles: [dispatcher]);
+        resource ServiceRecord : only(list), auth(required, providers: [identity], roles: [dispatcher]);
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [dispatcher]) -> FleetSummary {
+            return FleetSummary {
+                vansOnTheRoad: Vehicle.where(status: VehicleStatus.InService).count(),
+                serviceDue: Vehicle.where(status: VehicleStatus.ServiceDue).count(),
+                driversActive: Driver.where(status: DriverStatus.Active).count()
+            };
+        }
+
+        // What a dispatcher can choose from when planning a route.
+        @path('/choices/vans')
+        get vansToChoose() : auth(required, providers: [identity], roles: [dispatcher]) -> Array<Vehicle> {
+            return Vehicle.where(status: VehicleStatus.InService).orderBy(name: asc).limit(100).all();
+        }
+
+        @path('/choices/drivers')
+        get driversToChoose() : auth(required, providers: [identity], roles: [dispatcher]) -> Array<Driver> {
+            return Driver.where(status: DriverStatus.Active).orderBy(name: asc).limit(100).all();
+        }
+
+        @path('/vans')
+        post addVehicle(NewVehicle request) : auth(required, providers: [identity], roles: [dispatcher]) -> Vehicle {
+            return Vehicle.create({ name: request.name, registration: request.registration, capacityKg: request.capacityKg });
+        }
+
+        @path('/drivers')
+        post addDriver(NewDriver request) : auth(required, providers: [identity], roles: [dispatcher]) -> Driver {
+            return Driver.create({ name: request.name, email: request.email });
+        }
+
+        // A service puts the van back on the road and sets when the next one falls due.
+        @path('/vans/service')
+        post recordService(ServiceRequest request) : auth(required, providers: [identity], roles: [dispatcher]) -> Vehicle {
+            let Vehicle vehicle = Vehicle.findOrFail(request.vehicleId);
+            ServiceRecord.create({
+                vehicleName: vehicle.name,
+                vehicleId: vehicle.id,
+                workDone: request.workDone,
+                cost: request.cost,
+                atOdometerKm: vehicle.odometerKm
+            });
+            vehicle.nextServiceKm = vehicle.odometerKm + SERVICE_INTERVAL_KM;
+            vehicle.status = VehicleStatus.InService;
+            vehicle.save();
+            return vehicle;
+        }
+    }
+
+    // What the routes need.
+    rest_api FleetInternalAPI : basePath('/internal/fleet'), rdbms(fleetDb) {
+        @path('/assignment')
+        get assignment(UUID driverId, UUID vehicleId) : auth(service, providers: [machine]) -> Assignment {
+            let Driver driver = Driver.findOrFail(driverId);
+            let Vehicle vehicle = Vehicle.findOrFail(vehicleId);
+            if (driver.status != DriverStatus.Active || vehicle.status != VehicleStatus.InService) {
+                throw NotAvailableError();
+            }
+            return Assignment { driverName: driver.name, driverEmail: driver.email, vehicleName: vehicle.name, capacityKg: vehicle.capacityKg };
+        }
+
+        @path('/distance')
+        post addDistance(DistanceReport report) : auth(service, providers: [machine]) -> DistanceAck {
+            let Vehicle vehicle = Vehicle.findOrFail(report.vehicleId);
+            vehicle.odometerKm = vehicle.odometerKm + report.distanceKm;
+            vehicle.save();
+            return DistanceAck { odometerKm: vehicle.odometerKm };
+        }
+    }
+
+    jobs {
+        // Finds every van past its service distance, once a day, before the morning's planning.
+        job FlagVehiclesDue {
+            let Array<fleetDb.Vehicle> vans = fleetDb.Vehicle.where(status: VehicleStatus.InService).limit(500).all();
+            foreach vehicle in vans {
+                if (vehicle.odometerKm >= vehicle.nextServiceKm) {
+                    vehicle.status = VehicleStatus.ServiceDue;
+                    vehicle.save();
+                }
+            }
+        }
+    }
+
+    test("a new van is in service") {
+        let fleetDb.Vehicle van = fleetDb.Vehicle.create({ name: "Van 9", registration: "QL-TEST-9", capacityKg: 900.0 });
+        assert van.status == VehicleStatus.InService;
+        assert van.nextServiceKm == SERVICE_INTERVAL_KM;
+    }
+}

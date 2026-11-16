@@ -1,0 +1,42 @@
+config app ecommerce.Admin {
+  base {
+    targets = ["angular", "flutter"];
+    appId   = "com.example.admin";
+    strings = ["config/strings/admin.en-US.ccfg"];
+    clients {
+      angular {
+        scope = "@ecommerce";
+      }
+    }
+  }
+  profile development as "dev" extends azure {
+  }
+  profile test as "test" extends base {
+    web { port = 4300; }
+  }
+  profile production as "prod" extends base {
+    web { port = 4300; }
+  }
+  // Every deployed profile also ships the mobile app, so it declares how the
+  // release is signed. Each Android value names a logical secret handle the
+  // operator supplies at build time -- never the secret itself. The iOS team
+  // id is a public Apple Developer identifier.
+  profile deployed as "deployed" extends base {
+    android {
+      keystore = "android_keystore";
+      keyAlias = "android_key_alias";
+      storePassword = "android_store_password";
+      keyPassword = "android_key_password";
+    }
+    ios { teamId = "ABCDE12345"; }
+  }
+  profile aws extends deployed {
+    web { domain { name = "admin.wrenwood.example.com"; } }
+  }
+  profile azure extends deployed {
+    web { domain { name = "admin.wrenwood.example.com"; } }
+  }
+  profile azureVm extends deployed {
+    web { domain { name = "admin.wrenwood.example.com"; } }
+  }
+}

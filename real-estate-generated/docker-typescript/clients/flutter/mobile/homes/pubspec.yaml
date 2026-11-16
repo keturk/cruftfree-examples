@@ -1,0 +1,36 @@
+name: homes
+description: "Homes: the generated mobile app. Never edited."
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ^3.13.4
+  flutter: ^3.47.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cruftfree_client:
+    path: ../..
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: "6.0.0"
+  go_router: "18.0.1"
+  http: "1.6.0"
+  shared_preferences_platform_interface: "2.4.2"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/apps/homes/
+    - assets/config/
+    - assets/strings/
+  fonts:
+    - family: "Lora"
+      fonts:
+        - asset: assets/apps/homes/body-regular-ac079950fd98.ttf
+          weight: 400
+        - asset: assets/apps/homes/heading-semibold-7bbfe9f3c9e9.ttf
+          weight: 600

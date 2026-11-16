@@ -1,0 +1,19 @@
+// What the Millrace services and the app share.
+module taskapp.common {
+
+    /// The columns of a board, in the order a task crosses them.
+    enum TaskStatus {
+        Backlog : tone(neutral),
+        Todo : tone(info),
+        InProgress : tone(warning),
+        Review : tone(warning),
+        Done : tone(success)
+    }
+
+    enum Priority {
+        Low : tone(neutral),
+        Normal : tone(info),
+        High : tone(warning),
+        Urgent : tone(danger)
+    }
+}

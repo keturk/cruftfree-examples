@@ -1,0 +1,15 @@
+{
+  "connections": {
+    "email_provider_base_url": "http://helpdesk-email-mock:8091",
+    "helpdesk_ticket_service_base_url": "http://helpdesk-ticket-service:8001",
+    "mq_brokers": "helpdesk-system-kafka:9092",
+    "mq_port": 9092,
+    "notice_db_database": "helpdesk_notice",
+    "notice_db_host": "helpdesk-system-postgresql",
+    "notice_db_port": 5432,
+    "notice_db_user": "helpdesk_notice_service_notice_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

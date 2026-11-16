@@ -1,0 +1,81 @@
+config service healthcare.PatientService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8001;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms patientDb from postgresContainer(id: "f4c2356d-d373-4836-9a63-b75f60bbb3ec", database: "healthcare_patient");
+    httpSecurity from localHttpSecurity(host: "healthcare-patient-service");
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // The default only exists on a local stack, where it matches the hash seeded in
+      // seed/insurer-mock.cseed, so the example runs with nothing to configure. Any other deployment
+      // must supply the handle's value.
+      secret insurer_provider_api_key {
+        required = true;
+        purpose = "API key for the insurer (InsurerProvider contract).";
+        localDefault = "dev-only-insurer-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    remoteConfigOps {
+      appconfigMinPollSeconds = 15;
+    }
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms patientDb from rdsPostgres(id: "f4c2356d-d373-4836-9a63-b75f60bbb3ec", database: "healthcare_patient", poolSize: 20, maxOverflow: 10);
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

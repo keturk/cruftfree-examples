@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "sms_db_database": "cityservices_sms_mock",
+    "sms_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

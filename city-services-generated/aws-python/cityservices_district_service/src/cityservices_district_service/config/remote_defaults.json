@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "district_db_database": "cityservices_district",
+    "district_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

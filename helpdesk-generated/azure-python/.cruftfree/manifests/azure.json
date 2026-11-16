@@ -1,0 +1,531 @@
+{
+  "target": "azure",
+  "generated_at": "2026-11-16T02:28:04Z",
+  "files": [
+    ".cruftfree/runtime-requirements.json",
+    "DEPLOYMENT.md",
+    "azure-pipelines.yml",
+    "clients/angular/static-web-apps/console/staticwebapp.config.json",
+    "clients/angular/static-web-apps/help-centre/staticwebapp.config.json",
+    "config/identity-provider-plan.json",
+    "infra/.gitignore",
+    "infra/bicepconfig.json",
+    "infra/canary.bicep",
+    "infra/canary.bicepparam",
+    "infra/canary.prod.bicepparam",
+    "infra/diagnostic-settings.json",
+    "infra/foundation.bicep",
+    "infra/foundation.bicepparam",
+    "infra/foundation.prod.bicepparam",
+    "infra/main.bicep",
+    "infra/main.bicepparam",
+    "infra/main.prod.bicepparam",
+    "infra/modules/api-management.bicep",
+    "infra/modules/apim-tls-certificate-vault.bicep",
+    "infra/modules/app-configuration.bicep",
+    "infra/modules/app-insights.bicep",
+    "infra/modules/app-service-plan.bicep",
+    "infra/modules/console-static-web-app.bicep",
+    "infra/modules/container-registry.bicep",
+    "infra/modules/deploy-script-infra.bicep",
+    "infra/modules/help-centre-static-web-app.bicep",
+    "infra/modules/helpdesk-email-mock-email-db-development-pool-diag.bicep",
+    "infra/modules/helpdesk-email-mock-email-db-development-pool.bicep",
+    "infra/modules/helpdesk-email-mock-role-acr-pull.bicep",
+    "infra/modules/helpdesk-email-mock-role-app-configuration-data-reader.bicep",
+    "infra/modules/helpdesk-email-mock-role-keyvault-secret-reader.bicep",
+    "infra/modules/helpdesk-email-mock-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/helpdesk-email-mock-webapp.bicep",
+    "infra/modules/helpdesk-knowledge-service-knowledge-db-development-pool-diag.bicep",
+    "infra/modules/helpdesk-knowledge-service-knowledge-db-development-pool.bicep",
+    "infra/modules/helpdesk-knowledge-service-role-acr-pull.bicep",
+    "infra/modules/helpdesk-knowledge-service-role-app-configuration-data-reader.bicep",
+    "infra/modules/helpdesk-knowledge-service-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/helpdesk-knowledge-service-webapp.bicep",
+    "infra/modules/helpdesk-notice-service-notice-db-development-pool-diag.bicep",
+    "infra/modules/helpdesk-notice-service-notice-db-development-pool.bicep",
+    "infra/modules/helpdesk-notice-service-role-acr-pull.bicep",
+    "infra/modules/helpdesk-notice-service-role-app-configuration-data-reader.bicep",
+    "infra/modules/helpdesk-notice-service-role-eventhubs-data-receiver.bicep",
+    "infra/modules/helpdesk-notice-service-role-eventhubs-data-sender.bicep",
+    "infra/modules/helpdesk-notice-service-role-keyvault-secrets.bicep",
+    "infra/modules/helpdesk-notice-service-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/helpdesk-notice-service-webapp.bicep",
+    "infra/modules/helpdesk-ticket-service-role-acr-pull.bicep",
+    "infra/modules/helpdesk-ticket-service-role-app-configuration-data-reader.bicep",
+    "infra/modules/helpdesk-ticket-service-role-eventhubs-data-sender.bicep",
+    "infra/modules/helpdesk-ticket-service-role-monitoring-metrics-publisher.bicep",
+    "infra/modules/helpdesk-ticket-service-ticket-db-development-pool-diag.bicep",
+    "infra/modules/helpdesk-ticket-service-ticket-db-development-pool.bicep",
+    "infra/modules/helpdesk-ticket-service-webapp.bicep",
+    "infra/modules/identity/backend-audience.bicep",
+    "infra/modules/identity/identity-console-browser-entra-app-registration.bicep",
+    "infra/modules/identity/identity-entra-app-registration.bicep",
+    "infra/modules/identity/identity-help-centre-browser-entra-app-registration.bicep",
+    "infra/modules/identity/machine-entra-app-registration.bicep",
+    "infra/modules/identity/machine-managed-identity.bicep",
+    "infra/modules/in-vnet-bootstrap-pg-admin.bicep",
+    "infra/modules/in-vnet-bootstrap-rg-grant.bicep",
+    "infra/modules/in-vnet-bootstrap.bicep",
+    "infra/modules/key-vault.bicep",
+    "infra/modules/monitor-alerts.bicep",
+    "infra/modules/monitor-workbooks.bicep",
+    "infra/modules/pooled-event-hubs-lanternpost-events-development-diag.bicep",
+    "infra/modules/pooled-event-hubs-lanternpost-events-development.bicep",
+    "infra/modules/private-dns-zone-appconfig.bicep",
+    "infra/modules/private-dns-zone-cache.bicep",
+    "infra/modules/private-dns-zone-cosmos.bicep",
+    "infra/modules/private-dns-zone-cosmosmongo.bicep",
+    "infra/modules/private-dns-zone-foundry.bicep",
+    "infra/modules/private-dns-zone-keyvault.bicep",
+    "infra/modules/private-dns-zone-messaging.bicep",
+    "infra/modules/private-dns-zone-search.bicep",
+    "infra/modules/private-dns-zone-storage.bicep",
+    "infra/modules/private-dns-zone-webapp.bicep",
+    "infra/modules/private-endpoint-appconfig.bicep",
+    "infra/modules/private-endpoint-cache.bicep",
+    "infra/modules/private-endpoint-cosmos.bicep",
+    "infra/modules/private-endpoint-cosmosmongo.bicep",
+    "infra/modules/private-endpoint-foundry.bicep",
+    "infra/modules/private-endpoint-keyvault.bicep",
+    "infra/modules/private-endpoint-messaging.bicep",
+    "infra/modules/private-endpoint-search.bicep",
+    "infra/modules/private-endpoint-storage.bicep",
+    "infra/modules/private-endpoint-webapp.bicep",
+    "infra/modules/run-store.bicep",
+    "infra/modules/schema-owner-bootstrap.bicep",
+    "infra/modules/secret-seeding.bicep",
+    "infra/modules/trusted-caller-settings.bicep",
+    "infra/modules/virtual-network.bicep",
+    "scripts/cost-guard.ps1",
+    "scripts/deploy.ps1",
+    "scripts/deploy.py",
+    "scripts/deploy.sh",
+    "scripts/operating-hours.ps1"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    ".cruftfree/runtime-requirements.json": "b1289e081f19674ca9a4813b0562f0d6476d2b894cbe00f5adbb451ca865d8c4",
+    "DEPLOYMENT.md": "2427e303b9f351c2950935d41e46da978a5bd238c380f788b49e5c89d9e05445",
+    "azure-pipelines.yml": "99ca0f241da449ac1e5c5b7d41b2d370ac67af2516de90287d243e82ac2ed8fb",
+    "clients/angular/static-web-apps/console/staticwebapp.config.json": "a63ca8c5c1dc7ad50577cd7a51112fe06ab8d719ca604522b0b5edae8ef26762",
+    "clients/angular/static-web-apps/help-centre/staticwebapp.config.json": "c70ec9781bb0f20db12f0b3a05ca4782e08517c08615117cce366e2d8db1bee0",
+    "config/identity-provider-plan.json": "e207c148cc5bd2b2b849ad0f92f43122c1e21514b24978dad3e7225a8f0b39c4",
+    "infra/.gitignore": "870074775204814dafeadb3484d87393b101ec0fcb2eb282d1e5c288d94e211b",
+    "infra/bicepconfig.json": "7038f7ae67d943aa7d92a6067d41ec15d9ad255a080b2e3777ee5e5b5f7e014f",
+    "infra/canary.bicep": "4c419a1ef57d99358d4de4b4bed1244d7c70bba4cc9b0dcea5d472097ec7d49c",
+    "infra/canary.bicepparam": "6a84f654fc05d6a094fcdef06cb27500a6fa6052a5723294b3d9d2abbc85f7ac",
+    "infra/canary.prod.bicepparam": "27591bc58234cf10c18c0b7ed68de46b2630a89a7711807342bc21587982c88c",
+    "infra/diagnostic-settings.json": "48f1a0b3235bb64fcfe53c02cb4c7c6663744fe1ebc2c4261e570097d6abdcea",
+    "infra/foundation.bicep": "8e5939faa68cc6b9bd958ffeeedae43f0d467fd9cb237f95bc4865864be159ac",
+    "infra/foundation.bicepparam": "76ca27a908daa03dd4daad6e4582e2b6e147fd32e6d0bb90430af5a6de863054",
+    "infra/foundation.prod.bicepparam": "a3f3c4b7f155f09345c15ed2ce73cb6a69fd74f7e97aad7374422a3ab98db50c",
+    "infra/main.bicep": "f43a11d698380188907234579523204b23eb160870b718ead7060c8272379b4a",
+    "infra/main.bicepparam": "2b8694a1fcba34302ba483926b34074d7b74739c47fac6a571d59def43ba100d",
+    "infra/main.prod.bicepparam": "52bb696d69c359ee57057e40194a29af06a0347156d6809cab241da0bdae89ba",
+    "infra/modules/api-management.bicep": "218703fa7972e1c0ca431c0fa01899701cab407ebc68e3722153d7a12d34e9e7",
+    "infra/modules/apim-tls-certificate-vault.bicep": "af8c5606dbc8cc475ed3d66e5f2d2a4c5d6b4d9424f008719d8a2a59011c8c33",
+    "infra/modules/app-configuration.bicep": "d7baec9e47a1e71455ac70f952b9b297f8ac9a09bb6d1118d50345c9263f8c82",
+    "infra/modules/app-insights.bicep": "80de15dac37c4cbc57a275ca00bc7028f0d95c6f214c5374b683ad588e6a1d74",
+    "infra/modules/app-service-plan.bicep": "6151c0c842118ed31dbc9d655441d047bf7d28410171c485c6a8784d57fff92e",
+    "infra/modules/console-static-web-app.bicep": "801069bbeb85e35b11f65e92605be33c1899608105c5ffa81af42d72cb760e1c",
+    "infra/modules/container-registry.bicep": "1eba138c54506c0ca6531ea789934478681de70645946088f17211f0c719a5de",
+    "infra/modules/deploy-script-infra.bicep": "e1678f23dcc1d6030acd05f6553fc9609efca0dc0c95f51bcdb5377bf2641a95",
+    "infra/modules/help-centre-static-web-app.bicep": "801069bbeb85e35b11f65e92605be33c1899608105c5ffa81af42d72cb760e1c",
+    "infra/modules/helpdesk-email-mock-email-db-development-pool-diag.bicep": "16fb5a6ea712d5df6db6821ff5f1d214178d322fe0d271ca5abf5a7f25e78aa0",
+    "infra/modules/helpdesk-email-mock-email-db-development-pool.bicep": "72714623c8115e5128407f04a9894ab723f7bb28bbdb95cc64a467a0e8502d6b",
+    "infra/modules/helpdesk-email-mock-role-acr-pull.bicep": "3a1e7c4b2f3dddd3a88b5e1e6ccd8a1c8c8e8161826b18700880d5a4c6e02b1b",
+    "infra/modules/helpdesk-email-mock-role-app-configuration-data-reader.bicep": "f2e6fb2b656f1d118d4c1630bea97a5cb7138a2fde5924c5cc4bfdcb99edc9f6",
+    "infra/modules/helpdesk-email-mock-role-keyvault-secret-reader.bicep": "99555d6e5b405a47888501978d765561c6814a083a24468d99b8cae5b18ebcc9",
+    "infra/modules/helpdesk-email-mock-role-monitoring-metrics-publisher.bicep": "f1c7aa24d6034bfd1dd0e434a87bde28b2aa41220327cc1204582246168d8b04",
+    "infra/modules/helpdesk-email-mock-webapp.bicep": "5f95e9fe58c3d7ed4a5c6c5f7802bc8024930acfb92f70adcf724e54f392f13a",
+    "infra/modules/helpdesk-knowledge-service-knowledge-db-development-pool-diag.bicep": "08aa2bae62770d9623e51ba7e09ef2c6bd639544344c3bf3e42c05181e8ade11",
+    "infra/modules/helpdesk-knowledge-service-knowledge-db-development-pool.bicep": "e4166d39887a1aa284a9619abdad5ba7744d2b1c8180923092f9d1f6561ef817",
+    "infra/modules/helpdesk-knowledge-service-role-acr-pull.bicep": "b61a27017ecf7f4cb7ea26235fdf7804528a933b08fcbf946e12622d6f80f77b",
+    "infra/modules/helpdesk-knowledge-service-role-app-configuration-data-reader.bicep": "297a456ac729304a614c09635d888602553d0a3b64425d6277a69df38017e2ae",
+    "infra/modules/helpdesk-knowledge-service-role-monitoring-metrics-publisher.bicep": "016b68fed73810b001e3143eb181c9c0c531180011cdabcc5cf187cc39703378",
+    "infra/modules/helpdesk-knowledge-service-webapp.bicep": "db595d580777537fb823f2d8842d9e95b71190af46b8848f6cb7ea4b4267c672",
+    "infra/modules/helpdesk-notice-service-notice-db-development-pool-diag.bicep": "d2210ba2a767e0937ab24a17594416d0817e6a8fc716d1ec4758a461c29c91af",
+    "infra/modules/helpdesk-notice-service-notice-db-development-pool.bicep": "5b18709a62c0849b25ed4617a718edcb75da8096a7a0fa0d376ff74a9d8bae6e",
+    "infra/modules/helpdesk-notice-service-role-acr-pull.bicep": "8774128468ed52cbfae2fba736dff35f492f06a717784e8e2280e13f80b832b9",
+    "infra/modules/helpdesk-notice-service-role-app-configuration-data-reader.bicep": "4f8339740e0b0007375f14f70d25585cdb4aff6ec8a28dbf9b2e398f50e064f5",
+    "infra/modules/helpdesk-notice-service-role-eventhubs-data-receiver.bicep": "f9ef28710c3d58297085dac06ac2db13029ce391dc1b25f64d94d02f50399c80",
+    "infra/modules/helpdesk-notice-service-role-eventhubs-data-sender.bicep": "f32d10f28cb12aeeb996fea3de982fe4806b2b4f7143b2b819ddf8cc5ab38f36",
+    "infra/modules/helpdesk-notice-service-role-keyvault-secrets.bicep": "b6613d0fd2891469f16d8b80bf1ed72a87a34d91c01c2a2eeb5f878855eede13",
+    "infra/modules/helpdesk-notice-service-role-monitoring-metrics-publisher.bicep": "95d308270e45f09b4cf7e31d4b94047c7770f16b49ce528eee198dce3516a04e",
+    "infra/modules/helpdesk-notice-service-webapp.bicep": "8f34bc67ecaabe6eb210f9c3b628276525536a658df03d4d1dca1424af879745",
+    "infra/modules/helpdesk-ticket-service-role-acr-pull.bicep": "6cf3243593b2a6d90516841f66af5810cf595525947e8999cf513ef5fb647b6b",
+    "infra/modules/helpdesk-ticket-service-role-app-configuration-data-reader.bicep": "d94a581b81ac2f925926c23a409b938e3248af5b760740761aa3c25e9d6c39ea",
+    "infra/modules/helpdesk-ticket-service-role-eventhubs-data-sender.bicep": "a5c01f61f1a42dce2ae8cba6618b686c8288e57c11ea996b9ca7d09f7ea8aca2",
+    "infra/modules/helpdesk-ticket-service-role-monitoring-metrics-publisher.bicep": "783a2961c81d21500a5acbdc50a83ff7b5726e5f3fed50277a227362189d5f18",
+    "infra/modules/helpdesk-ticket-service-ticket-db-development-pool-diag.bicep": "56f3cf901fb2172c3b94a80f1fb5e79d8ab73253d41a2c04a83de8d038b9c426",
+    "infra/modules/helpdesk-ticket-service-ticket-db-development-pool.bicep": "5ca3e8eaeb87045259e7a654a2d3ddb115fa87450b2fb992d907e3710993fd36",
+    "infra/modules/helpdesk-ticket-service-webapp.bicep": "3ff9e2917bc354ebc0934d7a53dc1cacb693e041614aecdf2926fc79a15be089",
+    "infra/modules/identity/backend-audience.bicep": "f20705f3dcbcf9c2d6c855ff016ba3f324c047447b56469ebf8e1c8ed053da73",
+    "infra/modules/identity/identity-console-browser-entra-app-registration.bicep": "085c20eb1cf3bec6a5283dac02dcf8fba8daa9e19c3672f6c141c5cdc179bec3",
+    "infra/modules/identity/identity-entra-app-registration.bicep": "1f3ff9d35f6996a0753d1732fbf772c9e0ad3568dd9e6adcbc088d3c447ba72b",
+    "infra/modules/identity/identity-help-centre-browser-entra-app-registration.bicep": "5d29cb826456cdfe4a0ace72842a77719a924696dca363103780d7eb10266495",
+    "infra/modules/identity/machine-entra-app-registration.bicep": "5deb75b3dd53586fc59a027b7f1cf57b063f064f21d725837c06f8f4800c9118",
+    "infra/modules/identity/machine-managed-identity.bicep": "90b596bbfb9a8faa74452ec4228d2c94ce5c6789b4cd0288f6649c1f4eec31d8",
+    "infra/modules/in-vnet-bootstrap-pg-admin.bicep": "ab7a598c783bcbfe8fc5e99fb76785ccb2e5fae88567070bc3d685707c34408f",
+    "infra/modules/in-vnet-bootstrap-rg-grant.bicep": "7b7a2ad4be9f49d1f41f7138c315c25bf52c0cbc1c17be1a984e675b5188acca",
+    "infra/modules/in-vnet-bootstrap.bicep": "a33f59a8829d52ec665a22df5c314a5bead960bd25c6520a05d11a023be1045e",
+    "infra/modules/key-vault.bicep": "49ffea1956b4397d596beda9dc296d413364922159064f0f149526233d2b2519",
+    "infra/modules/monitor-alerts.bicep": "95bf3b258f610f9cb4f463b7aefeec747ec18c826792637b77f405e95b175c3b",
+    "infra/modules/monitor-workbooks.bicep": "86fe55cecd9b3bdd186317d5d742561ed4d43013a1f5bc64262be24727474ddd",
+    "infra/modules/pooled-event-hubs-lanternpost-events-development-diag.bicep": "96d9ef39b4adfb0de07229d6811b3b61439db6469e6c58d220c96dbd6a43b0c9",
+    "infra/modules/pooled-event-hubs-lanternpost-events-development.bicep": "b7f7f7e300bdfff785fe3b222500499d680ded77cf81ed9359c372cc3b62a3f0",
+    "infra/modules/private-dns-zone-appconfig.bicep": "3a038ae1829e3663dc603220cc8709194e9d848a60f42349e8a2793f0d568bcf",
+    "infra/modules/private-dns-zone-cache.bicep": "996e02aece340a8c0e4f17d256e1919b525656928196e4d4ca873becf164ffd9",
+    "infra/modules/private-dns-zone-cosmos.bicep": "c5d06da340a803d4dca5fa27036724ad552773704b561e48115ad1b694a50e4f",
+    "infra/modules/private-dns-zone-cosmosmongo.bicep": "8cc14411d3d74fd8577692ded2c81024fe19e5bc963ee3f89b76c821ab274c78",
+    "infra/modules/private-dns-zone-foundry.bicep": "8582be585fb61a0c2ec1f64c3384e5607a98268d86e574c6d5f3bf096d332338",
+    "infra/modules/private-dns-zone-keyvault.bicep": "0fc4cc4e8960216f9ad44fc25c53952c93a9e557fbc0dd0ce2361b1f07a59d13",
+    "infra/modules/private-dns-zone-messaging.bicep": "05fe4c3b4e610267bb6216af43d6aba7c7b43d841aab742838f7bea4534086e7",
+    "infra/modules/private-dns-zone-search.bicep": "d067574aff457efad7598f0ade97f62bb575d256f501b062f247b133c4678e0e",
+    "infra/modules/private-dns-zone-storage.bicep": "cb4ea5279762d4d3a2d36a9b9c8c43f2149452c9e0ab8b4d99472876443e173b",
+    "infra/modules/private-dns-zone-webapp.bicep": "575a9bff5c256d5f9f265e3a592b86733de55aac5327e72bd7b93ac20062b53e",
+    "infra/modules/private-endpoint-appconfig.bicep": "876c986e5a836240a0c806f3149cfae8ca9d0bdec34dd5dd47ec307e29cd1955",
+    "infra/modules/private-endpoint-cache.bicep": "eda943f9506f4cc31e9b69ca2b6adc8800b75d10b501f1694e498e267f8c5106",
+    "infra/modules/private-endpoint-cosmos.bicep": "903496f7d3d79de0a4c8ca8db7d24d7d63a4219a611a98e98d913cf933eeab22",
+    "infra/modules/private-endpoint-cosmosmongo.bicep": "aab6171387abb6df251f5ee7220ff447ec242ef675d1816444e915dec8412dd8",
+    "infra/modules/private-endpoint-foundry.bicep": "38473c8166adaca455162fa685cd49f89a4cd7ca5943e9800909eb5de2692fe8",
+    "infra/modules/private-endpoint-keyvault.bicep": "834c9dee13b51d9f8c14bf7bd328b61b4d791dc44523b5f3a5431a83bf37215c",
+    "infra/modules/private-endpoint-messaging.bicep": "c1ef394d4f4503c7099ead6593f897f148f8fc6701607f5f52b5d0edfd7c945e",
+    "infra/modules/private-endpoint-search.bicep": "285ca85e71a9354e4d76029cea603f3bd4546c0257bfa046c8a2669553098f1c",
+    "infra/modules/private-endpoint-storage.bicep": "9110ff04c7744842d6fa7e3e8fec74acfd23035f63bfbc6dbf5e633317742833",
+    "infra/modules/private-endpoint-webapp.bicep": "5b5a6215999ac127d8a06c4dc26b73972d94a07c15b50c61d174e60152c3726c",
+    "infra/modules/run-store.bicep": "d60f803d46e760db597b7874d2b51b90a4b274756e018acaa91179658f686d97",
+    "infra/modules/schema-owner-bootstrap.bicep": "6f3e068e42994d2d56eba06ca1b4683f5003b7d96cda555eeebe13829c624ad3",
+    "infra/modules/secret-seeding.bicep": "3bf1947e5d1de714e03ea1a2fd67f1c0d93fd9f09136f2271bbe8a57403061de",
+    "infra/modules/trusted-caller-settings.bicep": "a21f860c6e8222f92f7664c43cafc0400a3ec4b1915985a514150bd5aa995d98",
+    "infra/modules/virtual-network.bicep": "1c1f442c68877811a76cce71c2905fff9339c55b2672b6c8515898d09e95730e",
+    "scripts/cost-guard.ps1": "543375de9f3fea90a06ef13fe63f41df382ef8ccbb8a9dc0789d4127be14cbae",
+    "scripts/deploy.ps1": "aaf83acbb6a4db17b3550a475a9db4f8aefb31b4f4459d33278317892d921dc9",
+    "scripts/deploy.py": "8990299dbbdc9185cd10efc73a9c75d28bb33bd88a89012b29777f8c7ed9fa7e",
+    "scripts/deploy.sh": "ff8a704f16b174c7eaa0da832d64b6f7e5de540a24e8102d684f23d2cdb94740",
+    "scripts/operating-hours.ps1": "f03838f9a12e13366cb8af46235b28ef84008b92e4397f321b4565b349e3e045"
+  },
+  "output_hashes": {
+    ".cruftfree/runtime-requirements.json": "22c24c6869cbb4206d90d5e99e01baf3e53581265de41c965c9e7f0a070c9225",
+    "DEPLOYMENT.md": "2427e303b9f351c2950935d41e46da978a5bd238c380f788b49e5c89d9e05445",
+    "azure-pipelines.yml": "99ca0f241da449ac1e5c5b7d41b2d370ac67af2516de90287d243e82ac2ed8fb",
+    "clients/angular/static-web-apps/console/staticwebapp.config.json": "a63ca8c5c1dc7ad50577cd7a51112fe06ab8d719ca604522b0b5edae8ef26762",
+    "clients/angular/static-web-apps/help-centre/staticwebapp.config.json": "c70ec9781bb0f20db12f0b3a05ca4782e08517c08615117cce366e2d8db1bee0",
+    "config/identity-provider-plan.json": "2e5b9cd880d024fd307f384a27b1b4aaa78c5f0c6eed132e86488ec9a9a87b85",
+    "infra/.gitignore": "870074775204814dafeadb3484d87393b101ec0fcb2eb282d1e5c288d94e211b",
+    "infra/bicepconfig.json": "7038f7ae67d943aa7d92a6067d41ec15d9ad255a080b2e3777ee5e5b5f7e014f",
+    "infra/canary.bicep": "4c419a1ef57d99358d4de4b4bed1244d7c70bba4cc9b0dcea5d472097ec7d49c",
+    "infra/canary.bicepparam": "6a84f654fc05d6a094fcdef06cb27500a6fa6052a5723294b3d9d2abbc85f7ac",
+    "infra/canary.prod.bicepparam": "27591bc58234cf10c18c0b7ed68de46b2630a89a7711807342bc21587982c88c",
+    "infra/diagnostic-settings.json": "48f1a0b3235bb64fcfe53c02cb4c7c6663744fe1ebc2c4261e570097d6abdcea",
+    "infra/foundation.bicep": "8e5939faa68cc6b9bd958ffeeedae43f0d467fd9cb237f95bc4865864be159ac",
+    "infra/foundation.bicepparam": "76ca27a908daa03dd4daad6e4582e2b6e147fd32e6d0bb90430af5a6de863054",
+    "infra/foundation.prod.bicepparam": "a3f3c4b7f155f09345c15ed2ce73cb6a69fd74f7e97aad7374422a3ab98db50c",
+    "infra/main.bicep": "f43a11d698380188907234579523204b23eb160870b718ead7060c8272379b4a",
+    "infra/main.bicepparam": "2b8694a1fcba34302ba483926b34074d7b74739c47fac6a571d59def43ba100d",
+    "infra/main.prod.bicepparam": "52bb696d69c359ee57057e40194a29af06a0347156d6809cab241da0bdae89ba",
+    "infra/modules/api-management.bicep": "218703fa7972e1c0ca431c0fa01899701cab407ebc68e3722153d7a12d34e9e7",
+    "infra/modules/apim-tls-certificate-vault.bicep": "af8c5606dbc8cc475ed3d66e5f2d2a4c5d6b4d9424f008719d8a2a59011c8c33",
+    "infra/modules/app-configuration.bicep": "d7baec9e47a1e71455ac70f952b9b297f8ac9a09bb6d1118d50345c9263f8c82",
+    "infra/modules/app-insights.bicep": "80de15dac37c4cbc57a275ca00bc7028f0d95c6f214c5374b683ad588e6a1d74",
+    "infra/modules/app-service-plan.bicep": "6151c0c842118ed31dbc9d655441d047bf7d28410171c485c6a8784d57fff92e",
+    "infra/modules/console-static-web-app.bicep": "801069bbeb85e35b11f65e92605be33c1899608105c5ffa81af42d72cb760e1c",
+    "infra/modules/container-registry.bicep": "1eba138c54506c0ca6531ea789934478681de70645946088f17211f0c719a5de",
+    "infra/modules/deploy-script-infra.bicep": "e1678f23dcc1d6030acd05f6553fc9609efca0dc0c95f51bcdb5377bf2641a95",
+    "infra/modules/help-centre-static-web-app.bicep": "801069bbeb85e35b11f65e92605be33c1899608105c5ffa81af42d72cb760e1c",
+    "infra/modules/helpdesk-email-mock-email-db-development-pool-diag.bicep": "16fb5a6ea712d5df6db6821ff5f1d214178d322fe0d271ca5abf5a7f25e78aa0",
+    "infra/modules/helpdesk-email-mock-email-db-development-pool.bicep": "72714623c8115e5128407f04a9894ab723f7bb28bbdb95cc64a467a0e8502d6b",
+    "infra/modules/helpdesk-email-mock-role-acr-pull.bicep": "3a1e7c4b2f3dddd3a88b5e1e6ccd8a1c8c8e8161826b18700880d5a4c6e02b1b",
+    "infra/modules/helpdesk-email-mock-role-app-configuration-data-reader.bicep": "f2e6fb2b656f1d118d4c1630bea97a5cb7138a2fde5924c5cc4bfdcb99edc9f6",
+    "infra/modules/helpdesk-email-mock-role-keyvault-secret-reader.bicep": "99555d6e5b405a47888501978d765561c6814a083a24468d99b8cae5b18ebcc9",
+    "infra/modules/helpdesk-email-mock-role-monitoring-metrics-publisher.bicep": "f1c7aa24d6034bfd1dd0e434a87bde28b2aa41220327cc1204582246168d8b04",
+    "infra/modules/helpdesk-email-mock-webapp.bicep": "5f95e9fe58c3d7ed4a5c6c5f7802bc8024930acfb92f70adcf724e54f392f13a",
+    "infra/modules/helpdesk-knowledge-service-knowledge-db-development-pool-diag.bicep": "08aa2bae62770d9623e51ba7e09ef2c6bd639544344c3bf3e42c05181e8ade11",
+    "infra/modules/helpdesk-knowledge-service-knowledge-db-development-pool.bicep": "e4166d39887a1aa284a9619abdad5ba7744d2b1c8180923092f9d1f6561ef817",
+    "infra/modules/helpdesk-knowledge-service-role-acr-pull.bicep": "b61a27017ecf7f4cb7ea26235fdf7804528a933b08fcbf946e12622d6f80f77b",
+    "infra/modules/helpdesk-knowledge-service-role-app-configuration-data-reader.bicep": "297a456ac729304a614c09635d888602553d0a3b64425d6277a69df38017e2ae",
+    "infra/modules/helpdesk-knowledge-service-role-monitoring-metrics-publisher.bicep": "016b68fed73810b001e3143eb181c9c0c531180011cdabcc5cf187cc39703378",
+    "infra/modules/helpdesk-knowledge-service-webapp.bicep": "db595d580777537fb823f2d8842d9e95b71190af46b8848f6cb7ea4b4267c672",
+    "infra/modules/helpdesk-notice-service-notice-db-development-pool-diag.bicep": "d2210ba2a767e0937ab24a17594416d0817e6a8fc716d1ec4758a461c29c91af",
+    "infra/modules/helpdesk-notice-service-notice-db-development-pool.bicep": "5b18709a62c0849b25ed4617a718edcb75da8096a7a0fa0d376ff74a9d8bae6e",
+    "infra/modules/helpdesk-notice-service-role-acr-pull.bicep": "8774128468ed52cbfae2fba736dff35f492f06a717784e8e2280e13f80b832b9",
+    "infra/modules/helpdesk-notice-service-role-app-configuration-data-reader.bicep": "4f8339740e0b0007375f14f70d25585cdb4aff6ec8a28dbf9b2e398f50e064f5",
+    "infra/modules/helpdesk-notice-service-role-eventhubs-data-receiver.bicep": "f9ef28710c3d58297085dac06ac2db13029ce391dc1b25f64d94d02f50399c80",
+    "infra/modules/helpdesk-notice-service-role-eventhubs-data-sender.bicep": "f32d10f28cb12aeeb996fea3de982fe4806b2b4f7143b2b819ddf8cc5ab38f36",
+    "infra/modules/helpdesk-notice-service-role-keyvault-secrets.bicep": "b6613d0fd2891469f16d8b80bf1ed72a87a34d91c01c2a2eeb5f878855eede13",
+    "infra/modules/helpdesk-notice-service-role-monitoring-metrics-publisher.bicep": "95d308270e45f09b4cf7e31d4b94047c7770f16b49ce528eee198dce3516a04e",
+    "infra/modules/helpdesk-notice-service-webapp.bicep": "8f34bc67ecaabe6eb210f9c3b628276525536a658df03d4d1dca1424af879745",
+    "infra/modules/helpdesk-ticket-service-role-acr-pull.bicep": "6cf3243593b2a6d90516841f66af5810cf595525947e8999cf513ef5fb647b6b",
+    "infra/modules/helpdesk-ticket-service-role-app-configuration-data-reader.bicep": "d94a581b81ac2f925926c23a409b938e3248af5b760740761aa3c25e9d6c39ea",
+    "infra/modules/helpdesk-ticket-service-role-eventhubs-data-sender.bicep": "a5c01f61f1a42dce2ae8cba6618b686c8288e57c11ea996b9ca7d09f7ea8aca2",
+    "infra/modules/helpdesk-ticket-service-role-monitoring-metrics-publisher.bicep": "783a2961c81d21500a5acbdc50a83ff7b5726e5f3fed50277a227362189d5f18",
+    "infra/modules/helpdesk-ticket-service-ticket-db-development-pool-diag.bicep": "56f3cf901fb2172c3b94a80f1fb5e79d8ab73253d41a2c04a83de8d038b9c426",
+    "infra/modules/helpdesk-ticket-service-ticket-db-development-pool.bicep": "5ca3e8eaeb87045259e7a654a2d3ddb115fa87450b2fb992d907e3710993fd36",
+    "infra/modules/helpdesk-ticket-service-webapp.bicep": "3ff9e2917bc354ebc0934d7a53dc1cacb693e041614aecdf2926fc79a15be089",
+    "infra/modules/identity/backend-audience.bicep": "f20705f3dcbcf9c2d6c855ff016ba3f324c047447b56469ebf8e1c8ed053da73",
+    "infra/modules/identity/identity-console-browser-entra-app-registration.bicep": "085c20eb1cf3bec6a5283dac02dcf8fba8daa9e19c3672f6c141c5cdc179bec3",
+    "infra/modules/identity/identity-entra-app-registration.bicep": "1f3ff9d35f6996a0753d1732fbf772c9e0ad3568dd9e6adcbc088d3c447ba72b",
+    "infra/modules/identity/identity-help-centre-browser-entra-app-registration.bicep": "5d29cb826456cdfe4a0ace72842a77719a924696dca363103780d7eb10266495",
+    "infra/modules/identity/machine-entra-app-registration.bicep": "5deb75b3dd53586fc59a027b7f1cf57b063f064f21d725837c06f8f4800c9118",
+    "infra/modules/identity/machine-managed-identity.bicep": "90b596bbfb9a8faa74452ec4228d2c94ce5c6789b4cd0288f6649c1f4eec31d8",
+    "infra/modules/in-vnet-bootstrap-pg-admin.bicep": "ab7a598c783bcbfe8fc5e99fb76785ccb2e5fae88567070bc3d685707c34408f",
+    "infra/modules/in-vnet-bootstrap-rg-grant.bicep": "7b7a2ad4be9f49d1f41f7138c315c25bf52c0cbc1c17be1a984e675b5188acca",
+    "infra/modules/in-vnet-bootstrap.bicep": "a33f59a8829d52ec665a22df5c314a5bead960bd25c6520a05d11a023be1045e",
+    "infra/modules/key-vault.bicep": "49ffea1956b4397d596beda9dc296d413364922159064f0f149526233d2b2519",
+    "infra/modules/monitor-alerts.bicep": "95bf3b258f610f9cb4f463b7aefeec747ec18c826792637b77f405e95b175c3b",
+    "infra/modules/monitor-workbooks.bicep": "86fe55cecd9b3bdd186317d5d742561ed4d43013a1f5bc64262be24727474ddd",
+    "infra/modules/pooled-event-hubs-lanternpost-events-development-diag.bicep": "96d9ef39b4adfb0de07229d6811b3b61439db6469e6c58d220c96dbd6a43b0c9",
+    "infra/modules/pooled-event-hubs-lanternpost-events-development.bicep": "b7f7f7e300bdfff785fe3b222500499d680ded77cf81ed9359c372cc3b62a3f0",
+    "infra/modules/private-dns-zone-appconfig.bicep": "3a038ae1829e3663dc603220cc8709194e9d848a60f42349e8a2793f0d568bcf",
+    "infra/modules/private-dns-zone-cache.bicep": "996e02aece340a8c0e4f17d256e1919b525656928196e4d4ca873becf164ffd9",
+    "infra/modules/private-dns-zone-cosmos.bicep": "c5d06da340a803d4dca5fa27036724ad552773704b561e48115ad1b694a50e4f",
+    "infra/modules/private-dns-zone-cosmosmongo.bicep": "8cc14411d3d74fd8577692ded2c81024fe19e5bc963ee3f89b76c821ab274c78",
+    "infra/modules/private-dns-zone-foundry.bicep": "8582be585fb61a0c2ec1f64c3384e5607a98268d86e574c6d5f3bf096d332338",
+    "infra/modules/private-dns-zone-keyvault.bicep": "0fc4cc4e8960216f9ad44fc25c53952c93a9e557fbc0dd0ce2361b1f07a59d13",
+    "infra/modules/private-dns-zone-messaging.bicep": "05fe4c3b4e610267bb6216af43d6aba7c7b43d841aab742838f7bea4534086e7",
+    "infra/modules/private-dns-zone-search.bicep": "d067574aff457efad7598f0ade97f62bb575d256f501b062f247b133c4678e0e",
+    "infra/modules/private-dns-zone-storage.bicep": "cb4ea5279762d4d3a2d36a9b9c8c43f2149452c9e0ab8b4d99472876443e173b",
+    "infra/modules/private-dns-zone-webapp.bicep": "575a9bff5c256d5f9f265e3a592b86733de55aac5327e72bd7b93ac20062b53e",
+    "infra/modules/private-endpoint-appconfig.bicep": "876c986e5a836240a0c806f3149cfae8ca9d0bdec34dd5dd47ec307e29cd1955",
+    "infra/modules/private-endpoint-cache.bicep": "eda943f9506f4cc31e9b69ca2b6adc8800b75d10b501f1694e498e267f8c5106",
+    "infra/modules/private-endpoint-cosmos.bicep": "903496f7d3d79de0a4c8ca8db7d24d7d63a4219a611a98e98d913cf933eeab22",
+    "infra/modules/private-endpoint-cosmosmongo.bicep": "aab6171387abb6df251f5ee7220ff447ec242ef675d1816444e915dec8412dd8",
+    "infra/modules/private-endpoint-foundry.bicep": "38473c8166adaca455162fa685cd49f89a4cd7ca5943e9800909eb5de2692fe8",
+    "infra/modules/private-endpoint-keyvault.bicep": "834c9dee13b51d9f8c14bf7bd328b61b4d791dc44523b5f3a5431a83bf37215c",
+    "infra/modules/private-endpoint-messaging.bicep": "c1ef394d4f4503c7099ead6593f897f148f8fc6701607f5f52b5d0edfd7c945e",
+    "infra/modules/private-endpoint-search.bicep": "285ca85e71a9354e4d76029cea603f3bd4546c0257bfa046c8a2669553098f1c",
+    "infra/modules/private-endpoint-storage.bicep": "9110ff04c7744842d6fa7e3e8fec74acfd23035f63bfbc6dbf5e633317742833",
+    "infra/modules/private-endpoint-webapp.bicep": "5b5a6215999ac127d8a06c4dc26b73972d94a07c15b50c61d174e60152c3726c",
+    "infra/modules/run-store.bicep": "d60f803d46e760db597b7874d2b51b90a4b274756e018acaa91179658f686d97",
+    "infra/modules/schema-owner-bootstrap.bicep": "6f3e068e42994d2d56eba06ca1b4683f5003b7d96cda555eeebe13829c624ad3",
+    "infra/modules/secret-seeding.bicep": "3bf1947e5d1de714e03ea1a2fd67f1c0d93fd9f09136f2271bbe8a57403061de",
+    "infra/modules/trusted-caller-settings.bicep": "a21f860c6e8222f92f7664c43cafc0400a3ec4b1915985a514150bd5aa995d98",
+    "infra/modules/virtual-network.bicep": "1c1f442c68877811a76cce71c2905fff9339c55b2672b6c8515898d09e95730e",
+    "scripts/cost-guard.ps1": "543375de9f3fea90a06ef13fe63f41df382ef8ccbb8a9dc0789d4127be14cbae",
+    "scripts/deploy.ps1": "aaf83acbb6a4db17b3550a475a9db4f8aefb31b4f4459d33278317892d921dc9",
+    "scripts/deploy.py": "56eac89d25dfe95856b8681a4bb1061e7e4b46d631b32a3576414c3435b4a30e",
+    "scripts/deploy.sh": "ff8a704f16b174c7eaa0da832d64b6f7e5de540a24e8102d684f23d2cdb94740",
+    "scripts/operating-hours.ps1": "f03838f9a12e13366cb8af46235b28ef84008b92e4397f321b4565b349e3e045"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "config/identity-provider-plan.json": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/api-management.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/apim-tls-certificate-vault.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/app-configuration.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/app-service-plan.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/deploy-script-infra.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/helpdesk-email-mock-email-db-development-pool-diag.bicep": [
+      "helpdesk.EmailMock"
+    ],
+    "infra/modules/helpdesk-email-mock-email-db-development-pool.bicep": [
+      "helpdesk.EmailMock"
+    ],
+    "infra/modules/helpdesk-email-mock-role-acr-pull.bicep": [
+      "helpdesk.EmailMock"
+    ],
+    "infra/modules/helpdesk-email-mock-role-app-configuration-data-reader.bicep": [
+      "helpdesk.EmailMock"
+    ],
+    "infra/modules/helpdesk-email-mock-role-keyvault-secret-reader.bicep": [
+      "helpdesk.EmailMock"
+    ],
+    "infra/modules/helpdesk-email-mock-role-monitoring-metrics-publisher.bicep": [
+      "helpdesk.EmailMock"
+    ],
+    "infra/modules/helpdesk-email-mock-webapp.bicep": [
+      "helpdesk.EmailMock"
+    ],
+    "infra/modules/helpdesk-knowledge-service-knowledge-db-development-pool-diag.bicep": [
+      "helpdesk.KnowledgeService"
+    ],
+    "infra/modules/helpdesk-knowledge-service-knowledge-db-development-pool.bicep": [
+      "helpdesk.KnowledgeService"
+    ],
+    "infra/modules/helpdesk-knowledge-service-role-acr-pull.bicep": [
+      "helpdesk.KnowledgeService"
+    ],
+    "infra/modules/helpdesk-knowledge-service-role-app-configuration-data-reader.bicep": [
+      "helpdesk.KnowledgeService"
+    ],
+    "infra/modules/helpdesk-knowledge-service-role-monitoring-metrics-publisher.bicep": [
+      "helpdesk.KnowledgeService"
+    ],
+    "infra/modules/helpdesk-knowledge-service-webapp.bicep": [
+      "helpdesk.KnowledgeService"
+    ],
+    "infra/modules/helpdesk-notice-service-notice-db-development-pool-diag.bicep": [
+      "helpdesk.NoticeService"
+    ],
+    "infra/modules/helpdesk-notice-service-notice-db-development-pool.bicep": [
+      "helpdesk.NoticeService"
+    ],
+    "infra/modules/helpdesk-notice-service-role-acr-pull.bicep": [
+      "helpdesk.NoticeService"
+    ],
+    "infra/modules/helpdesk-notice-service-role-app-configuration-data-reader.bicep": [
+      "helpdesk.NoticeService"
+    ],
+    "infra/modules/helpdesk-notice-service-role-eventhubs-data-receiver.bicep": [
+      "helpdesk.NoticeService"
+    ],
+    "infra/modules/helpdesk-notice-service-role-eventhubs-data-sender.bicep": [
+      "helpdesk.NoticeService"
+    ],
+    "infra/modules/helpdesk-notice-service-role-keyvault-secrets.bicep": [
+      "helpdesk.NoticeService"
+    ],
+    "infra/modules/helpdesk-notice-service-role-monitoring-metrics-publisher.bicep": [
+      "helpdesk.NoticeService"
+    ],
+    "infra/modules/helpdesk-notice-service-webapp.bicep": [
+      "helpdesk.NoticeService"
+    ],
+    "infra/modules/helpdesk-ticket-service-role-acr-pull.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/helpdesk-ticket-service-role-app-configuration-data-reader.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/helpdesk-ticket-service-role-eventhubs-data-sender.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/helpdesk-ticket-service-role-monitoring-metrics-publisher.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/helpdesk-ticket-service-ticket-db-development-pool-diag.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/helpdesk-ticket-service-ticket-db-development-pool.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/helpdesk-ticket-service-webapp.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/identity/backend-audience.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/identity/identity-console-browser-entra-app-registration.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/identity/identity-entra-app-registration.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/identity/identity-help-centre-browser-entra-app-registration.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/identity/machine-entra-app-registration.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/identity/machine-managed-identity.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/in-vnet-bootstrap-pg-admin.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/in-vnet-bootstrap-rg-grant.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/in-vnet-bootstrap.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/monitor-alerts.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/monitor-workbooks.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/pooled-event-hubs-lanternpost-events-development-diag.bicep": [
+      "helpdesk.NoticeService",
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/pooled-event-hubs-lanternpost-events-development.bicep": [
+      "helpdesk.NoticeService",
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-appconfig.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-cache.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-cosmos.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-cosmosmongo.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-foundry.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-keyvault.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-messaging.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-search.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-storage.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-dns-zone-webapp.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-appconfig.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-cache.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-cosmos.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-cosmosmongo.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-foundry.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-keyvault.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-messaging.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-search.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-storage.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/private-endpoint-webapp.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/schema-owner-bootstrap.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/secret-seeding.bicep": [
+      "helpdesk.TicketService"
+    ],
+    "infra/modules/virtual-network.bicep": [
+      "helpdesk.TicketService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

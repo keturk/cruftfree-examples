@@ -1,0 +1,33 @@
+<header data-kind="pageHeader">
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+</header>
+
+<div data-kind="tabs" cruftfreeTabs #__tabs0="cruftfreeTabs">
+<div role="tablist" cruftfreeTabKeys>
+<button data-kind="tab" type="button" role="tab" (click)="__tabs0.select(&#39;0&#39;)" [attr.id]="__tabs0.tabId(0)" [attr.aria-selected]="__tabs0.selected() === &#39;0&#39;" [attr.tabindex]="__tabs0.selected() === &#39;0&#39; ? 0 : -1" [attr.aria-controls]="__tabs0.panelId(0)">
+{{ __arg2() }}</button>
+<button data-kind="tab" type="button" role="tab" (click)="__tabs0.select(&#39;1&#39;)" [attr.id]="__tabs0.tabId(1)" [attr.aria-selected]="__tabs0.selected() === &#39;1&#39;" [attr.tabindex]="__tabs0.selected() === &#39;1&#39; ? 0 : -1" [attr.aria-controls]="__tabs0.panelId(1)">
+{{ __arg3() }}</button>
+</div>
+<div role="tabpanel" data-part="tabpanel" tabindex="0" [attr.id]="__tabs0.panelId(0)" [attr.aria-labelledby]="__tabs0.tabId(0)" [hidden]="!(__tabs0.selected() === &#39;0&#39;)">
+<app-lookup-list-table data-kind="table">
+</app-lookup-list-table>
+</div>
+<div role="tabpanel" data-part="tabpanel" tabindex="0" [attr.id]="__tabs0.panelId(1)" [attr.aria-labelledby]="__tabs0.tabId(1)" [hidden]="!(__tabs0.selected() === &#39;1&#39;)">
+<div data-kind="card">
+<div data-part="header">
+<h3 data-part="title">{{ __arg4() }}</h3>
+</div>
+<app-add-address-form data-kind="form">
+</app-add-address-form>
+</div>
+
+<app-address-list-table data-kind="table">
+</app-address-list-table>
+</div>
+</div>
+
+

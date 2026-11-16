@@ -1,0 +1,319 @@
+from hr.common import Department, EmploymentType, generateReference;
+
+// Hiring. Anyone can read the open roles and apply, with no account. HR moves an application along,
+// an offer needs a clear background check first, and a signature on the offer makes the candidate an
+// employee: this service tells the employee and payroll services, and they never call back.
+service hr.RecruitmentService('config/recruitment-service.ccfg') : version('2.0.0'), description('Roles and applications') {
+
+    discovery { }
+
+    uses EmployeeService;
+    uses PayrollService;
+    uses CheckProvider;
+    uses SignatureProvider;
+
+    exceptions {
+        RoleClosedError : status(409), message("This role is no longer open");
+        CheckNotClearError : status(409), message("An offer needs a clear background check first");
+        NoSuchMoveError : status(409), message("An application cannot move there from where it is");
+    }
+
+    enum PostingStatus {
+        Draft : tone(neutral),
+        Open : tone(success),
+        Closed : tone(neutral)
+    }
+
+    /// An application's path. The pipeline board shows one column per member, in this order.
+    enum ApplicationStatus {
+        Applied : tone(info),
+        Screening : tone(info),
+        Interview : tone(warning),
+        Offer : tone(warning),
+        Hired : tone(success),
+        Rejected : tone(neutral)
+    }
+
+    enum CheckState {
+        NotStarted : tone(neutral),
+        InProgress : tone(warning),
+        Clear : tone(success),
+        Flagged : tone(danger)
+    }
+
+    enum OfferState {
+        NotSent : tone(neutral),
+        Sent : tone(warning),
+        Signed : tone(success),
+        Declined : tone(danger)
+    }
+
+    rdbms recruitDb {
+
+        entity JobPosting extends BaseEntity {
+            String(200) title : filterable;
+            Department department : filterable;
+            EmploymentType employmentType = EmploymentType.FullTime;
+            String(120) location : filterable;
+            Text description;
+            Money salaryFrom;
+            Money salaryTo;
+            PostingStatus status : filterable = PostingStatus.Open;
+        }
+
+        entity JobApplication extends BaseEntity {
+            String(200) candidateName : filterable;
+            String(200) postingTitle : filterable;
+            ApplicationStatus status : filterable = ApplicationStatus.Applied;
+            CheckState checkState : filterable = CheckState.NotStarted;
+            OfferState offerState : filterable = OfferState.NotSent;
+            Money? offeredSalary;
+            Email candidateEmail;
+            Phone? candidatePhone;
+            Text coverNote;
+            String(20) reference : unique, hidden;
+            String(40)? checkId : hidden;
+            String(40)? envelopeId : hidden;
+            String(34)? accountNumber : hidden;
+            UUID jobPostingId : index;
+            Department department;
+            EmploymentType employmentType;
+
+            index(jobPostingId, status);
+        }
+    }
+
+    struct ApplyRequest {
+        UUID postingId;
+        String(200) candidateName;
+        Email candidateEmail;
+        Phone? candidatePhone;
+        Text coverNote;
+    }
+
+    /// All a candidate gets back, and all a reference number reveals.
+    struct ApplicationReceipt {
+        String(20) reference;
+        String(200) postingTitle;
+        ApplicationStatus status;
+    }
+
+    struct MoveApplicationRequest {
+        ApplicationStatus status;
+    }
+
+    struct MakeOfferRequest {
+        UUID id;
+        Money salary;
+        String(34) accountNumber;
+    }
+
+    struct HiringSummary {
+        Int openRoles;
+        Int inPipeline;
+        Int offersOut;
+    }
+
+    /// The moves HR may make from a board column. Hired only ever comes from a signature.
+    fn hrMayMove(ApplicationStatus from, ApplicationStatus to) -> Boolean {
+        return (from == ApplicationStatus.Applied && to == ApplicationStatus.Screening)
+            || (from == ApplicationStatus.Screening && to == ApplicationStatus.Interview)
+            || (to == ApplicationStatus.Rejected && from != ApplicationStatus.Hired);
+    }
+
+    fn receiptOf(recruitDb.JobApplication application) -> ApplicationReceipt {
+        return ApplicationReceipt {
+            reference: application.reference,
+            postingTitle: application.postingTitle,
+            status: application.status
+        };
+    }
+
+    /// A signed offer. Each call below finds the first result if it already ran, so a failure half way
+    /// is finished by the next run of the job.
+    fn completeHire(recruitDb.JobApplication application) {
+        let HiredEmployee employee = EmployeeService.HiringAPI.post.hire({
+            fullName: application.candidateName,
+            jobTitle: application.postingTitle,
+            department: application.department,
+            employmentType: application.employmentType,
+            workEmail: application.candidateEmail,
+            hiredOn: Date.now()
+        });
+        if (application.offeredSalary != null && application.accountNumber != null) {
+            let EnrolledProfile enrolled = PayrollService.EnrollmentAPI.post.enroll({
+                employeeId: employee.id,
+                employeeName: application.candidateName,
+                department: application.department,
+                workEmail: application.candidateEmail,
+                annualSalary: application.offeredSalary,
+                accountNumber: application.accountNumber
+            });
+            Log.info("Enrolled in payroll", { profileId: enrolled.id });
+        }
+        application.status = ApplicationStatus.Hired;
+        application.save();
+    }
+
+    // What anyone can reach, with no account.
+    rest_api CareersAPI : basePath('/api/v1/careers'), rdbms(recruitDb) {
+        @path('/roles')
+        get openRoles() : auth(public) -> Array<JobPosting> {
+            return JobPosting.where(status: PostingStatus.Open).orderBy(title: asc).limit(100).all();
+        }
+
+        @path('/roles/:id')
+        get roleById(UUID id) : auth(public) -> JobPosting {
+            return JobPosting.where(id: id, status: PostingStatus.Open).firstOrFail();
+        }
+
+        @path('/applications')
+        post apply(ApplyRequest request) : auth(public) -> ApplicationReceipt {
+            let JobPosting? posting = JobPosting.where(id: request.postingId, status: PostingStatus.Open).first();
+            if (posting == null) {
+                throw RoleClosedError();
+            }
+            return receiptOf(JobApplication.create({
+                jobPostingId: posting.id,
+                postingTitle: posting.title,
+                department: posting.department,
+                employmentType: posting.employmentType,
+                candidateName: request.candidateName,
+                candidateEmail: request.candidateEmail,
+                candidatePhone: request.candidatePhone,
+                coverNote: request.coverNote,
+                reference: generateReference()
+            }));
+        }
+
+        // The reference is the secret: it says how far an application has come and nothing else.
+        @path('/applications/:reference')
+        get track(String reference) : auth(public) -> ApplicationReceipt {
+            let JobApplication application = JobApplication.where(reference: reference).firstOrFail();
+            return receiptOf(application);
+        }
+    }
+
+    // What HR works with.
+    rest_api PipelineAPI : basePath('/api/v1/recruiting'), rdbms(recruitDb) {
+        resource JobPosting : only(list, create), auth(required, providers: [identity], roles: [hr]);
+        resource JobApplication : only(list, get), auth(required, providers: [identity], roles: [hr]);
+
+        @path('/postings/:id/close')
+        post closePosting(UUID id) : auth(required, providers: [identity], roles: [hr]) -> JobPosting {
+            let JobPosting posting = JobPosting.findOrFail(id);
+            posting.status = PostingStatus.Closed;
+            posting.save();
+            return posting;
+        }
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [hr, manager]) -> HiringSummary {
+            let Array<JobApplication> applications = JobApplication.limit(5000).all();
+            return HiringSummary {
+                openRoles: JobPosting.where(status: PostingStatus.Open).count(),
+                inPipeline: applications.filter(a => a.status != ApplicationStatus.Hired && a.status != ApplicationStatus.Rejected).length,
+                offersOut: applications.filter(a => a.offerState == OfferState.Sent).length
+            };
+        }
+
+        @path('/postings/:id/board')
+        get boardOf(UUID id) : auth(required, providers: [identity], roles: [hr]) -> Array<JobApplication> {
+            return JobApplication.where(jobPostingId: id).orderBy(createdAt: asc).limit(500).all();
+        }
+
+        @path('/applications/:id/move')
+        post moveApplication(UUID id, MoveApplicationRequest request) : auth(required, providers: [identity], roles: [hr]) -> JobApplication {
+            let JobApplication application = JobApplication.findOrFail(id);
+            if (!hrMayMove(application.status, request.status)) {
+                throw NoSuchMoveError();
+            }
+            application.status = request.status;
+            application.save();
+            return application;
+        }
+
+        @path('/applications/:id/check')
+        post startCheck(UUID id) : auth(required, providers: [identity], roles: [hr]) -> JobApplication {
+            let JobApplication application = JobApplication.findOrFail(id);
+            let BackgroundCheck check = CheckProvider.CheckAPI.post.startCheck(StartCheckRequest {
+                candidateName: application.candidateName,
+                candidateEmail: application.candidateEmail,
+                idempotencyKey: #"check-{application.id}"
+            });
+            application.checkId = check.id;
+            application.checkState = CheckState.InProgress;
+            application.save();
+            return application;
+        }
+
+        @path('/applications/offer')
+        post makeOffer(MakeOfferRequest request) : auth(required, providers: [identity], roles: [hr]) -> JobApplication {
+            let JobApplication application = JobApplication.findOrFail(request.id);
+            if (application.checkState != CheckState.Clear) {
+                throw CheckNotClearError();
+            }
+            let Envelope envelope = SignatureProvider.SignatureAPI.post.sendEnvelope(SendEnvelopeRequest {
+                signerName: application.candidateName,
+                signerEmail: application.candidateEmail,
+                documentTitle: #"Offer: {application.postingTitle}",
+                documentBody: #"We offer you the role of {application.postingTitle} at a salary of {request.salary} a year.",
+                idempotencyKey: #"offer-{application.id}"
+            });
+            application.envelopeId = envelope.id;
+            application.offeredSalary = request.salary;
+            application.accountNumber = request.accountNumber;
+            application.offerState = OfferState.Sent;
+            application.status = ApplicationStatus.Offer;
+            application.save();
+            return application;
+        }
+    }
+
+    jobs {
+        // Vendors do not call back, so this asks about every check and offer still out.
+        job SyncVendors {
+            let Array<recruitDb.JobApplication> checking = recruitDb.JobApplication.where(checkState: CheckState.InProgress).limit(200).all();
+            foreach application in checking {
+                if (application.checkId != null) {
+                    try {
+                        let BackgroundCheck check = CheckProvider.CheckAPI.get.checkById(id: application.checkId);
+                        if (check.outcome == CheckOutcome.Clear) {
+                            application.checkState = CheckState.Clear;
+                            application.save();
+                        } else if (check.outcome == CheckOutcome.Flagged) {
+                            application.checkState = CheckState.Flagged;
+                            application.save();
+                        }
+                    } catch (Exception e) {
+                        Log.warn("Check vendor not reached", { applicationId: application.id });
+                    }
+                }
+            }
+            let Array<recruitDb.JobApplication> offered = recruitDb.JobApplication.where(offerState: OfferState.Sent).limit(200).all();
+            foreach application in offered {
+                if (application.envelopeId != null) {
+                    try {
+                        let Envelope envelope = SignatureProvider.SignatureAPI.get.envelopeById(id: application.envelopeId);
+                        if (envelope.status == EnvelopeStatus.Signed) {
+                            application.offerState = OfferState.Signed;
+                            application.save();
+                            completeHire(application);
+                        } else if (envelope.status == EnvelopeStatus.Declined) {
+                            application.offerState = OfferState.Declined;
+                            application.status = ApplicationStatus.Rejected;
+                            application.save();
+                        }
+                    } catch (Exception e) {
+                        Log.warn("Offer not settled", { applicationId: application.id });
+                    }
+                }
+            }
+        }
+    }
+
+    test("a person cannot move an application straight to hired") {
+        assert hrMayMove(ApplicationStatus.Applied, ApplicationStatus.Screening);
+        assert !hrMayMove(ApplicationStatus.Offer, ApplicationStatus.Hired);
+    }
+}

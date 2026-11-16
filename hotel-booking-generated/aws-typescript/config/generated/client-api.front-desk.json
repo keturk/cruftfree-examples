@@ -1,0 +1,2301 @@
+{
+  "services": [
+    {
+      "routes": [
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/channel/published_nights",
+          "pathParams": [],
+          "queryParams": [
+            {
+              "name": "limit",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            },
+            {
+              "name": "night",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Date"
+              }
+            },
+            {
+              "name": "roomType",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "String"
+              }
+            },
+            {
+              "name": "skip",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            }
+          ],
+          "reads": [
+            [
+              "items"
+            ],
+            [
+              "items",
+              "[]",
+              "createdAt"
+            ],
+            [
+              "items",
+              "[]",
+              "id"
+            ],
+            [
+              "items",
+              "[]",
+              "left"
+            ],
+            [
+              "items",
+              "[]",
+              "night"
+            ],
+            [
+              "items",
+              "[]",
+              "nightlyRate"
+            ],
+            [
+              "items",
+              "[]",
+              "receivedAt"
+            ],
+            [
+              "items",
+              "[]",
+              "roomType"
+            ],
+            [
+              "items",
+              "[]",
+              "updatedAt"
+            ],
+            [
+              "limit"
+            ],
+            [
+              "maxLimit"
+            ],
+            [
+              "offset"
+            ],
+            [
+              "total"
+            ]
+          ]
+        }
+      ],
+      "service": "hotel.ChannelMock"
+    },
+    {
+      "routes": [
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/email/outbounds",
+          "pathParams": [],
+          "queryParams": [
+            {
+              "name": "limit",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            },
+            {
+              "name": "recipient",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "String"
+              }
+            },
+            {
+              "name": "skip",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            },
+            {
+              "name": "status",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "enum:hotel-email-mock.DeliveryStatus"
+              }
+            },
+            {
+              "name": "subject",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "String"
+              }
+            }
+          ],
+          "reads": [
+            [
+              "items"
+            ],
+            [
+              "items",
+              "[]",
+              "body"
+            ],
+            [
+              "items",
+              "[]",
+              "createdAt"
+            ],
+            [
+              "items",
+              "[]",
+              "deliveryId"
+            ],
+            [
+              "items",
+              "[]",
+              "id"
+            ],
+            [
+              "items",
+              "[]",
+              "idempotencyKey"
+            ],
+            [
+              "items",
+              "[]",
+              "recipient"
+            ],
+            [
+              "items",
+              "[]",
+              "status"
+            ],
+            [
+              "items",
+              "[]",
+              "subject"
+            ],
+            [
+              "items",
+              "[]",
+              "updatedAt"
+            ],
+            [
+              "limit"
+            ],
+            [
+              "maxLimit"
+            ],
+            [
+              "offset"
+            ],
+            [
+              "total"
+            ]
+          ]
+        }
+      ],
+      "service": "hotel.EmailMock"
+    },
+    {
+      "routes": [
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/notices",
+          "pathParams": [],
+          "queryParams": [
+            {
+              "name": "delivered",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Boolean"
+              }
+            },
+            {
+              "name": "limit",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            },
+            {
+              "name": "recipient",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "String"
+              }
+            },
+            {
+              "name": "skip",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            }
+          ],
+          "reads": [
+            [
+              "items"
+            ],
+            [
+              "items",
+              "[]",
+              "attempts"
+            ],
+            [
+              "items",
+              "[]",
+              "body"
+            ],
+            [
+              "items",
+              "[]",
+              "createdAt"
+            ],
+            [
+              "items",
+              "[]",
+              "delivered"
+            ],
+            [
+              "items",
+              "[]",
+              "id"
+            ],
+            [
+              "items",
+              "[]",
+              "noticeKey"
+            ],
+            [
+              "items",
+              "[]",
+              "recipient"
+            ],
+            [
+              "items",
+              "[]",
+              "subject"
+            ],
+            [
+              "items",
+              "[]",
+              "updatedAt"
+            ],
+            [
+              "limit"
+            ],
+            [
+              "maxLimit"
+            ],
+            [
+              "offset"
+            ],
+            [
+              "total"
+            ]
+          ]
+        }
+      ],
+      "service": "hotel.NoticeService"
+    },
+    {
+      "routes": [
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/payment/card_charges",
+          "pathParams": [],
+          "queryParams": [
+            {
+              "name": "limit",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            },
+            {
+              "name": "reference",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "String"
+              }
+            },
+            {
+              "name": "skip",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            },
+            {
+              "name": "status",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "enum:hotel-payment-mock.ChargeStatus"
+              }
+            }
+          ],
+          "reads": [
+            [
+              "items"
+            ],
+            [
+              "items",
+              "[]",
+              "amount"
+            ],
+            [
+              "items",
+              "[]",
+              "chargeId"
+            ],
+            [
+              "items",
+              "[]",
+              "createdAt"
+            ],
+            [
+              "items",
+              "[]",
+              "currency"
+            ],
+            [
+              "items",
+              "[]",
+              "declineReason"
+            ],
+            [
+              "items",
+              "[]",
+              "id"
+            ],
+            [
+              "items",
+              "[]",
+              "idempotencyKey"
+            ],
+            [
+              "items",
+              "[]",
+              "reference"
+            ],
+            [
+              "items",
+              "[]",
+              "status"
+            ],
+            [
+              "items",
+              "[]",
+              "updatedAt"
+            ],
+            [
+              "limit"
+            ],
+            [
+              "maxLimit"
+            ],
+            [
+              "offset"
+            ],
+            [
+              "total"
+            ]
+          ]
+        }
+      ],
+      "service": "hotel.PaymentMock"
+    },
+    {
+      "routes": [
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/arrivals",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "[]",
+              "arrival"
+            ],
+            [
+              "[]",
+              "canCancel"
+            ],
+            [
+              "[]",
+              "code"
+            ],
+            [
+              "[]",
+              "departure"
+            ],
+            [
+              "[]",
+              "guestName"
+            ],
+            [
+              "[]",
+              "guests"
+            ],
+            [
+              "[]",
+              "holdEnds"
+            ],
+            [
+              "[]",
+              "id"
+            ],
+            [
+              "[]",
+              "nights"
+            ],
+            [
+              "[]",
+              "roomNumber"
+            ],
+            [
+              "[]",
+              "roomTypeName"
+            ],
+            [
+              "[]",
+              "status"
+            ],
+            [
+              "[]",
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/calendar",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "[]",
+              "endsAt"
+            ],
+            [
+              "[]",
+              "id"
+            ],
+            [
+              "[]",
+              "startsAt"
+            ],
+            [
+              "[]",
+              "title"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": {
+            "encoding": "json",
+            "fields": [
+              {
+                "name": "roomNumber",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "String"
+                }
+              },
+              {
+                "name": "stayId",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "UUID"
+                }
+              }
+            ],
+            "type": {
+              "array": false,
+              "map": false,
+              "page": false,
+              "ref": "struct:hotel-stay-service.AssignRequest"
+            }
+          },
+          "method": "POST",
+          "path": "/api/v1/desk/check-in",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "arrival"
+            ],
+            [
+              "canCancel"
+            ],
+            [
+              "code"
+            ],
+            [
+              "departure"
+            ],
+            [
+              "guestName"
+            ],
+            [
+              "guests"
+            ],
+            [
+              "holdEnds"
+            ],
+            [
+              "id"
+            ],
+            [
+              "nights"
+            ],
+            [
+              "roomNumber"
+            ],
+            [
+              "roomTypeName"
+            ],
+            [
+              "status"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/departures",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "[]",
+              "arrival"
+            ],
+            [
+              "[]",
+              "canCancel"
+            ],
+            [
+              "[]",
+              "code"
+            ],
+            [
+              "[]",
+              "departure"
+            ],
+            [
+              "[]",
+              "guestName"
+            ],
+            [
+              "[]",
+              "guests"
+            ],
+            [
+              "[]",
+              "holdEnds"
+            ],
+            [
+              "[]",
+              "id"
+            ],
+            [
+              "[]",
+              "nights"
+            ],
+            [
+              "[]",
+              "roomNumber"
+            ],
+            [
+              "[]",
+              "roomTypeName"
+            ],
+            [
+              "[]",
+              "status"
+            ],
+            [
+              "[]",
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": {
+            "encoding": "json",
+            "fields": [
+              {
+                "name": "note",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "String"
+                }
+              },
+              {
+                "name": "stayId",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "UUID"
+                }
+              }
+            ],
+            "type": {
+              "array": false,
+              "map": false,
+              "page": false,
+              "ref": "struct:hotel-stay-service.NoteRequest"
+            }
+          },
+          "method": "POST",
+          "path": "/api/v1/desk/note",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "arrival"
+            ],
+            [
+              "canCancel"
+            ],
+            [
+              "code"
+            ],
+            [
+              "departure"
+            ],
+            [
+              "guestName"
+            ],
+            [
+              "guests"
+            ],
+            [
+              "holdEnds"
+            ],
+            [
+              "id"
+            ],
+            [
+              "nights"
+            ],
+            [
+              "roomNumber"
+            ],
+            [
+              "roomTypeName"
+            ],
+            [
+              "status"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/occupancy",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "[]",
+              "left"
+            ],
+            [
+              "[]",
+              "night"
+            ],
+            [
+              "[]",
+              "sold"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/room_types",
+          "pathParams": [],
+          "queryParams": [
+            {
+              "name": "limit",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            },
+            {
+              "name": "listed",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Boolean"
+              }
+            },
+            {
+              "name": "skip",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            }
+          ],
+          "reads": [
+            [
+              "items"
+            ],
+            [
+              "items",
+              "[]",
+              "createdAt"
+            ],
+            [
+              "items",
+              "[]",
+              "description"
+            ],
+            [
+              "items",
+              "[]",
+              "id"
+            ],
+            [
+              "items",
+              "[]",
+              "inventory"
+            ],
+            [
+              "items",
+              "[]",
+              "listed"
+            ],
+            [
+              "items",
+              "[]",
+              "name"
+            ],
+            [
+              "items",
+              "[]",
+              "nightlyRate"
+            ],
+            [
+              "items",
+              "[]",
+              "sleeps"
+            ],
+            [
+              "items",
+              "[]",
+              "summary"
+            ],
+            [
+              "items",
+              "[]",
+              "updatedAt"
+            ],
+            [
+              "limit"
+            ],
+            [
+              "maxLimit"
+            ],
+            [
+              "offset"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": {
+            "encoding": "json",
+            "fields": [
+              {
+                "name": "description",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Text"
+                }
+              },
+              {
+                "name": "inventory",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Integer"
+                }
+              },
+              {
+                "name": "listed",
+                "required": false,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Boolean"
+                }
+              },
+              {
+                "name": "name",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "String"
+                }
+              },
+              {
+                "name": "nightlyRate",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Money"
+                }
+              },
+              {
+                "name": "sleeps",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Integer"
+                }
+              },
+              {
+                "name": "summary",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "String"
+                }
+              }
+            ],
+            "type": {
+              "array": false,
+              "map": false,
+              "page": false,
+              "ref": "entity-create:hotel.StayService.stayDb.RoomType"
+            }
+          },
+          "method": "POST",
+          "path": "/api/v1/desk/room_types",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "createdAt"
+            ],
+            [
+              "description"
+            ],
+            [
+              "id"
+            ],
+            [
+              "inventory"
+            ],
+            [
+              "listed"
+            ],
+            [
+              "name"
+            ],
+            [
+              "nightlyRate"
+            ],
+            [
+              "sleeps"
+            ],
+            [
+              "summary"
+            ],
+            [
+              "updatedAt"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "DELETE",
+          "path": "/api/v1/desk/room_types/{id}",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": []
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/room_types/{id}",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "createdAt"
+            ],
+            [
+              "description"
+            ],
+            [
+              "id"
+            ],
+            [
+              "inventory"
+            ],
+            [
+              "listed"
+            ],
+            [
+              "name"
+            ],
+            [
+              "nightlyRate"
+            ],
+            [
+              "sleeps"
+            ],
+            [
+              "summary"
+            ],
+            [
+              "updatedAt"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": {
+            "encoding": "json",
+            "fields": [
+              {
+                "name": "description",
+                "required": false,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Text"
+                }
+              },
+              {
+                "name": "inventory",
+                "required": false,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Integer"
+                }
+              },
+              {
+                "name": "listed",
+                "required": false,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Boolean"
+                }
+              },
+              {
+                "name": "name",
+                "required": false,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "String"
+                }
+              },
+              {
+                "name": "nightlyRate",
+                "required": false,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Money"
+                }
+              },
+              {
+                "name": "sleeps",
+                "required": false,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Integer"
+                }
+              },
+              {
+                "name": "summary",
+                "required": false,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "String"
+                }
+              }
+            ],
+            "type": {
+              "array": false,
+              "map": false,
+              "page": false,
+              "ref": "entity-update:hotel.StayService.stayDb.RoomType"
+            }
+          },
+          "method": "PUT",
+          "path": "/api/v1/desk/room_types/{id}",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "createdAt"
+            ],
+            [
+              "description"
+            ],
+            [
+              "id"
+            ],
+            [
+              "inventory"
+            ],
+            [
+              "listed"
+            ],
+            [
+              "name"
+            ],
+            [
+              "nightlyRate"
+            ],
+            [
+              "sleeps"
+            ],
+            [
+              "summary"
+            ],
+            [
+              "updatedAt"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/rooms",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "[]",
+              "condition"
+            ],
+            [
+              "[]",
+              "floor"
+            ],
+            [
+              "[]",
+              "id"
+            ],
+            [
+              "[]",
+              "number"
+            ],
+            [
+              "[]",
+              "roomTypeName"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": {
+            "encoding": "json",
+            "fields": [
+              {
+                "name": "condition",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "enum:hotel-common.RoomCondition"
+                }
+              }
+            ],
+            "type": {
+              "array": false,
+              "map": false,
+              "page": false,
+              "ref": "struct:hotel-stay-service.ConditionRequest"
+            }
+          },
+          "method": "POST",
+          "path": "/api/v1/desk/rooms/{id}/condition",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "condition"
+            ],
+            [
+              "floor"
+            ],
+            [
+              "id"
+            ],
+            [
+              "number"
+            ],
+            [
+              "roomTypeName"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/stays",
+          "pathParams": [],
+          "queryParams": [
+            {
+              "name": "arrival",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Date"
+              }
+            },
+            {
+              "name": "departure",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Date"
+              }
+            },
+            {
+              "name": "guestName",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "String"
+              }
+            },
+            {
+              "name": "limit",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            },
+            {
+              "name": "roomTypeName",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "String"
+              }
+            },
+            {
+              "name": "skip",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "Integer"
+              }
+            },
+            {
+              "name": "status",
+              "required": false,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "enum:hotel-common.StayStatus"
+              }
+            }
+          ],
+          "reads": [
+            [
+              "items"
+            ],
+            [
+              "items",
+              "[]",
+              "arrival"
+            ],
+            [
+              "items",
+              "[]",
+              "chargeId"
+            ],
+            [
+              "items",
+              "[]",
+              "code"
+            ],
+            [
+              "items",
+              "[]",
+              "createdAt"
+            ],
+            [
+              "items",
+              "[]",
+              "departure"
+            ],
+            [
+              "items",
+              "[]",
+              "deskNote"
+            ],
+            [
+              "items",
+              "[]",
+              "guestEmail"
+            ],
+            [
+              "items",
+              "[]",
+              "guestId"
+            ],
+            [
+              "items",
+              "[]",
+              "guestName"
+            ],
+            [
+              "items",
+              "[]",
+              "guests"
+            ],
+            [
+              "items",
+              "[]",
+              "holdUntil"
+            ],
+            [
+              "items",
+              "[]",
+              "id"
+            ],
+            [
+              "items",
+              "[]",
+              "nights"
+            ],
+            [
+              "items",
+              "[]",
+              "roomNumber"
+            ],
+            [
+              "items",
+              "[]",
+              "roomTypeId"
+            ],
+            [
+              "items",
+              "[]",
+              "roomTypeName"
+            ],
+            [
+              "items",
+              "[]",
+              "status"
+            ],
+            [
+              "items",
+              "[]",
+              "total"
+            ],
+            [
+              "items",
+              "[]",
+              "updatedAt"
+            ],
+            [
+              "limit"
+            ],
+            [
+              "maxLimit"
+            ],
+            [
+              "offset"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/stays/{id}",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "deskNote"
+            ],
+            [
+              "guestEmail"
+            ],
+            [
+              "stay"
+            ],
+            [
+              "stay",
+              "arrival"
+            ],
+            [
+              "stay",
+              "canCancel"
+            ],
+            [
+              "stay",
+              "code"
+            ],
+            [
+              "stay",
+              "departure"
+            ],
+            [
+              "stay",
+              "guestName"
+            ],
+            [
+              "stay",
+              "guests"
+            ],
+            [
+              "stay",
+              "holdEnds"
+            ],
+            [
+              "stay",
+              "id"
+            ],
+            [
+              "stay",
+              "nights"
+            ],
+            [
+              "stay",
+              "roomNumber"
+            ],
+            [
+              "stay",
+              "roomTypeName"
+            ],
+            [
+              "stay",
+              "status"
+            ],
+            [
+              "stay",
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "POST",
+          "path": "/api/v1/desk/stays/{id}/cancel",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "arrival"
+            ],
+            [
+              "canCancel"
+            ],
+            [
+              "code"
+            ],
+            [
+              "departure"
+            ],
+            [
+              "guestName"
+            ],
+            [
+              "guests"
+            ],
+            [
+              "holdEnds"
+            ],
+            [
+              "id"
+            ],
+            [
+              "nights"
+            ],
+            [
+              "roomNumber"
+            ],
+            [
+              "roomTypeName"
+            ],
+            [
+              "status"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "POST",
+          "path": "/api/v1/desk/stays/{id}/check-out",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "arrival"
+            ],
+            [
+              "canCancel"
+            ],
+            [
+              "code"
+            ],
+            [
+              "departure"
+            ],
+            [
+              "guestName"
+            ],
+            [
+              "guests"
+            ],
+            [
+              "holdEnds"
+            ],
+            [
+              "id"
+            ],
+            [
+              "nights"
+            ],
+            [
+              "roomNumber"
+            ],
+            [
+              "roomTypeName"
+            ],
+            [
+              "status"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/stays/{id}/free-rooms",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "[]",
+              "condition"
+            ],
+            [
+              "[]",
+              "floor"
+            ],
+            [
+              "[]",
+              "id"
+            ],
+            [
+              "[]",
+              "number"
+            ],
+            [
+              "[]",
+              "roomTypeName"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/desk/today",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "arrivals"
+            ],
+            [
+              "departures"
+            ],
+            [
+              "inHouse"
+            ],
+            [
+              "occupancyPercent"
+            ],
+            [
+              "roomsToClean"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": {
+            "encoding": "json",
+            "fields": [
+              {
+                "name": "arrival",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Date"
+                }
+              },
+              {
+                "name": "departure",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Date"
+                }
+              },
+              {
+                "name": "guests",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Integer"
+                }
+              },
+              {
+                "name": "roomTypeId",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "UUID"
+                }
+              }
+            ],
+            "type": {
+              "array": false,
+              "map": false,
+              "page": false,
+              "ref": "struct:hotel-stay-service.HoldRequest"
+            }
+          },
+          "method": "POST",
+          "path": "/api/v1/stays/hold",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "arrival"
+            ],
+            [
+              "canCancel"
+            ],
+            [
+              "code"
+            ],
+            [
+              "departure"
+            ],
+            [
+              "guestName"
+            ],
+            [
+              "guests"
+            ],
+            [
+              "holdEnds"
+            ],
+            [
+              "id"
+            ],
+            [
+              "nights"
+            ],
+            [
+              "roomNumber"
+            ],
+            [
+              "roomTypeName"
+            ],
+            [
+              "status"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/stays/mine",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "[]",
+              "arrival"
+            ],
+            [
+              "[]",
+              "canCancel"
+            ],
+            [
+              "[]",
+              "code"
+            ],
+            [
+              "[]",
+              "departure"
+            ],
+            [
+              "[]",
+              "guestName"
+            ],
+            [
+              "[]",
+              "guests"
+            ],
+            [
+              "[]",
+              "holdEnds"
+            ],
+            [
+              "[]",
+              "id"
+            ],
+            [
+              "[]",
+              "nights"
+            ],
+            [
+              "[]",
+              "roomNumber"
+            ],
+            [
+              "[]",
+              "roomTypeName"
+            ],
+            [
+              "[]",
+              "status"
+            ],
+            [
+              "[]",
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/stays/mine/{id}",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "arrival"
+            ],
+            [
+              "canCancel"
+            ],
+            [
+              "code"
+            ],
+            [
+              "departure"
+            ],
+            [
+              "guestName"
+            ],
+            [
+              "guests"
+            ],
+            [
+              "holdEnds"
+            ],
+            [
+              "id"
+            ],
+            [
+              "nights"
+            ],
+            [
+              "roomNumber"
+            ],
+            [
+              "roomTypeName"
+            ],
+            [
+              "status"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": null,
+          "method": "POST",
+          "path": "/api/v1/stays/mine/{id}/cancel",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "arrival"
+            ],
+            [
+              "canCancel"
+            ],
+            [
+              "code"
+            ],
+            [
+              "departure"
+            ],
+            [
+              "guestName"
+            ],
+            [
+              "guests"
+            ],
+            [
+              "holdEnds"
+            ],
+            [
+              "id"
+            ],
+            [
+              "nights"
+            ],
+            [
+              "roomNumber"
+            ],
+            [
+              "roomTypeName"
+            ],
+            [
+              "status"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "required",
+          "body": {
+            "encoding": "json",
+            "fields": [
+              {
+                "name": "card",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "enum:hotel-common.TestCard"
+                }
+              },
+              {
+                "name": "stayId",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "UUID"
+                }
+              }
+            ],
+            "type": {
+              "array": false,
+              "map": false,
+              "page": false,
+              "ref": "struct:hotel-stay-service.PayRequest"
+            }
+          },
+          "method": "POST",
+          "path": "/api/v1/stays/pay",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "arrival"
+            ],
+            [
+              "canCancel"
+            ],
+            [
+              "code"
+            ],
+            [
+              "departure"
+            ],
+            [
+              "guestName"
+            ],
+            [
+              "guests"
+            ],
+            [
+              "holdEnds"
+            ],
+            [
+              "id"
+            ],
+            [
+              "nights"
+            ],
+            [
+              "roomNumber"
+            ],
+            [
+              "roomTypeName"
+            ],
+            [
+              "status"
+            ],
+            [
+              "total"
+            ]
+          ]
+        },
+        {
+          "auth": "public",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/stays/room-types",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "[]",
+              "description"
+            ],
+            [
+              "[]",
+              "id"
+            ],
+            [
+              "[]",
+              "name"
+            ],
+            [
+              "[]",
+              "nightlyRate"
+            ],
+            [
+              "[]",
+              "sleeps"
+            ],
+            [
+              "[]",
+              "summary"
+            ]
+          ]
+        },
+        {
+          "auth": "public",
+          "body": null,
+          "method": "GET",
+          "path": "/api/v1/stays/room-types/{id}",
+          "pathParams": [
+            {
+              "name": "id",
+              "required": true,
+              "type": {
+                "array": false,
+                "map": false,
+                "page": false,
+                "ref": "UUID"
+              }
+            }
+          ],
+          "queryParams": [],
+          "reads": [
+            [
+              "description"
+            ],
+            [
+              "id"
+            ],
+            [
+              "name"
+            ],
+            [
+              "nightlyRate"
+            ],
+            [
+              "sleeps"
+            ],
+            [
+              "summary"
+            ]
+          ]
+        },
+        {
+          "auth": "public",
+          "body": {
+            "encoding": "json",
+            "fields": [
+              {
+                "name": "arrival",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Date"
+                }
+              },
+              {
+                "name": "departure",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Date"
+                }
+              },
+              {
+                "name": "guests",
+                "required": true,
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "Integer"
+                }
+              }
+            ],
+            "type": {
+              "array": false,
+              "map": false,
+              "page": false,
+              "ref": "struct:hotel-stay-service.SearchRequest"
+            }
+          },
+          "method": "POST",
+          "path": "/api/v1/stays/search",
+          "pathParams": [],
+          "queryParams": [],
+          "reads": [
+            [
+              "[]",
+              "left"
+            ],
+            [
+              "[]",
+              "name"
+            ],
+            [
+              "[]",
+              "nightlyRate"
+            ],
+            [
+              "[]",
+              "nights"
+            ],
+            [
+              "[]",
+              "roomTypeId"
+            ],
+            [
+              "[]",
+              "sleeps"
+            ],
+            [
+              "[]",
+              "summary"
+            ],
+            [
+              "[]",
+              "total"
+            ]
+          ]
+        }
+      ],
+      "service": "hotel.StayService"
+    }
+  ]
+}

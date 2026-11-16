@@ -1,0 +1,11 @@
+{
+  "name": "@lanternpost/ticket-service-api",
+  "private": true,
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/common": "22.1.7",
+    "@angular/core": "22.1.7",
+    "@lanternpost/system-api-common": "*",
+    "rxjs": "7.8.2"
+  }
+}

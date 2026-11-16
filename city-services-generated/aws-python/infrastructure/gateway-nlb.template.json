@@ -1,0 +1,322 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "CityservicesDistrictServiceNlbListenerArn": {
+      "Description": "NLB listener forwarding to cityservices-district-service",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesDistrictServiceNlbListenerArn"
+      },
+      "Value": {
+        "Ref": "CityservicesDistrictServiceListener"
+      }
+    },
+    "CityservicesDistrictServiceNlbTargetGroupArn": {
+      "Description": "NLB target group polled by deploy.py's verify phase for cityservices-district-service",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesDistrictServiceNlbTargetGroupArn"
+      },
+      "Value": {
+        "Ref": "CityservicesDistrictServiceNlbTg"
+      }
+    },
+    "CityservicesFacilityServiceNlbListenerArn": {
+      "Description": "NLB listener forwarding to cityservices-facility-service",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesFacilityServiceNlbListenerArn"
+      },
+      "Value": {
+        "Ref": "CityservicesFacilityServiceListener"
+      }
+    },
+    "CityservicesFacilityServiceNlbTargetGroupArn": {
+      "Description": "NLB target group polled by deploy.py's verify phase for cityservices-facility-service",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesFacilityServiceNlbTargetGroupArn"
+      },
+      "Value": {
+        "Ref": "CityservicesFacilityServiceNlbTg"
+      }
+    },
+    "CityservicesGeocoderMockNlbListenerArn": {
+      "Description": "NLB listener forwarding to cityservices-geocoder-mock",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesGeocoderMockNlbListenerArn"
+      },
+      "Value": {
+        "Ref": "CityservicesGeocoderMockListener"
+      }
+    },
+    "CityservicesGeocoderMockNlbTargetGroupArn": {
+      "Description": "NLB target group polled by deploy.py's verify phase for cityservices-geocoder-mock",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesGeocoderMockNlbTargetGroupArn"
+      },
+      "Value": {
+        "Ref": "CityservicesGeocoderMockNlbTg"
+      }
+    },
+    "CityservicesRequestServiceNlbListenerArn": {
+      "Description": "NLB listener forwarding to cityservices-request-service",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbListenerArn"
+      },
+      "Value": {
+        "Ref": "CityservicesRequestServiceListener"
+      }
+    },
+    "CityservicesRequestServiceNlbTargetGroupArn": {
+      "Description": "NLB target group polled by deploy.py's verify phase for cityservices-request-service",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesRequestServiceNlbTargetGroupArn"
+      },
+      "Value": {
+        "Ref": "CityservicesRequestServiceNlbTg"
+      }
+    },
+    "CityservicesSmsMockNlbListenerArn": {
+      "Description": "NLB listener forwarding to cityservices-sms-mock",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesSmsMockNlbListenerArn"
+      },
+      "Value": {
+        "Ref": "CityservicesSmsMockListener"
+      }
+    },
+    "CityservicesSmsMockNlbTargetGroupArn": {
+      "Description": "NLB target group polled by deploy.py's verify phase for cityservices-sms-mock",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-CityservicesSmsMockNlbTargetGroupArn"
+      },
+      "Value": {
+        "Ref": "CityservicesSmsMockNlbTg"
+      }
+    },
+    "NlbArn": {
+      "Description": "The gateway's internal NLB.",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-NlbArn"
+      },
+      "Value": {
+        "Ref": "Nlb"
+      }
+    },
+    "NlbDnsName": {
+      "Description": "The NLB's DNS name.",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-NlbDnsName"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "Nlb",
+          "DNSName"
+        ]
+      }
+    },
+    "NlbSecurityGroupId": {
+      "Description": "The NLB's security group, admitted by each gateway-routed service.",
+      "Export": {
+        "Name": "cityservices-system-gateway-nlb-NlbSecurityGroupId"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "NlbSecurityGroup",
+          "GroupId"
+        ]
+      }
+    }
+  },
+  "Resources": {
+    "CityservicesDistrictServiceListener": {
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "CityservicesDistrictServiceNlbTg"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "Nlb"
+        },
+        "Port": 8001,
+        "Protocol": "TCP"
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener"
+    },
+    "CityservicesDistrictServiceNlbTg": {
+      "Properties": {
+        "HealthCheckPath": "/ready",
+        "HealthCheckProtocol": "HTTP",
+        "Port": 8001,
+        "Protocol": "TCP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+    },
+    "CityservicesFacilityServiceListener": {
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "CityservicesFacilityServiceNlbTg"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "Nlb"
+        },
+        "Port": 8002,
+        "Protocol": "TCP"
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener"
+    },
+    "CityservicesFacilityServiceNlbTg": {
+      "Properties": {
+        "HealthCheckPath": "/ready",
+        "HealthCheckProtocol": "HTTP",
+        "Port": 8002,
+        "Protocol": "TCP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+    },
+    "CityservicesGeocoderMockListener": {
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "CityservicesGeocoderMockNlbTg"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "Nlb"
+        },
+        "Port": 8091,
+        "Protocol": "TCP"
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener"
+    },
+    "CityservicesGeocoderMockNlbTg": {
+      "Properties": {
+        "HealthCheckPath": "/ready",
+        "HealthCheckProtocol": "HTTP",
+        "Port": 8091,
+        "Protocol": "TCP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+    },
+    "CityservicesRequestServiceListener": {
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "CityservicesRequestServiceNlbTg"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "Nlb"
+        },
+        "Port": 8003,
+        "Protocol": "TCP"
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener"
+    },
+    "CityservicesRequestServiceNlbTg": {
+      "Properties": {
+        "HealthCheckPath": "/ready",
+        "HealthCheckProtocol": "HTTP",
+        "Port": 8003,
+        "Protocol": "TCP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+    },
+    "CityservicesSmsMockListener": {
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "CityservicesSmsMockNlbTg"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "Nlb"
+        },
+        "Port": 8090,
+        "Protocol": "TCP"
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener"
+    },
+    "CityservicesSmsMockNlbTg": {
+      "Properties": {
+        "HealthCheckPath": "/ready",
+        "HealthCheckProtocol": "HTTP",
+        "Port": 8090,
+        "Protocol": "TCP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+    },
+    "Nlb": {
+      "Properties": {
+        "Name": "cityservices-system-nlb",
+        "Scheme": "internal",
+        "SecurityGroups": [
+          {
+            "Ref": "NlbSecurityGroup"
+          }
+        ],
+        "Subnets": [
+          {
+            "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet1Id"
+          },
+          {
+            "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet2Id"
+          }
+        ],
+        "Type": "network"
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer"
+    },
+    "NlbSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Security group for cityservices-system API gateway NLB",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": "cityservices-system-vpc-VpcId"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    }
+  }
+}

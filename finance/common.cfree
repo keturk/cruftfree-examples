@@ -1,0 +1,33 @@
+// What the Quillon Bank services share.
+module finance.common {
+
+    enum AccountType {
+        Checking,
+        Savings
+    }
+
+    enum AccountStatus {
+        Active : tone(success),
+        Frozen : tone(danger),
+        Closed : tone(neutral)
+    }
+
+    enum TransferStatus {
+        Posted : tone(success),
+        Held : tone(warning),
+        Rejected : tone(danger)
+    }
+
+    /// A transfer at or above this amount is reviewed by compliance.
+    const REVIEW_THRESHOLD = 10000.00;
+
+    /// An account number nobody can guess or count through.
+    fn generateAccountNumber() -> String {
+        return #"QB{Random.string(10, '0123456789')}";
+    }
+
+    /// A reference a customer can quote.
+    fn generateTransferReference() -> String {
+        return #"TR-{DateTime.now().format('yyyyMMdd')}-{Random.string(6, '0123456789ABCDEFGHJKLMNPQRSTUVWXYZ')}";
+    }
+}

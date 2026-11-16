@@ -1,0 +1,13 @@
+{
+  "connections": {
+    "mq_brokers": "helpdesk-system-kafka:9092",
+    "mq_port": 9092,
+    "ticket_db_database": "helpdesk_ticket",
+    "ticket_db_host": "helpdesk-system-postgresql",
+    "ticket_db_port": 5432,
+    "ticket_db_user": "helpdesk_ticket_service_ticket_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

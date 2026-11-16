@@ -1,0 +1,80 @@
+@if (__loaded()) {
+@if (__stale(); as staleFailure) {
+<div data-kind="callout" role="status" data-state="stale">
+  <span class="material-symbols-outlined" aria-hidden="true">sync_problem</span>
+  <span data-part="text">
+    <span data-part="title">{{ __messages.key(&#39;framework.refreshFailed&#39;).text }}</span>
+    <span data-part="detail">{{ __messages.failureText(staleFailure.problem, staleFailure.binding.site) ?? __messages.problemTitle(staleFailure.problem) }}</span>
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="staleFailure.binding.isLoading || staleFailure.binding.pausedForMs &gt; 0" (click)="staleFailure.binding.refresh()">{{ staleFailure.binding.pausedForMs &gt; 0 ? __messages.retryIn(staleFailure.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+}
+
+<header data-kind="pageHeader">
+<a data-part="back" [routerLink]="&quot;/&quot;" [attr.aria-label]="__messages.key('framework.back').text"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span></a>
+<div data-part="titles">
+<h1 data-part="title">{{ __arg0() }}</h1>
+<p data-part="subtitle">{{ __arg1() }}</p>
+</div>
+<div data-part="actions">
+<a data-kind="link" [routerLink]="this.__nav.url(&quot;/homes/:id&quot;, &#123; &quot;id&quot;: __arg3() &#125;)">
+<span class="material-symbols-outlined" aria-hidden="true">home</span>
+{{ __arg2() }}
+</a>
+
+</div>
+</header>
+
+<div data-kind="tabs" cruftfreeTabs #__tabs0="cruftfreeTabs">
+<div role="tablist" cruftfreeTabKeys>
+<button data-kind="tab" type="button" role="tab" (click)="__tabs0.select(&#39;0&#39;)" [attr.id]="__tabs0.tabId(0)" [attr.aria-selected]="__tabs0.selected() === &#39;0&#39;" [attr.tabindex]="__tabs0.selected() === &#39;0&#39; ? 0 : -1" [attr.aria-controls]="__tabs0.panelId(0)">
+{{ __arg4() }}</button>
+<button data-kind="tab" type="button" role="tab" (click)="__tabs0.select(&#39;1&#39;)" [attr.id]="__tabs0.tabId(1)" [attr.aria-selected]="__tabs0.selected() === &#39;1&#39;" [attr.tabindex]="__tabs0.selected() === &#39;1&#39; ? 0 : -1" [attr.aria-controls]="__tabs0.panelId(1)">
+{{ __arg5() }}</button>
+</div>
+<div role="tabpanel" data-part="tabpanel" tabindex="0" [attr.id]="__tabs0.panelId(0)" [attr.aria-labelledby]="__tabs0.tabId(0)" [hidden]="!(__tabs0.selected() === &#39;0&#39;)">
+<div data-kind="card">
+<app-book-viewing-form data-kind="form">
+</app-book-viewing-form>
+</div>
+
+</div>
+<div role="tabpanel" data-part="tabpanel" tabindex="0" [attr.id]="__tabs0.panelId(1)" [attr.aria-labelledby]="__tabs0.tabId(1)" [hidden]="!(__tabs0.selected() === &#39;1&#39;)">
+<div data-kind="callout" role="status" data-tone="info" [attr.aria-label]="__aname0()">
+<span data-part="text">{{ __arg6() }}</span>
+</div>
+
+<div data-kind="card">
+<app-offer-on-home-form data-kind="form">
+</app-offer-on-home-form>
+</div>
+
+</div>
+</div>
+
+
+} @else if (__failed(); as failed) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(failed.problem, failed.binding.site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(failed.problem) }}</span>
+    @if (failed.problem.detail) {
+    <span data-part="detail">{{ failed.problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" [disabled]="failed.binding.pausedForMs &gt; 0" (click)="failed.binding.refresh()">{{ failed.binding.pausedForMs &gt; 0 ? __messages.retryIn(failed.binding.pausedForMs) : __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else {
+<div role="status" aria-busy="true" data-state="loading">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+}

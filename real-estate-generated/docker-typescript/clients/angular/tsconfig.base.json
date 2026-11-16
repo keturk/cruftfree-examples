@@ -1,0 +1,48 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "dom"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "paths": {
+      "@cobblestone/system-api-common": ["./libs/system-api-common/src/index.ts"],
+      "@cobblestone/listing-service-api": ["./libs/listing-service-api/src/index.ts"],
+      "@cobblestone/viewing-service-api": ["./libs/viewing-service-api/src/index.ts"],
+      "@cobblestone/deal-service-api": ["./libs/deal-service-api/src/index.ts"],
+      "@cobblestone/mortgage-mock-api": ["./libs/mortgage-mock-api/src/index.ts"],
+      "@cobblestone/signature-mock-api": ["./libs/signature-mock-api/src/index.ts"],
+      "@cobblestone/email-mock-api": ["./libs/email-mock-api/src/index.ts"],
+      "@cobblestone/system-api-state-common": ["./libs/system-api-state-common/src/index.ts"],
+      "@cobblestone/listing-service-api-state": ["./libs/listing-service-api-state/src/index.ts"],
+      "@cobblestone/viewing-service-api-state": ["./libs/viewing-service-api-state/src/index.ts"],
+      "@cobblestone/deal-service-api-state": ["./libs/deal-service-api-state/src/index.ts"],
+      "@cobblestone/mortgage-mock-api-state": ["./libs/mortgage-mock-api-state/src/index.ts"],
+      "@cobblestone/signature-mock-api-state": ["./libs/signature-mock-api-state/src/index.ts"],
+      "@cobblestone/email-mock-api-state": ["./libs/email-mock-api-state/src/index.ts"],
+      "@cobblestone/system-api-common/testing": ["./libs/system-api-common/src/testing/index.ts"],
+      "@cobblestone/listing-service-api/testing": ["./libs/listing-service-api/src/testing/index.ts"],
+      "@cobblestone/viewing-service-api/testing": ["./libs/viewing-service-api/src/testing/index.ts"],
+      "@cobblestone/deal-service-api/testing": ["./libs/deal-service-api/src/testing/index.ts"],
+      "@cobblestone/mortgage-mock-api/testing": ["./libs/mortgage-mock-api/src/testing/index.ts"],
+      "@cobblestone/signature-mock-api/testing": ["./libs/signature-mock-api/src/testing/index.ts"],
+      "@cobblestone/email-mock-api/testing": ["./libs/email-mock-api/src/testing/index.ts"],
+      "@cobblestone/ui-core": ["./libs/ui-core/src/index.ts"],
+      "@cobblestone/ui-core/testing": ["./libs/ui-core/src/testing/index.ts"]
+    }
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  }
+}

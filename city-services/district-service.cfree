@@ -1,0 +1,130 @@
+from cityservices.common import ZoningType;
+
+// The city's districts and zoning, and the application's identity block. A boundary is stored as
+// a PostGIS polygon with an automatic spatial index, so "which district is this point in?" is one
+// query. A boundary arrives as GeoJSON text, and a job turns any text not yet converted into the
+// spatial column, because seed data can write only plain columns.
+service cityservices.DistrictService('config/district-service.ccfg') : version('2.0.0'), description('Districts and zoning') {
+
+    discovery { }
+
+    identity {
+        // City staff. Sign-in belongs to the hosted identity provider, and residents never need
+        // an account: reporting and tracking are public.
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+
+            group "dispatcher" as dispatcher;
+            group "admin" as admin;
+            group "operator" as operator;
+        }
+
+        // Service-to-service callers.
+        provider machine config('config/identity/machine.ccfg') {
+        }
+
+        // API keys the mocks issue, the way a real vendor authenticates its API callers.
+        provider smsKeys config('config/identity/sms-keys.ccfg') {
+        }
+
+        provider geocoderKeys config('config/identity/geocoder-keys.ccfg') {
+        }
+    }
+
+    rdbms districtDb {
+
+        entity District extends BaseEntity {
+            String(200) name : trim, filterable, sortable;
+            String(20) code : unique, trim;
+            Int population : min(0) = 0;
+            Text boundaryGeoJson;
+            Geometry? boundary;
+            Text? description;
+        }
+
+        entity ZoningArea extends BaseEntity {
+            String(200) name : trim, filterable;
+            String(20) zoneCode : unique, trim;
+            ZoningType type : filterable;
+            Text boundaryGeoJson;
+            Geometry? boundary;
+
+            belongsTo District : index;
+        }
+    }
+
+    jobs {
+        // Converts boundaries written as text, such as seed data, into the spatial column.
+        job ConvertBoundaries {
+            foreach district in districtDb.District.whereNull(boundary).all() {
+                district.boundary = GeoShape.fromGeoJson(district.boundaryGeoJson);
+                district.save();
+            }
+            foreach area in districtDb.ZoningArea.whereNull(boundary).all() {
+                area.boundary = GeoShape.fromGeoJson(area.boundaryGeoJson);
+                area.save();
+            }
+        }
+    }
+
+    /// The answer to "which district is this?": finding none is an answer, not an error.
+    struct DistrictMatch {
+        Boolean found;
+        UUID? districtId;
+        String? name;
+    }
+
+    struct DistrictFacts {
+        UUID id;
+        String name;
+        String code;
+        Int population;
+        Float areaSquareKilometres;
+    }
+
+    fn factsOf(districtDb.District district) -> DistrictFacts {
+        let Float squareMetres = district.boundary != null ? GeoShape.area(district.boundary) : 0.0;
+        return DistrictFacts {
+            id: district.id,
+            name: district.name,
+            code: district.code,
+            population: district.population,
+            areaSquareKilometres: squareMetres / 1000000.0
+        };
+    }
+
+    rest_api DistrictAPI : basePath('/api/v1/districts'), rdbms(districtDb) {
+        resource District : only(list), auth(public);
+
+        // GeoSql.containsPoint lowers to ST_Contains, answered by the spatial index.
+        @path('/for-location')
+        get forLocation(Float latitude, Float longitude) : auth(service, providers: [machine]) -> DistrictMatch {
+            let District? district = District.where(GeoSql.containsPoint(boundary, latitude, longitude)).first();
+            if (district == null) {
+                return DistrictMatch { found: false };
+            }
+            return DistrictMatch { found: true, districtId: district.id, name: district.name };
+        }
+
+        @path('/zoning')
+        get zoningAt(Float latitude, Float longitude) : auth(public) -> Array<ZoningArea> {
+            return ZoningArea.where(GeoSql.containsPoint(boundary, latitude, longitude)).all();
+        }
+
+        @path('/facts')
+        get facts() : auth(required, providers: [identity], roles: [dispatcher, admin]) -> Array<DistrictFacts> {
+            let Array<District> all = District.orderBy(name: asc).all();
+            return all.map(d => factsOf(d));
+        }
+    }
+
+    test("a new district starts with no converted boundary") {
+        let District district = districtDb.District.create({
+            name: "Harborside",
+            code: "HBR",
+            boundaryGeoJson: "{\"type\":\"Polygon\",\"coordinates\":[[[0,0],[0,1],[1,1],[1,0],[0,0]]]}"
+        });
+        assert district.boundary == null;
+    }
+}

@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "files": [],
+  "include": [
+    "./libs/system-api-common/src/**/*.ts",
+    "./libs/district-service-api/src/**/*.ts",
+    "./libs/facility-service-api/src/**/*.ts",
+    "./libs/request-service-api/src/**/*.ts",
+    "./libs/sms-mock-api/src/**/*.ts",
+    "./libs/geocoder-mock-api/src/**/*.ts",
+    "./libs/system-api-state-common/src/**/*.ts",
+    "./libs/district-service-api-state/src/**/*.ts",
+    "./libs/facility-service-api-state/src/**/*.ts",
+    "./libs/request-service-api-state/src/**/*.ts",
+    "./libs/sms-mock-api-state/src/**/*.ts",
+    "./libs/geocoder-mock-api-state/src/**/*.ts",
+    "./libs/ui-core/src/**/*.ts"
+  ],
+  "exclude": ["./libs/**/*.spec.ts"]
+}

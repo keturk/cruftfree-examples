@@ -1,0 +1,3011 @@
+{
+  "backend": {
+    "api": {
+      "services": [
+        {
+          "routes": [
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/agent/deals/accept/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "buyerEmail"
+                ],
+                [
+                  "buyerName"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "envelopeId"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "listingId"
+                ],
+                [
+                  "listingTitle"
+                ],
+                [
+                  "offerId"
+                ],
+                [
+                  "price"
+                ],
+                [
+                  "signedAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/deals/contracts",
+              "pathParams": [],
+              "queryParams": [
+                {
+                  "name": "buyerName",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "limit",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "listingTitle",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "skip",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "status",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "enum:realestate-deal-service.ContractStatus"
+                  }
+                }
+              ],
+              "reads": [
+                [
+                  "items"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "agentEmail"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "buyerEmail"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "buyerName"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "envelopeId"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "id"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "listingId"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "listingTitle"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "offerId"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "price"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "signedAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "status"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "updatedAt"
+                ],
+                [
+                  "limit"
+                ],
+                [
+                  "maxLimit"
+                ],
+                [
+                  "offset"
+                ],
+                [
+                  "total"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/deals/offers",
+              "pathParams": [],
+              "queryParams": [
+                {
+                  "name": "buyerName",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "financing",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "enum:realestate-deal-service.Financing"
+                  }
+                },
+                {
+                  "name": "limit",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "listingTitle",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "skip",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "status",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "enum:realestate-deal-service.OfferStatus"
+                  }
+                }
+              ],
+              "reads": [
+                [
+                  "items"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "agentEmail"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "amount"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "buyerEmail"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "buyerName"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "financing"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "id"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "lenderReference"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "listingId"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "listingTitle"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "status"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "updatedAt"
+                ],
+                [
+                  "limit"
+                ],
+                [
+                  "maxLimit"
+                ],
+                [
+                  "offset"
+                ],
+                [
+                  "total"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/agent/deals/reject/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "amount"
+                ],
+                [
+                  "buyerEmail"
+                ],
+                [
+                  "buyerName"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "financing"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "lenderReference"
+                ],
+                [
+                  "listingId"
+                ],
+                [
+                  "listingTitle"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/deals/summary",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "contractsOut"
+                ],
+                [
+                  "offersWaiting"
+                ],
+                [
+                  "signed"
+                ],
+                [
+                  "signedValue"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": {
+                "encoding": "json",
+                "fields": [
+                  {
+                    "name": "amount",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "Money"
+                    }
+                  },
+                  {
+                    "name": "financing",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "enum:realestate-deal-service.Financing"
+                    }
+                  },
+                  {
+                    "name": "listingId",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "UUID"
+                    }
+                  }
+                ],
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "struct:realestate-deal-service.MakeOffer"
+                }
+              },
+              "method": "POST",
+              "path": "/api/v1/offers/make",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "amount"
+                ],
+                [
+                  "buyerEmail"
+                ],
+                [
+                  "buyerName"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "financing"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "lenderReference"
+                ],
+                [
+                  "listingId"
+                ],
+                [
+                  "listingTitle"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/offers/mine",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "[]",
+                  "agentEmail"
+                ],
+                [
+                  "[]",
+                  "amount"
+                ],
+                [
+                  "[]",
+                  "buyerEmail"
+                ],
+                [
+                  "[]",
+                  "buyerName"
+                ],
+                [
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "[]",
+                  "financing"
+                ],
+                [
+                  "[]",
+                  "id"
+                ],
+                [
+                  "[]",
+                  "lenderReference"
+                ],
+                [
+                  "[]",
+                  "listingId"
+                ],
+                [
+                  "[]",
+                  "listingTitle"
+                ],
+                [
+                  "[]",
+                  "status"
+                ],
+                [
+                  "[]",
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/offers/my-contracts",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "[]",
+                  "agentEmail"
+                ],
+                [
+                  "[]",
+                  "buyerEmail"
+                ],
+                [
+                  "[]",
+                  "buyerName"
+                ],
+                [
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "[]",
+                  "envelopeId"
+                ],
+                [
+                  "[]",
+                  "id"
+                ],
+                [
+                  "[]",
+                  "listingId"
+                ],
+                [
+                  "[]",
+                  "listingTitle"
+                ],
+                [
+                  "[]",
+                  "offerId"
+                ],
+                [
+                  "[]",
+                  "price"
+                ],
+                [
+                  "[]",
+                  "signedAt"
+                ],
+                [
+                  "[]",
+                  "status"
+                ],
+                [
+                  "[]",
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/offers/withdraw/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "amount"
+                ],
+                [
+                  "buyerEmail"
+                ],
+                [
+                  "buyerName"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "financing"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "lenderReference"
+                ],
+                [
+                  "listingId"
+                ],
+                [
+                  "listingTitle"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            }
+          ],
+          "service": "realestate.DealService"
+        },
+        {
+          "routes": [
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/desk/email/outbounds",
+              "pathParams": [],
+              "queryParams": [
+                {
+                  "name": "limit",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "recipient",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "skip",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "status",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "enum:realestate-email-mock.DeliveryStatus"
+                  }
+                },
+                {
+                  "name": "subject",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                }
+              ],
+              "reads": [
+                [
+                  "items"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "body"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "deliveryId"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "id"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "idempotencyKey"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "recipient"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "status"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "subject"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "updatedAt"
+                ],
+                [
+                  "limit"
+                ],
+                [
+                  "maxLimit"
+                ],
+                [
+                  "offset"
+                ],
+                [
+                  "total"
+                ]
+              ]
+            }
+          ],
+          "service": "realestate.EmailMock"
+        },
+        {
+          "routes": [
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/listings",
+              "pathParams": [],
+              "queryParams": [
+                {
+                  "name": "agentName",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "kind",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "enum:realestate-listing-service.PropertyKind"
+                  }
+                },
+                {
+                  "name": "limit",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "neighbourhoodName",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "skip",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "status",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "enum:realestate-common.ListingStatus"
+                  }
+                },
+                {
+                  "name": "title",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                }
+              ],
+              "reads": [
+                [
+                  "items"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "agentEmail"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "agentName"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "areaSqm"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "bathrooms"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "bedrooms"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "city"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "id"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "kind"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "latitude"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "longitude"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "neighbourhoodName"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "price"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "publishedAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "status"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "summary"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "title"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "updatedAt"
+                ],
+                [
+                  "limit"
+                ],
+                [
+                  "maxLimit"
+                ],
+                [
+                  "offset"
+                ],
+                [
+                  "total"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/listings/neighbourhoods",
+              "pathParams": [],
+              "queryParams": [
+                {
+                  "name": "limit",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "skip",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                }
+              ],
+              "reads": [
+                [
+                  "items"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "city"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "id"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "latitude"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "longitude"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "name"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "updatedAt"
+                ],
+                [
+                  "limit"
+                ],
+                [
+                  "maxLimit"
+                ],
+                [
+                  "offset"
+                ],
+                [
+                  "total"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": {
+                "encoding": "json",
+                "fields": [
+                  {
+                    "name": "areaSqm",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "Integer"
+                    }
+                  },
+                  {
+                    "name": "bathrooms",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "Integer"
+                    }
+                  },
+                  {
+                    "name": "bedrooms",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "Integer"
+                    }
+                  },
+                  {
+                    "name": "kind",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "enum:realestate-listing-service.PropertyKind"
+                    }
+                  },
+                  {
+                    "name": "neighbourhoodId",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "UUID"
+                    }
+                  },
+                  {
+                    "name": "price",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "Money"
+                    }
+                  },
+                  {
+                    "name": "summary",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "Text"
+                    }
+                  },
+                  {
+                    "name": "title",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "String"
+                    }
+                  }
+                ],
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "struct:realestate-listing-service.NewListing"
+                }
+              },
+              "method": "POST",
+              "path": "/api/v1/agent/listings/new",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "agentName"
+                ],
+                [
+                  "areaSqm"
+                ],
+                [
+                  "bathrooms"
+                ],
+                [
+                  "bedrooms"
+                ],
+                [
+                  "city"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "kind"
+                ],
+                [
+                  "latitude"
+                ],
+                [
+                  "longitude"
+                ],
+                [
+                  "neighbourhoodName"
+                ],
+                [
+                  "price"
+                ],
+                [
+                  "publishedAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "summary"
+                ],
+                [
+                  "title"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/listings/page/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentName"
+                ],
+                [
+                  "home"
+                ],
+                [
+                  "home",
+                  "areaSqm"
+                ],
+                [
+                  "home",
+                  "bathrooms"
+                ],
+                [
+                  "home",
+                  "bedrooms"
+                ],
+                [
+                  "home",
+                  "city"
+                ],
+                [
+                  "home",
+                  "id"
+                ],
+                [
+                  "home",
+                  "kind"
+                ],
+                [
+                  "home",
+                  "neighbourhoodName"
+                ],
+                [
+                  "home",
+                  "price"
+                ],
+                [
+                  "home",
+                  "status"
+                ],
+                [
+                  "home",
+                  "title"
+                ],
+                [
+                  "point"
+                ],
+                [
+                  "point",
+                  "accuracyM"
+                ],
+                [
+                  "point",
+                  "latitude"
+                ],
+                [
+                  "point",
+                  "longitude"
+                ],
+                [
+                  "priceHistory"
+                ],
+                [
+                  "priceHistory",
+                  "[]",
+                  "at"
+                ],
+                [
+                  "priceHistory",
+                  "[]",
+                  "newPrice"
+                ],
+                [
+                  "priceHistory",
+                  "[]",
+                  "oldPrice"
+                ],
+                [
+                  "summary"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": {
+                "encoding": "json",
+                "fields": [
+                  {
+                    "name": "listingId",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "UUID"
+                    }
+                  },
+                  {
+                    "name": "price",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "Money"
+                    }
+                  }
+                ],
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "struct:realestate-listing-service.NewPrice"
+                }
+              },
+              "method": "POST",
+              "path": "/api/v1/agent/listings/price",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "agentName"
+                ],
+                [
+                  "areaSqm"
+                ],
+                [
+                  "bathrooms"
+                ],
+                [
+                  "bedrooms"
+                ],
+                [
+                  "city"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "kind"
+                ],
+                [
+                  "latitude"
+                ],
+                [
+                  "longitude"
+                ],
+                [
+                  "neighbourhoodName"
+                ],
+                [
+                  "price"
+                ],
+                [
+                  "publishedAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "summary"
+                ],
+                [
+                  "title"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/agent/listings/publish/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "agentName"
+                ],
+                [
+                  "areaSqm"
+                ],
+                [
+                  "bathrooms"
+                ],
+                [
+                  "bedrooms"
+                ],
+                [
+                  "city"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "kind"
+                ],
+                [
+                  "latitude"
+                ],
+                [
+                  "longitude"
+                ],
+                [
+                  "neighbourhoodName"
+                ],
+                [
+                  "price"
+                ],
+                [
+                  "publishedAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "summary"
+                ],
+                [
+                  "title"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/listings/summary",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "drafts"
+                ],
+                [
+                  "onTheMarket"
+                ],
+                [
+                  "sold"
+                ],
+                [
+                  "underOffer"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/agent/listings/withdraw/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "agentName"
+                ],
+                [
+                  "areaSqm"
+                ],
+                [
+                  "bathrooms"
+                ],
+                [
+                  "bedrooms"
+                ],
+                [
+                  "city"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "kind"
+                ],
+                [
+                  "latitude"
+                ],
+                [
+                  "longitude"
+                ],
+                [
+                  "neighbourhoodName"
+                ],
+                [
+                  "price"
+                ],
+                [
+                  "publishedAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "summary"
+                ],
+                [
+                  "title"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "public",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/homes",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "[]",
+                  "areaSqm"
+                ],
+                [
+                  "[]",
+                  "bathrooms"
+                ],
+                [
+                  "[]",
+                  "bedrooms"
+                ],
+                [
+                  "[]",
+                  "city"
+                ],
+                [
+                  "[]",
+                  "id"
+                ],
+                [
+                  "[]",
+                  "kind"
+                ],
+                [
+                  "[]",
+                  "neighbourhoodName"
+                ],
+                [
+                  "[]",
+                  "price"
+                ],
+                [
+                  "[]",
+                  "status"
+                ],
+                [
+                  "[]",
+                  "title"
+                ]
+              ]
+            },
+            {
+              "auth": "public",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/homes/home/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentName"
+                ],
+                [
+                  "home"
+                ],
+                [
+                  "home",
+                  "areaSqm"
+                ],
+                [
+                  "home",
+                  "bathrooms"
+                ],
+                [
+                  "home",
+                  "bedrooms"
+                ],
+                [
+                  "home",
+                  "city"
+                ],
+                [
+                  "home",
+                  "id"
+                ],
+                [
+                  "home",
+                  "kind"
+                ],
+                [
+                  "home",
+                  "neighbourhoodName"
+                ],
+                [
+                  "home",
+                  "price"
+                ],
+                [
+                  "home",
+                  "status"
+                ],
+                [
+                  "home",
+                  "title"
+                ],
+                [
+                  "point"
+                ],
+                [
+                  "point",
+                  "accuracyM"
+                ],
+                [
+                  "point",
+                  "latitude"
+                ],
+                [
+                  "point",
+                  "longitude"
+                ],
+                [
+                  "priceHistory"
+                ],
+                [
+                  "priceHistory",
+                  "[]",
+                  "at"
+                ],
+                [
+                  "priceHistory",
+                  "[]",
+                  "newPrice"
+                ],
+                [
+                  "priceHistory",
+                  "[]",
+                  "oldPrice"
+                ],
+                [
+                  "summary"
+                ]
+              ]
+            },
+            {
+              "auth": "public",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/homes/pins",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "[]",
+                  "id"
+                ],
+                [
+                  "[]",
+                  "point"
+                ],
+                [
+                  "[]",
+                  "point",
+                  "accuracyM"
+                ],
+                [
+                  "[]",
+                  "point",
+                  "latitude"
+                ],
+                [
+                  "[]",
+                  "point",
+                  "longitude"
+                ],
+                [
+                  "[]",
+                  "title"
+                ]
+              ]
+            },
+            {
+              "auth": "public",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/homes/search",
+              "pathParams": [],
+              "queryParams": [
+                {
+                  "name": "q",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                }
+              ],
+              "reads": [
+                [
+                  "[]",
+                  "areaSqm"
+                ],
+                [
+                  "[]",
+                  "bathrooms"
+                ],
+                [
+                  "[]",
+                  "bedrooms"
+                ],
+                [
+                  "[]",
+                  "city"
+                ],
+                [
+                  "[]",
+                  "id"
+                ],
+                [
+                  "[]",
+                  "kind"
+                ],
+                [
+                  "[]",
+                  "neighbourhoodName"
+                ],
+                [
+                  "[]",
+                  "price"
+                ],
+                [
+                  "[]",
+                  "status"
+                ],
+                [
+                  "[]",
+                  "title"
+                ]
+              ]
+            }
+          ],
+          "service": "realestate.ListingService"
+        },
+        {
+          "routes": [
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/desk/mortgage/lender_answers",
+              "pathParams": [],
+              "queryParams": [
+                {
+                  "name": "applicantName",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "decision",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "enum:realestate-mortgage-mock.PreapprovalDecision"
+                  }
+                },
+                {
+                  "name": "limit",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "skip",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                }
+              ],
+              "reads": [
+                [
+                  "items"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "amount"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "applicantEmail"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "applicantName"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "decision"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "id"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "idempotencyKey"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "reference"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "updatedAt"
+                ],
+                [
+                  "limit"
+                ],
+                [
+                  "maxLimit"
+                ],
+                [
+                  "offset"
+                ],
+                [
+                  "total"
+                ]
+              ]
+            }
+          ],
+          "service": "realestate.MortgageMock"
+        },
+        {
+          "routes": [
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/desk/signature/decline/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "createdAt"
+                ],
+                [
+                  "documentBody"
+                ],
+                [
+                  "documentTitle"
+                ],
+                [
+                  "envelopeId"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "idempotencyKey"
+                ],
+                [
+                  "settledAt"
+                ],
+                [
+                  "signerEmail"
+                ],
+                [
+                  "signerName"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/desk/signature/sign/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "createdAt"
+                ],
+                [
+                  "documentBody"
+                ],
+                [
+                  "documentTitle"
+                ],
+                [
+                  "envelopeId"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "idempotencyKey"
+                ],
+                [
+                  "settledAt"
+                ],
+                [
+                  "signerEmail"
+                ],
+                [
+                  "signerName"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/desk/signature/vendor_envelopes",
+              "pathParams": [],
+              "queryParams": [
+                {
+                  "name": "documentTitle",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "limit",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "signerName",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "skip",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "status",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "enum:realestate-signature-mock.EnvelopeStatus"
+                  }
+                }
+              ],
+              "reads": [
+                [
+                  "items"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "documentBody"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "documentTitle"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "envelopeId"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "id"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "idempotencyKey"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "settledAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "signerEmail"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "signerName"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "status"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "updatedAt"
+                ],
+                [
+                  "limit"
+                ],
+                [
+                  "maxLimit"
+                ],
+                [
+                  "offset"
+                ],
+                [
+                  "total"
+                ]
+              ]
+            }
+          ],
+          "service": "realestate.SignatureMock"
+        },
+        {
+          "routes": [
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/viewings",
+              "pathParams": [],
+              "queryParams": [
+                {
+                  "name": "agentName",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "buyerName",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "limit",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "listingTitle",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "String"
+                  }
+                },
+                {
+                  "name": "skip",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "Integer"
+                  }
+                },
+                {
+                  "name": "status",
+                  "required": false,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "enum:realestate-viewing-service.ViewingStatus"
+                  }
+                }
+              ],
+              "reads": [
+                [
+                  "items"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "agentEmail"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "agentName"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "buyerEmail"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "buyerName"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "endsAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "id"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "listingId"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "listingTitle"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "note"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "reminderSent"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "startsAt"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "status"
+                ],
+                [
+                  "items",
+                  "[]",
+                  "updatedAt"
+                ],
+                [
+                  "limit"
+                ],
+                [
+                  "maxLimit"
+                ],
+                [
+                  "offset"
+                ],
+                [
+                  "total"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/viewings/calendar",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "[]",
+                  "agentEmail"
+                ],
+                [
+                  "[]",
+                  "agentName"
+                ],
+                [
+                  "[]",
+                  "buyerEmail"
+                ],
+                [
+                  "[]",
+                  "buyerName"
+                ],
+                [
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "[]",
+                  "endsAt"
+                ],
+                [
+                  "[]",
+                  "id"
+                ],
+                [
+                  "[]",
+                  "listingId"
+                ],
+                [
+                  "[]",
+                  "listingTitle"
+                ],
+                [
+                  "[]",
+                  "note"
+                ],
+                [
+                  "[]",
+                  "reminderSent"
+                ],
+                [
+                  "[]",
+                  "startsAt"
+                ],
+                [
+                  "[]",
+                  "status"
+                ],
+                [
+                  "[]",
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/agent/viewings/completed/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "agentName"
+                ],
+                [
+                  "buyerEmail"
+                ],
+                [
+                  "buyerName"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "endsAt"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "listingId"
+                ],
+                [
+                  "listingTitle"
+                ],
+                [
+                  "note"
+                ],
+                [
+                  "reminderSent"
+                ],
+                [
+                  "startsAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/agent/viewings/confirm/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "agentName"
+                ],
+                [
+                  "buyerEmail"
+                ],
+                [
+                  "buyerName"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "endsAt"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "listingId"
+                ],
+                [
+                  "listingTitle"
+                ],
+                [
+                  "note"
+                ],
+                [
+                  "reminderSent"
+                ],
+                [
+                  "startsAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/agent/viewings/no-show/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "agentName"
+                ],
+                [
+                  "buyerEmail"
+                ],
+                [
+                  "buyerName"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "endsAt"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "listingId"
+                ],
+                [
+                  "listingTitle"
+                ],
+                [
+                  "note"
+                ],
+                [
+                  "reminderSent"
+                ],
+                [
+                  "startsAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/agent/viewings/summary",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "ahead"
+                ],
+                [
+                  "ahead",
+                  "[]",
+                  "day"
+                ],
+                [
+                  "ahead",
+                  "[]",
+                  "viewings"
+                ],
+                [
+                  "nextSevenDays"
+                ],
+                [
+                  "waitingForYou"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "POST",
+              "path": "/api/v1/viewings/cancel/{id}",
+              "pathParams": [
+                {
+                  "name": "id",
+                  "required": true,
+                  "type": {
+                    "array": false,
+                    "map": false,
+                    "page": false,
+                    "ref": "UUID"
+                  }
+                }
+              ],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "agentName"
+                ],
+                [
+                  "buyerEmail"
+                ],
+                [
+                  "buyerName"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "endsAt"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "listingId"
+                ],
+                [
+                  "listingTitle"
+                ],
+                [
+                  "note"
+                ],
+                [
+                  "reminderSent"
+                ],
+                [
+                  "startsAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": null,
+              "method": "GET",
+              "path": "/api/v1/viewings/mine",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "[]",
+                  "agentEmail"
+                ],
+                [
+                  "[]",
+                  "agentName"
+                ],
+                [
+                  "[]",
+                  "buyerEmail"
+                ],
+                [
+                  "[]",
+                  "buyerName"
+                ],
+                [
+                  "[]",
+                  "createdAt"
+                ],
+                [
+                  "[]",
+                  "endsAt"
+                ],
+                [
+                  "[]",
+                  "id"
+                ],
+                [
+                  "[]",
+                  "listingId"
+                ],
+                [
+                  "[]",
+                  "listingTitle"
+                ],
+                [
+                  "[]",
+                  "note"
+                ],
+                [
+                  "[]",
+                  "reminderSent"
+                ],
+                [
+                  "[]",
+                  "startsAt"
+                ],
+                [
+                  "[]",
+                  "status"
+                ],
+                [
+                  "[]",
+                  "updatedAt"
+                ]
+              ]
+            },
+            {
+              "auth": "required",
+              "body": {
+                "encoding": "json",
+                "fields": [
+                  {
+                    "name": "listingId",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "UUID"
+                    }
+                  },
+                  {
+                    "name": "note",
+                    "required": false,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "String"
+                    }
+                  },
+                  {
+                    "name": "startsAt",
+                    "required": true,
+                    "type": {
+                      "array": false,
+                      "map": false,
+                      "page": false,
+                      "ref": "DateTime"
+                    }
+                  }
+                ],
+                "type": {
+                  "array": false,
+                  "map": false,
+                  "page": false,
+                  "ref": "struct:realestate-viewing-service.RequestViewing"
+                }
+              },
+              "method": "POST",
+              "path": "/api/v1/viewings/request",
+              "pathParams": [],
+              "queryParams": [],
+              "reads": [
+                [
+                  "agentEmail"
+                ],
+                [
+                  "agentName"
+                ],
+                [
+                  "buyerEmail"
+                ],
+                [
+                  "buyerName"
+                ],
+                [
+                  "createdAt"
+                ],
+                [
+                  "endsAt"
+                ],
+                [
+                  "id"
+                ],
+                [
+                  "listingId"
+                ],
+                [
+                  "listingTitle"
+                ],
+                [
+                  "note"
+                ],
+                [
+                  "reminderSent"
+                ],
+                [
+                  "startsAt"
+                ],
+                [
+                  "status"
+                ],
+                [
+                  "updatedAt"
+                ]
+              ]
+            }
+          ],
+          "service": "realestate.ViewingService"
+        }
+      ]
+    },
+    "apiBaseUrl": "http://localhost:8080"
+  },
+  "registrations": {
+    "Console": {
+      "appId": null,
+      "clients": {
+        "browser": {
+          "authority": "http://localhost:8085",
+          "clientId": "399790530332000261",
+          "flows": [
+            "authorization_code"
+          ],
+          "issuer": "http://localhost:8085",
+          "logoutUris": [
+            "http://localhost:4300/auth/logout"
+          ],
+          "redirectUris": [
+            "http://localhost:4300/auth/callback"
+          ],
+          "roleMappings": {
+            "agent": "agent",
+            "operator": "operator"
+          },
+          "rolesClaim": "urn:zitadel:iam:org:project:roles",
+          "scopes": [
+            "openid",
+            "profile",
+            "email"
+          ]
+        }
+      },
+      "kinds": [
+        "browser"
+      ],
+      "services": [
+        "realestate.ListingService",
+        "realestate.ViewingService",
+        "realestate.DealService",
+        "realestate.MortgageMock",
+        "realestate.SignatureMock",
+        "realestate.EmailMock"
+      ],
+      "webOrigin": "http://localhost:4300"
+    },
+    "Homes": {
+      "appId": "com.example.cobblestone",
+      "clients": {
+        "browser": {
+          "authority": "http://localhost:8085",
+          "clientId": "399790530466217989",
+          "flows": [
+            "authorization_code"
+          ],
+          "issuer": "http://localhost:8085",
+          "logoutUris": [
+            "http://localhost:4200/auth/logout"
+          ],
+          "redirectUris": [
+            "http://localhost:4200/auth/callback"
+          ],
+          "roleMappings": {
+            "agent": "agent",
+            "operator": "operator"
+          },
+          "rolesClaim": "urn:zitadel:iam:org:project:roles",
+          "scopes": [
+            "openid",
+            "profile",
+            "email"
+          ]
+        },
+        "native": {
+          "authority": "http://localhost:8085",
+          "clientId": "399790530566881285",
+          "flows": [
+            "authorization_code"
+          ],
+          "issuer": "http://localhost:8085",
+          "logoutUris": [
+            "com.example.cobblestone://oauth/logout"
+          ],
+          "redirectUris": [
+            "com.example.cobblestone://oauth/callback"
+          ],
+          "roleMappings": {
+            "agent": "agent",
+            "operator": "operator"
+          },
+          "rolesClaim": "urn:zitadel:iam:org:project:roles",
+          "scopes": [
+            "openid",
+            "profile",
+            "email"
+          ]
+        }
+      },
+      "kinds": [
+        "browser",
+        "native"
+      ],
+      "services": [
+        "realestate.ListingService",
+        "realestate.ViewingService",
+        "realestate.DealService"
+      ],
+      "webOrigin": "http://localhost:4200"
+    }
+  },
+  "system": {
+    "name": "realestate.System",
+    "version": "2.0.0"
+  }
+}

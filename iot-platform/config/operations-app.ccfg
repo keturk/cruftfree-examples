@@ -1,0 +1,26 @@
+config app iot.Operations {
+  base {
+    targets = ["angular"];
+    clients {
+      angular {
+        scope = "@coldframe";
+      }
+    }
+    strings = ["config/strings/operations.en-US.ccfg"];
+    map {
+      tiles = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+      attribution = "Map data from OpenStreetMap contributors";
+    }
+  }
+  profile test as "test" extends base {
+    web { port = 4200; }
+  }
+  profile aws as "aws" extends base {
+    web { domain { name = "operations.coldframe.example.com"; } }
+  }
+  profile development as "dev" extends aws {
+  }
+  profile production as "prod" extends base {
+    web { port = 4200; }
+  }
+}

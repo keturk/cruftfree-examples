@@ -1,0 +1,833 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "IsolatedSubnet1Id": {
+      "Description": "Isolated subnet in AZ 1.",
+      "Export": {
+        "Name": "hotel-system-vpc-IsolatedSubnet1Id"
+      },
+      "Value": {
+        "Ref": "IsolatedSubnet1"
+      }
+    },
+    "IsolatedSubnet2Id": {
+      "Description": "Isolated subnet in AZ 2.",
+      "Export": {
+        "Name": "hotel-system-vpc-IsolatedSubnet2Id"
+      },
+      "Value": {
+        "Ref": "IsolatedSubnet2"
+      }
+    },
+    "PrivateSubnet1Id": {
+      "Description": "Private subnet in AZ 1.",
+      "Export": {
+        "Name": "hotel-system-vpc-PrivateSubnet1Id"
+      },
+      "Value": {
+        "Ref": "PrivateSubnet1"
+      }
+    },
+    "PrivateSubnet2Id": {
+      "Description": "Private subnet in AZ 2.",
+      "Export": {
+        "Name": "hotel-system-vpc-PrivateSubnet2Id"
+      },
+      "Value": {
+        "Ref": "PrivateSubnet2"
+      }
+    },
+    "PublicSubnet1Id": {
+      "Description": "Public subnet in AZ 1.",
+      "Export": {
+        "Name": "hotel-system-vpc-PublicSubnet1Id"
+      },
+      "Value": {
+        "Ref": "PublicSubnet1"
+      }
+    },
+    "PublicSubnet2Id": {
+      "Description": "Public subnet in AZ 2.",
+      "Export": {
+        "Name": "hotel-system-vpc-PublicSubnet2Id"
+      },
+      "Value": {
+        "Ref": "PublicSubnet2"
+      }
+    },
+    "VpcCidrBlock": {
+      "Description": "The VPC's CIDR block, for groups admitting traffic from the VPC.",
+      "Export": {
+        "Name": "hotel-system-vpc-VpcCidrBlock"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "Vpc",
+          "CidrBlock"
+        ]
+      }
+    },
+    "VpcId": {
+      "Description": "The application VPC.",
+      "Export": {
+        "Name": "hotel-system-vpc-VpcId"
+      },
+      "Value": {
+        "Ref": "Vpc"
+      }
+    }
+  },
+  "Parameters": {
+    "DefaultSecurityGroupCodeKey": {
+      "AllowedPattern": "[0-9A-Za-z!_.*'()/-]{1,1024}",
+      "ConstraintDescription": "an S3 object key of unreserved characters, 1-1024 long",
+      "Description": "Deployment-bucket key of the uploaded default security group function package.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "CloudWatchLogsEndpoint": {
+      "Properties": {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": [
+          {
+            "Ref": "CloudWatchLogsEndpointSecurityGroup"
+          }
+        ],
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.logs"
+        },
+        "SubnetIds": [
+          {
+            "Ref": "PrivateSubnet1"
+          },
+          {
+            "Ref": "PrivateSubnet2"
+          }
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCEndpoint"
+    },
+    "CloudWatchLogsEndpointSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "HTTPS from the VPC to the CloudWatchLogsEndpoint",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "10.0.0.0/16",
+            "Description": "HTTPS from the VPC",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "DefaultSecurityGroupClosed": {
+      "Properties": {
+        "GroupId": {
+          "Fn::GetAtt": [
+            "Vpc",
+            "DefaultSecurityGroup"
+          ]
+        },
+        "ServiceTimeout": 120,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "DefaultSecurityGroupFn",
+            "Arn"
+          ]
+        }
+      },
+      "Type": "AWS::CloudFormation::CustomResource"
+    },
+    "DefaultSecurityGroupFn": {
+      "DependsOn": [
+        "DefaultSecurityGroupRoleDefaultPolicy",
+        "DefaultSecurityGroupRole"
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::ImportValue": "hotel-system-bootstrap-DeploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "DefaultSecurityGroupCodeKey"
+          }
+        },
+        "Handler": "index.cfn_handler",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "DefaultSecurityGroupLogGroup"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "DefaultSecurityGroupRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 60
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "DefaultSecurityGroupLogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "DefaultSecurityGroupRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "DefaultSecurityGroupRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "DefaultSecurityGroupLogGroup",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${DefaultSecurityGroupLogGroup.Arn}:*"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ec2:RevokeSecurityGroupIngress",
+                "ec2:RevokeSecurityGroupEgress"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:security-group/${Group}",
+                    {
+                      "Group": {
+                        "Fn::GetAtt": [
+                          "Vpc",
+                          "DefaultSecurityGroup"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ec2:DescribeSecurityGroups"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "*"
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "DefaultSecurityGroupRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "DefaultSecurityGroupRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    },
+    "EcrApiEndpoint": {
+      "Properties": {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": [
+          {
+            "Ref": "EcrApiEndpointSecurityGroup"
+          }
+        ],
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.ecr.api"
+        },
+        "SubnetIds": [
+          {
+            "Ref": "PrivateSubnet1"
+          },
+          {
+            "Ref": "PrivateSubnet2"
+          }
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCEndpoint"
+    },
+    "EcrApiEndpointSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "HTTPS from the VPC to the EcrApiEndpoint",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "10.0.0.0/16",
+            "Description": "HTTPS from the VPC",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "EcrDockerEndpoint": {
+      "Properties": {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": [
+          {
+            "Ref": "EcrDockerEndpointSecurityGroup"
+          }
+        ],
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.ecr.dkr"
+        },
+        "SubnetIds": [
+          {
+            "Ref": "PrivateSubnet1"
+          },
+          {
+            "Ref": "PrivateSubnet2"
+          }
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCEndpoint"
+    },
+    "EcrDockerEndpointSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "HTTPS from the VPC to the EcrDockerEndpoint",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "10.0.0.0/16",
+            "Description": "HTTPS from the VPC",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "InternetGateway": {
+      "Type": "AWS::EC2::InternetGateway"
+    },
+    "InternetGatewayAttachment": {
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCGatewayAttachment"
+    },
+    "IsolatedSubnet1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": "10.0.4.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "IsolatedSubnet1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "IsolatedSubnet1RouteTable": {
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "IsolatedSubnet1RouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "IsolatedSubnet1RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "IsolatedSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "IsolatedSubnet2": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": "10.0.5.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "IsolatedSubnet2"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "IsolatedSubnet2RouteTable": {
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "IsolatedSubnet2RouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "IsolatedSubnet2RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "IsolatedSubnet2"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "NatGateway": {
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "NatGatewayEip",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::NatGateway"
+    },
+    "NatGatewayEip": {
+      "DependsOn": [
+        "InternetGatewayAttachment"
+      ],
+      "Properties": {
+        "Domain": "vpc"
+      },
+      "Type": "AWS::EC2::EIP"
+    },
+    "PrivateSubnet1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": "10.0.2.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateSubnet1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "PrivateSubnet1DefaultRoute": {
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "NatGateway"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateSubnet1RouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "PrivateSubnet1RouteTable": {
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "PrivateSubnet1RouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PrivateSubnet1RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PrivateSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "PrivateSubnet2": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": "10.0.3.0/24",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateSubnet2"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "PrivateSubnet2DefaultRoute": {
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "NatGateway"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateSubnet2RouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "PrivateSubnet2RouteTable": {
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "PrivateSubnet2RouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PrivateSubnet2RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PrivateSubnet2"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "PublicSubnet1": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PublicSubnet1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "PublicSubnet1DefaultRoute": {
+      "DependsOn": [
+        "InternetGatewayAttachment"
+      ],
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "PublicSubnet1RouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "PublicSubnet1RouteTable": {
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "PublicSubnet1RouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicSubnet1RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnet1"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "PublicSubnet2": {
+      "Properties": {
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "CidrBlock": "10.0.1.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PublicSubnet2"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::Subnet"
+    },
+    "PublicSubnet2DefaultRoute": {
+      "DependsOn": [
+        "InternetGatewayAttachment"
+      ],
+      "Properties": {
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        },
+        "RouteTableId": {
+          "Ref": "PublicSubnet2RouteTable"
+        }
+      },
+      "Type": "AWS::EC2::Route"
+    },
+    "PublicSubnet2RouteTable": {
+      "Properties": {
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::RouteTable"
+    },
+    "PublicSubnet2RouteTableAssociation": {
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "PublicSubnet2RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "PublicSubnet2"
+        }
+      },
+      "Type": "AWS::EC2::SubnetRouteTableAssociation"
+    },
+    "S3Endpoint": {
+      "Properties": {
+        "RouteTableIds": [
+          {
+            "Ref": "PublicSubnet1RouteTable"
+          },
+          {
+            "Ref": "PublicSubnet2RouteTable"
+          },
+          {
+            "Ref": "PrivateSubnet1RouteTable"
+          },
+          {
+            "Ref": "PrivateSubnet2RouteTable"
+          },
+          {
+            "Ref": "IsolatedSubnet1RouteTable"
+          },
+          {
+            "Ref": "IsolatedSubnet2RouteTable"
+          }
+        ],
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.s3"
+        },
+        "VpcEndpointType": "Gateway",
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCEndpoint"
+    },
+    "SecretsManagerEndpoint": {
+      "Properties": {
+        "PrivateDnsEnabled": true,
+        "SecurityGroupIds": [
+          {
+            "Ref": "SecretsManagerEndpointSecurityGroup"
+          }
+        ],
+        "ServiceName": {
+          "Fn::Sub": "com.amazonaws.${AWS::Region}.secretsmanager"
+        },
+        "SubnetIds": [
+          {
+            "Ref": "PrivateSubnet1"
+          },
+          {
+            "Ref": "PrivateSubnet2"
+          }
+        ],
+        "VpcEndpointType": "Interface",
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::VPCEndpoint"
+    },
+    "SecretsManagerEndpointSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "HTTPS from the VPC to the SecretsManagerEndpoint",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "127.0.0.1/32",
+            "Description": "Inline anchor so EC2 adds no default allow-all egress rule",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "10.0.0.0/16",
+            "Description": "HTTPS from the VPC",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "SystemOverviewDashboard": {
+      "Properties": {
+        "DashboardBody": "{\"start\": \"-PT1H\", \"periodOverride\": \"inherit\", \"widgets\": [{\"type\": \"metric\", \"x\": 0, \"y\": 0, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[{\"expression\": \"m1 / PERIOD(m1)\", \"label\": \"Requests/sec\", \"id\": \"e1\"}], [\"CruftFree/Application\", \"http_requests_total\", \"ServiceName\", \"hotel.StayService\", {\"stat\": \"Sum\", \"id\": \"m1\", \"visible\": false}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Request Rate - hotel.StayService\"}}, {\"type\": \"metric\", \"x\": 12, \"y\": 0, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.StayService\", {\"stat\": \"Average\", \"label\": \"avg\"}], [\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.StayService\", {\"stat\": \"Maximum\", \"label\": \"max\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Latency (s) - hotel.StayService\"}}, {\"type\": \"metric\", \"x\": 0, \"y\": 6, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[{\"expression\": \"m1 / PERIOD(m1)\", \"label\": \"Requests/sec\", \"id\": \"e1\"}], [\"CruftFree/Application\", \"http_requests_total\", \"ServiceName\", \"hotel.NoticeService\", {\"stat\": \"Sum\", \"id\": \"m1\", \"visible\": false}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Request Rate - hotel.NoticeService\"}}, {\"type\": \"metric\", \"x\": 12, \"y\": 6, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.NoticeService\", {\"stat\": \"Average\", \"label\": \"avg\"}], [\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.NoticeService\", {\"stat\": \"Maximum\", \"label\": \"max\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Latency (s) - hotel.NoticeService\"}}, {\"type\": \"metric\", \"x\": 0, \"y\": 12, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[{\"expression\": \"m1 / PERIOD(m1)\", \"label\": \"Requests/sec\", \"id\": \"e1\"}], [\"CruftFree/Application\", \"http_requests_total\", \"ServiceName\", \"hotel.PaymentMock\", {\"stat\": \"Sum\", \"id\": \"m1\", \"visible\": false}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Request Rate - hotel.PaymentMock\"}}, {\"type\": \"metric\", \"x\": 12, \"y\": 12, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.PaymentMock\", {\"stat\": \"Average\", \"label\": \"avg\"}], [\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.PaymentMock\", {\"stat\": \"Maximum\", \"label\": \"max\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Latency (s) - hotel.PaymentMock\"}}, {\"type\": \"metric\", \"x\": 0, \"y\": 18, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[{\"expression\": \"m1 / PERIOD(m1)\", \"label\": \"Requests/sec\", \"id\": \"e1\"}], [\"CruftFree/Application\", \"http_requests_total\", \"ServiceName\", \"hotel.EmailMock\", {\"stat\": \"Sum\", \"id\": \"m1\", \"visible\": false}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Request Rate - hotel.EmailMock\"}}, {\"type\": \"metric\", \"x\": 12, \"y\": 18, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.EmailMock\", {\"stat\": \"Average\", \"label\": \"avg\"}], [\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.EmailMock\", {\"stat\": \"Maximum\", \"label\": \"max\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Latency (s) - hotel.EmailMock\"}}, {\"type\": \"metric\", \"x\": 0, \"y\": 24, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[{\"expression\": \"m1 / PERIOD(m1)\", \"label\": \"Requests/sec\", \"id\": \"e1\"}], [\"CruftFree/Application\", \"http_requests_total\", \"ServiceName\", \"hotel.ChannelMock\", {\"stat\": \"Sum\", \"id\": \"m1\", \"visible\": false}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Request Rate - hotel.ChannelMock\"}}, {\"type\": \"metric\", \"x\": 12, \"y\": 24, \"width\": 12, \"height\": 6, \"properties\": {\"metrics\": [[\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.ChannelMock\", {\"stat\": \"Average\", \"label\": \"avg\"}], [\"CruftFree/Application\", \"http_request_duration_seconds\", \"ServiceName\", \"hotel.ChannelMock\", {\"stat\": \"Maximum\", \"label\": \"max\"}]], \"period\": 30, \"region\": \"us-east-1\", \"title\": \"HTTP Latency (s) - hotel.ChannelMock\"}}]}",
+        "DashboardName": "hotel-system-system-overview"
+      },
+      "Type": "AWS::CloudWatch::Dashboard"
+    },
+    "Vpc": {
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "hotel-system-vpc"
+          }
+        ]
+      },
+      "Type": "AWS::EC2::VPC"
+    }
+  }
+}

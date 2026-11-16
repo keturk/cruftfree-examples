@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "knowledge_db_database": "helpdesk_knowledge",
+    "knowledge_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

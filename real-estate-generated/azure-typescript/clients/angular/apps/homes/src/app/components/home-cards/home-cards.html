@@ -1,0 +1,28 @@
+<div data-kind="grid" class="style-cardGrid">
+@for (home of __foreach0(); track $index) {
+<div data-kind="card">
+<div data-part="header">
+<h3 data-part="title">{{ this.__textOf(home.title) }}</h3>
+</div>
+<app-home-art data-kind="HomeArt" [kind]="home.kind">
+</app-home-art>
+<span data-kind="text">
+{{ this.__textOf(this.__format.money(home.price)) }}
+</span>
+<span data-kind="text">
+{{ this.__textOf(this.__messages.key(&quot;placeLine&quot;, &#123; &quot;place&quot;: home.neighbourhoodName, &quot;city&quot;: home.city &#125;)) }}
+</span>
+@if ((home.kind !== PropertyKind.Land)) {
+<span data-kind="text">
+{{ this.__textOf(this.__messages.key(&quot;factsLine&quot;, &#123; &quot;beds&quot;: this.__format.number(home.bedrooms), &quot;baths&quot;: this.__format.number(home.bathrooms), &quot;area&quot;: this.__format.number(home.areaSqm) &#125;)) }}
+</span>
+}
+<a data-kind="link" data-variant="primary" [routerLink]="this.__nav.url(&quot;/homes/:id&quot;, &#123; &quot;id&quot;: home.id &#125;)">
+<span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+{{ __arg0() }}
+</a>
+</div>
+
+}
+</div>
+

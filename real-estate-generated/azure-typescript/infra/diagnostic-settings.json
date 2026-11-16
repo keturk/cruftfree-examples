@@ -1,0 +1,32 @@
+{
+  "settings": [
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "realestate-deal-service-deal-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "realestate-email-mock-email-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "realestate-listing-service-listing-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "realestate-mortgage-mock-mortgage-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "realestate-signature-mock-signature-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "settingName": "realestate-viewing-service-viewing-db-development-pool-diag"
+    },
+    {
+      "resourceType": "Microsoft.EventHub/namespaces",
+      "settingName": "pooled-event-hubs-cobblestone-events-development-diag"
+    }
+  ]
+}

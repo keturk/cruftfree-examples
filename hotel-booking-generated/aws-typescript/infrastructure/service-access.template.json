@@ -1,0 +1,35 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "HotelStayServiceFromHotelNoticeServiceEgress": {
+      "Properties": {
+        "Description": "Allow traffic from hotel_notice_service (declared dependency)",
+        "DestinationSecurityGroupId": {
+          "Fn::ImportValue": "hotel-system-hotel-stay-service-ServiceSecurityGroupId"
+        },
+        "FromPort": 8001,
+        "GroupId": {
+          "Fn::ImportValue": "hotel-system-hotel-notice-service-ServiceSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 8001
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress"
+    },
+    "HotelStayServiceFromHotelNoticeServiceIngress": {
+      "Properties": {
+        "Description": "Allow traffic from hotel_notice_service (declared dependency)",
+        "FromPort": 8001,
+        "GroupId": {
+          "Fn::ImportValue": "hotel-system-hotel-stay-service-ServiceSecurityGroupId"
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::ImportValue": "hotel-system-hotel-notice-service-ServiceSecurityGroupId"
+        },
+        "ToPort": 8001
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress"
+    }
+  }
+}

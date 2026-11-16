@@ -1,0 +1,106 @@
+﻿config service logistics.ShipmentService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8001;
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms shipmentDb from postgresContainer(id: "457ecc79-f5c1-4fb1-a780-6d9139e5b627", database: "logistics_shipment");
+    pubsub mq from kafkaContainer();
+    queues from rabbitContainer();
+    httpSecurity from localHttpSecurity(host: "logistics-shipment-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    queueOps from queuePolling();
+    messagingOps from rabbitPrefetch();
+    serviceCredentialOps from machineCredential();
+    jobs {
+      jobs {
+        SyncPartnerConsignments {
+          schedule = "*/2 * * * *";
+          timeout = "120s";
+        }
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // The defaults only exist on a local stack, where they match the hashes seeded in seed/, so the
+      // example runs with nothing to configure. Any other deployment must supply the handles' values.
+      secret carrier_provider_api_key {
+        required = true;
+        purpose = "API key for the partner carrier (CarrierProvider contract).";
+        localDefault = "dev-only-carrier-key-not-a-credential";
+      }
+      secret geocode_provider_api_key {
+        required = true;
+        purpose = "API key for the geocoding vendor (GeocodeProvider contract).";
+        localDefault = "dev-only-geocode-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    remoteConfigOps {
+      appconfigMinPollSeconds = 15;
+    }
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+    // Consumers run as SQS-triggered Lambdas: the `mq` topics cross service boundaries, which on AWS
+    // means SNS/SQS, and no language target runs an SQS pubsub consumer inside the service process.
+    runtime { consumers = "decoupled"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms shipmentDb from rdsPostgres(id: "457ecc79-f5c1-4fb1-a780-6d9139e5b627", database: "logistics_shipment", poolSize: 20, maxOverflow: 10);
+    replace pubsub mq from snsSqs();
+    replace queues {
+      engine = "sqs";
+      flavor = "sqs";
+      region = "us-east-1";
+    }
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

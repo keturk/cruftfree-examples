@@ -1,0 +1,63 @@
+services:
+  cityservices-system-citizen-angular-web-static-site:
+    build:
+      context: ./clients/angular/
+      dockerfile: ../../config/web-static-site/citizen-angular.dockerfile
+    container_name: cityservices-system-citizen-angular-web-static-site
+    ports:
+    - 127.0.0.1:${CITYSERVICES_SYSTEM_CITIZEN_ANGULAR_WEB_STATIC_SITE_HOST_PORT:-4200}:80
+    volumes:
+    - ./config/nginx/web-citizen-angular.conf:/etc/nginx/conf.d/default.conf:ro
+    - type: bind
+      source: ./config/resolved
+      target: /cruftfree-runtime-config
+      read_only: true
+      bind:
+        create_host_path: false
+    healthcheck:
+      test:
+      - CMD
+      - nginx
+      - -t
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    cpu_shares: 1024
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'
+  cityservices-system-operations-angular-web-static-site:
+    build:
+      context: ./clients/angular/
+      dockerfile: ../../config/web-static-site/operations-angular.dockerfile
+    container_name: cityservices-system-operations-angular-web-static-site
+    ports:
+    - 127.0.0.1:${CITYSERVICES_SYSTEM_OPERATIONS_ANGULAR_WEB_STATIC_SITE_HOST_PORT:-4300}:80
+    volumes:
+    - ./config/nginx/web-operations-angular.conf:/etc/nginx/conf.d/default.conf:ro
+    - type: bind
+      source: ./config/resolved
+      target: /cruftfree-runtime-config
+      read_only: true
+      bind:
+        create_host_path: false
+    healthcheck:
+      test:
+      - CMD
+      - nginx
+      - -t
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    cpu_shares: 1024
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: '3'

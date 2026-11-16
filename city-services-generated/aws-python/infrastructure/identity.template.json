@@ -1,0 +1,234 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "DistrictServiceAppClientId": {
+      "Description": "App client ID for service DistrictService",
+      "Export": {
+        "Name": "cityservices-system-identity-DistrictServiceAppClientId"
+      },
+      "Value": {
+        "Ref": "DistrictServiceAppClient"
+      }
+    },
+    "FacilityServiceAppClientId": {
+      "Description": "App client ID for service FacilityService",
+      "Export": {
+        "Name": "cityservices-system-identity-FacilityServiceAppClientId"
+      },
+      "Value": {
+        "Ref": "FacilityServiceAppClient"
+      }
+    },
+    "GeocoderMockAppClientId": {
+      "Description": "App client ID for service GeocoderMock",
+      "Export": {
+        "Name": "cityservices-system-identity-GeocoderMockAppClientId"
+      },
+      "Value": {
+        "Ref": "GeocoderMockAppClient"
+      }
+    },
+    "IdentityOperationsBrowserPublicClientId": {
+      "Description": "Public client ID for Operations-browser",
+      "Export": {
+        "Name": "cityservices-system-identity-IdentityOperationsBrowserPublicClientId"
+      },
+      "Value": {
+        "Ref": "OperationsBrowserAppClient"
+      }
+    },
+    "RequestServiceAppClientId": {
+      "Description": "App client ID for service RequestService",
+      "Export": {
+        "Name": "cityservices-system-identity-RequestServiceAppClientId"
+      },
+      "Value": {
+        "Ref": "RequestServiceAppClient"
+      }
+    },
+    "SmsMockAppClientId": {
+      "Description": "App client ID for service SmsMock",
+      "Export": {
+        "Name": "cityservices-system-identity-SmsMockAppClientId"
+      },
+      "Value": {
+        "Ref": "SmsMockAppClient"
+      }
+    },
+    "UserPoolArn": {
+      "Description": "ARN of the user pool the services write user attributes to.",
+      "Export": {
+        "Name": "cityservices-system-identity-UserPoolArn"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "IdentityUserPool",
+          "Arn"
+        ]
+      }
+    },
+    "UserPoolId": {
+      "Description": "Cognito User Pool ID for identity",
+      "Value": {
+        "Ref": "IdentityUserPool"
+      }
+    }
+  },
+  "Resources": {
+    "DistrictServiceAppClient": {
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "ClientName": "DistrictService",
+        "GenerateSecret": true,
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolClient"
+    },
+    "FacilityServiceAppClient": {
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "ClientName": "FacilityService",
+        "GenerateSecret": true,
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolClient"
+    },
+    "GeocoderMockAppClient": {
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "ClientName": "GeocoderMock",
+        "GenerateSecret": true,
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolClient"
+    },
+    "HostedUiDomain": {
+      "Properties": {
+        "Domain": "cityservices-system",
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolDomain"
+    },
+    "IdentityAdminGroup": {
+      "Properties": {
+        "Description": "CruftFree role: admin",
+        "GroupName": "admin",
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolGroup"
+    },
+    "IdentityDispatcherGroup": {
+      "Properties": {
+        "Description": "CruftFree role: dispatcher",
+        "GroupName": "dispatcher",
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolGroup"
+    },
+    "IdentityOperatorGroup": {
+      "Properties": {
+        "Description": "CruftFree role: operator",
+        "GroupName": "operator",
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolGroup"
+    },
+    "IdentityUserPool": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AccountRecoverySetting": {
+          "RecoveryMechanisms": [
+            {
+              "Name": "verified_email",
+              "Priority": 1
+            }
+          ]
+        },
+        "AdminCreateUserConfig": {
+          "AllowAdminCreateUserOnly": true
+        },
+        "AutoVerifiedAttributes": [
+          "email"
+        ],
+        "MfaConfiguration": "OFF",
+        "UserPoolName": "CityservicesSystemUserPool",
+        "UsernameAttributes": [
+          "email"
+        ]
+      },
+      "Type": "AWS::Cognito::UserPool",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "OperationsBrowserAppClient": {
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "CallbackURLs": [
+          "https://operations.portalder.example.com/auth/callback"
+        ],
+        "ClientName": "Operations-browser",
+        "GenerateSecret": false,
+        "LogoutURLs": [
+          "https://operations.portalder.example.com/auth/logout"
+        ],
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolClient"
+    },
+    "RequestServiceAppClient": {
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "ClientName": "RequestService",
+        "GenerateSecret": true,
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolClient"
+    },
+    "SmsMockAppClient": {
+      "Properties": {
+        "AllowedOAuthFlows": [
+          "code"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": true,
+        "ClientName": "SmsMock",
+        "GenerateSecret": true,
+        "UserPoolId": {
+          "Ref": "IdentityUserPool"
+        }
+      },
+      "Type": "AWS::Cognito::UserPoolClient"
+    }
+  }
+}

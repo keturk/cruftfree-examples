@@ -1,0 +1,84 @@
+@if (__loadProblem(); as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" (click)="__retryLoad()">{{ __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else if (!__loaded()) {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+} @else {
+<form [formGroup]="__form" (ngSubmit)="__submit()">
+<label>
+  <span>{{ __messages.key(&#39;field.Article.title&#39;).text }}</span>
+  <input type="text" [formControlName]="&#39;title&#39;" name="title" required [attr.aria-invalid]="__invalid(__form.get(&#39;title&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;title&#39;))" />
+</label>
+@if (__serverError(__form.get('title')) ?? __fieldError(__form.get('title')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;title&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.Article.topic&#39;).text }}</span>
+  <select [formControlName]="&#39;topic&#39;" required [attr.aria-invalid]="__invalid(__form.get(&#39;topic&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;topic&#39;))">
+    <option [ngValue]="null"></option>
+    <option [ngValue]="'Billing'">{{ __messages.key(&#39;enum.TicketTopic.Billing&#39;).text }}</option>
+    <option [ngValue]="'Domains'">{{ __messages.key(&#39;enum.TicketTopic.Domains&#39;).text }}</option>
+    <option [ngValue]="'Email'">{{ __messages.key(&#39;enum.TicketTopic.Email&#39;).text }}</option>
+    <option [ngValue]="'Websites'">{{ __messages.key(&#39;enum.TicketTopic.Websites&#39;).text }}</option>
+  </select>
+</label>
+@if (__serverError(__form.get('topic')) ?? __fieldError(__form.get('topic')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;topic&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.Article.summary&#39;).text }}</span>
+  <input type="text" [formControlName]="&#39;summary&#39;" name="summary" required [attr.aria-invalid]="__invalid(__form.get(&#39;summary&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;summary&#39;))" />
+</label>
+@if (__serverError(__form.get('summary')) ?? __fieldError(__form.get('summary')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;summary&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.Article.body&#39;).text }}</span>
+  <textarea [formControlName]="&#39;body&#39;" name="body" required [attr.aria-invalid]="__invalid(__form.get(&#39;body&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;body&#39;))"></textarea>
+</label>
+@if (__serverError(__form.get('body')) ?? __fieldError(__form.get('body')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;body&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.Article.published&#39;).text }}</span>
+  <input type="checkbox" [formControlName]="&#39;published&#39;" [attr.aria-invalid]="__invalid(__form.get(&#39;published&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;published&#39;))" />
+</label>
+@if (__serverError(__form.get('published')) ?? __fieldError(__form.get('published')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;published&#39;))">{{ message }}</span>
+}
+
+
+  @if (__formError(); as message) {
+  <div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">{{ message }}</span>
+</div>
+
+  }
+  <button type="submit" data-kind="button" [disabled]="__submitting()" [attr.aria-busy]="__submitting() ? 'true' : null" [attr.data-busy]="__submitting() ? 'true' : null">{{ __messages.key(&#39;framework.submit&#39;).text }}</button>
+</form>
+}

@@ -1,0 +1,23 @@
+// What the Ferncrest services share.
+module healthcare.common {
+
+    /// A visit's path through the day. The clinic's board shows one column per member, in this order.
+    enum AppointmentStatus {
+        Booked : tone(info),
+        CheckedIn : tone(warning),
+        InRoom : tone(warning),
+        Completed : tone(success),
+        Cancelled : tone(neutral),
+        NoShow : tone(danger)
+    }
+
+    enum VisitKind {
+        InPerson : tone(neutral),
+        Video : tone(info)
+    }
+
+    /// A record number a patient can read out at the front desk.
+    fn generateRecordNumber() -> String {
+        return #"FC-{Random.string(6, '0123456789')}";
+    }
+}

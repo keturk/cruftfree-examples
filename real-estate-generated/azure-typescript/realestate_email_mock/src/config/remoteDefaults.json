@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "email_db_database": "realestate_email_mock",
+    "email_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

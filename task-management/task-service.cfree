@@ -1,0 +1,400 @@
+from taskapp.common import TaskStatus, Priority;
+
+// Tasks on a board. The rule the board keeps: a task cannot start while another one blocks it, and finishing
+// a blocker frees everything waiting on it in one transaction. Every change is written to an append-only
+// activity feed and told to the notice service as an event. Reading from outside the app goes through GraphQL.
+service taskapp.TaskService('config/task-service.ccfg') : version('2.0.0'), description('Tasks, comments and activity') {
+
+    discovery { }
+
+    uses ProjectService;
+
+    exceptions {
+        NoSuchTaskError : status(404), message("Task not found");
+        ReadOnlyError : status(403), message("You can read this project but not change it");
+        BlockedError : status(409), message("Another task is blocking this one, so it cannot start yet");
+        SelfBlockError : status(422), message("A task cannot block itself");
+        LoopError : status(409), message("That task is already waiting on this one");
+        AlreadyBlockedError : status(409), message("That task is already blocking this one");
+        NotOnProjectError : status(422), message("That person is not on this project");
+    }
+
+    rdbms taskDb {
+
+        entity Task extends BaseEntity {
+            /// WEB-42. The number people say out loud.
+            String(20) number : unique;
+            String(200) title : filterable;
+            String(120) projectName : filterable;
+            TaskStatus status : filterable = TaskStatus.Backlog;
+            Priority priority : filterable = Priority.Normal;
+            String(200)? assigneeName : filterable;
+            DateTime? dueAt;
+            DateTime? doneAt;
+            /// How many unfinished tasks block this one. Zero means it may start.
+            Int openBlockers = 0;
+            Text description;
+            /// The last day this task was reported overdue, so it is reported once a day.
+            DateTime? overdueToldAt;
+            /// Where this project's news goes, copied here so a job needs no other service to say it.
+            String(80) chatChannel;
+            UUID projectId : index;
+            Email? assigneeEmail : index;
+
+            fulltext(title, description);
+        }
+
+        entity Comment extends BaseEntity {
+            String(200) authorName;
+            Text body;
+            UUID taskId : index;
+            Email authorEmail;
+        }
+
+        /// One task waiting on another. The names are copied here so a page never shows an id.
+        entity Blocker extends BaseEntity {
+            String(20) blockerNumber;
+            String(200) blockerTitle;
+            UUID taskId : index;
+            UUID blockerTaskId : index;
+
+            index(taskId, blockerTaskId) : unique;
+        }
+
+        /// Everything that happened on a project. Never changed once written.
+        entity Activity extends BaseEntity : appendOnly {
+            String(200) actorName;
+            String(20) taskNumber;
+            String(400) summary;
+            UUID projectId : index;
+        }
+    }
+
+    pubsub mq {
+        topic TaskEvents {
+            publish TaskAssigned(String number, String title, String projectName, String assigneeName, String assigneeEmail, String actorName) {
+                ensure assigneeEmail != "";
+            }
+            publish TaskFinished(String number, String title, String projectName, String channel, String actorName);
+            publish TaskOverdue(String number, String title, String projectName, String channel, String assigneeName);
+        }
+    }
+
+    struct NewTask {
+        UUID projectId;
+        String(200) title;
+        Text description;
+        Priority priority;
+        DateTime? dueAt;
+    }
+
+    struct MoveTask {
+        TaskStatus status;
+    }
+
+    struct AssignTask {
+        UUID taskId;
+        String(200) personName;
+        String(200) email;
+    }
+
+    struct NewComment {
+        UUID taskId;
+        Text body;
+    }
+
+    struct NewBlocker {
+        UUID taskId;
+        String(20) blockerNumber;
+    }
+
+    struct TaskPage {
+        Task task;
+        Array<Comment> comments;
+        Array<Blocker> blockers;
+        Array<PersonRow> people;
+        Boolean canEdit;
+    }
+
+    struct PersonRow {
+        String personName;
+        String email;
+    }
+
+    struct MySummary {
+        Int open;
+        Int dueSoon;
+        Int overdue;
+        Int doneThisWeek;
+    }
+
+    fn actorName() -> String {
+        return (Auth.identity.fullName ?? Auth.identity.email).toString();
+    }
+
+    fn accessTo(UUID projectId) -> ProjectAccess {
+        let ProjectAccess access = ProjectService.ProjectInternalAPI.post.access({
+            projectId: projectId,
+            email: Auth.identity.email.toString()
+        });
+        if (!access.isMember) {
+            throw NoSuchTaskError();
+        }
+        return access;
+    }
+
+    fn editableAccess(UUID projectId) -> ProjectAccess {
+        let ProjectAccess access = accessTo(projectId);
+        if (!access.canEdit) {
+            throw ReadOnlyError();
+        }
+        return access;
+    }
+
+    fn logActivity(taskDb.Task task, String summary) {
+        taskDb.Activity.create({
+            projectId: task.projectId,
+            taskNumber: task.number,
+            actorName: actorName(),
+            summary: summary
+        });
+    }
+
+    /// Finishing a task frees whatever was waiting on it, in the same transaction as the task itself.
+    fn finish(taskDb.Task task) {
+        transaction(taskDb) {
+            let Array<taskDb.Blocker> waiting = taskDb.Blocker.where(blockerTaskId: task.id).all();
+            foreach edge in waiting {
+                let taskDb.Task freed = taskDb.Task.where(id: edge.taskId).forUpdate().firstOrFail();
+                freed.openBlockers = Math.max(freed.openBlockers - 1, 0);
+                freed.save();
+            }
+            task.doneAt = DateTime.now();
+            task.status = TaskStatus.Done;
+            task.save();
+        }
+        dispatch TaskFinished(task.number, task.title, task.projectName, task.chatChannel, actorName());
+    }
+
+    /// Reopening a finished task puts it back in the way of whatever it blocks.
+    fn reopenBlockers(taskDb.Task task) {
+        let Array<taskDb.Blocker> waiting = taskDb.Blocker.where(blockerTaskId: task.id).all();
+        foreach edge in waiting {
+            let taskDb.Task held = taskDb.Task.where(id: edge.taskId).firstOrFail();
+            held.openBlockers = held.openBlockers + 1;
+            held.save();
+        }
+    }
+
+    // What the app works with. Every route checks the person is on the task's project first.
+    rest_api TaskAPI : basePath('/api/v1/tasks'), rdbms(taskDb) {
+        @path('/board/:projectId')
+        get board(UUID projectId) : auth(required, providers: [identity]) -> Array<Task> {
+            accessTo(projectId);
+            return Task.where(projectId: projectId).orderBy(createdAt: desc).limit(300).all();
+        }
+
+        @path('/activity/:projectId')
+        get activity(UUID projectId) : auth(required, providers: [identity]) -> Array<Activity> {
+            accessTo(projectId);
+            return Activity.where(projectId: projectId).orderBy(createdAt: desc).limit(50).all();
+        }
+
+        @path('/page/:id')
+        get page(UUID id) : auth(required, providers: [identity]) -> TaskPage {
+            let Task task = Task.findOrFail(id);
+            let ProjectAccess access = accessTo(task.projectId);
+            let ProjectPeople team = ProjectService.ProjectInternalAPI.post.people({ projectId: task.projectId });
+            return TaskPage {
+                task: task,
+                comments: Comment.where(taskId: id).orderBy(createdAt: asc).limit(200).all(),
+                blockers: Blocker.where(taskId: id).limit(50).all(),
+                people: team.people.map(p => PersonRow { personName: p.personName, email: p.email }),
+                canEdit: access.canEdit
+            };
+        }
+
+        @path('/mine')
+        get mine() : auth(required, providers: [identity]) -> Array<Task> {
+            return Task.where(assigneeEmail: Auth.identity.email).whereIn(status: [TaskStatus.Todo, TaskStatus.InProgress, TaskStatus.Review]).orderBy(dueAt: asc).limit(100).all();
+        }
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity]) -> MySummary {
+            let String me = Auth.identity.email.toString();
+            let DateTime now = DateTime.now();
+            let Array<TaskStatus> openStates = [TaskStatus.Todo, TaskStatus.InProgress, TaskStatus.Review];
+            return MySummary {
+                open: Task.where(assigneeEmail: me).whereIn(status: openStates).count(),
+                dueSoon: Task.where(assigneeEmail: me).whereIn(status: openStates).where(dueAt: gte(now)).where(dueAt: lt(now.addDays(3))).count(),
+                overdue: Task.where(assigneeEmail: me).whereIn(status: openStates).where(dueAt: lt(now)).count(),
+                doneThisWeek: Task.where(assigneeEmail: me, status: TaskStatus.Done).where(doneAt: gte(now.addDays(-7))).count()
+            };
+        }
+
+        @path('/search/:projectId')
+        get search(UUID projectId, String q) : auth(required, providers: [identity]) -> Array<Task> {
+            accessTo(projectId);
+            return Task.where(projectId: projectId).fulltext(q).limit(30).all();
+        }
+
+        @path('/new')
+        post createTask(NewTask request) : auth(required, providers: [identity]) -> Task {
+            let ProjectAccess access = editableAccess(request.projectId);
+            let TaskNumber issued = ProjectService.ProjectInternalAPI.post.nextNumber({ projectId: request.projectId });
+            let Task created = Task.create({
+                number: issued.number,
+                title: request.title,
+                description: request.description,
+                priority: request.priority,
+                dueAt: request.dueAt,
+                projectId: request.projectId,
+                projectName: access.projectName,
+                chatChannel: access.chatChannel
+            });
+            logActivity(created, #"created {created.title}");
+            return created;
+        }
+
+        // What a drag across the board calls.
+        @path('/:id/move')
+        post moveTask(UUID id, MoveTask request) : auth(required, providers: [identity]) -> Task {
+            let Task task = Task.findOrFail(id);
+            editableAccess(task.projectId);
+            let Boolean starting = request.status == TaskStatus.InProgress || request.status == TaskStatus.Review || request.status == TaskStatus.Done;
+            if (starting && task.openBlockers > 0) {
+                throw BlockedError();
+            }
+            if (task.status == request.status) {
+                return task;
+            }
+            if (request.status == TaskStatus.Done) {
+                finish(task);
+            } else {
+                if (task.status == TaskStatus.Done) {
+                    reopenBlockers(task);
+                    task.doneAt = null;
+                }
+                task.status = request.status;
+                task.save();
+            }
+            logActivity(task, #"moved it to {request.status}");
+            return task;
+        }
+
+        @path('/assign')
+        post assign(AssignTask request) : auth(required, providers: [identity]) -> Task {
+            let Task task = Task.findOrFail(request.taskId);
+            editableAccess(task.projectId);
+            let ProjectAccess theirs = ProjectService.ProjectInternalAPI.post.access({ projectId: task.projectId, email: request.email });
+            if (!theirs.isMember) {
+                throw NotOnProjectError();
+            }
+            task.assigneeName = request.personName;
+            task.assigneeEmail = request.email;
+            task.save();
+            logActivity(task, #"gave it to {request.personName}");
+            dispatch TaskAssigned(task.number, task.title, task.projectName, request.personName, request.email, actorName());
+            return task;
+        }
+
+        @path('/comment')
+        post addComment(NewComment request) : auth(required, providers: [identity]) -> Comment {
+            let Task task = Task.findOrFail(request.taskId);
+            accessTo(task.projectId);
+            let Comment created = Comment.create({
+                taskId: task.id,
+                body: request.body,
+                authorName: actorName(),
+                authorEmail: Auth.identity.email
+            });
+            logActivity(task, "commented");
+            return created;
+        }
+
+        @path('/block')
+        post addBlocker(NewBlocker request) : auth(required, providers: [identity]) -> Task {
+            let Task task = Task.findOrFail(request.taskId);
+            editableAccess(task.projectId);
+            let Task? blocker = Task.where(number: request.blockerNumber, projectId: task.projectId).first();
+            if (blocker == null) {
+                throw NoSuchTaskError();
+            }
+            if (blocker.id == task.id) {
+                throw SelfBlockError();
+            }
+            if (Blocker.where(taskId: blocker.id, blockerTaskId: task.id).first() != null) {
+                throw LoopError();
+            }
+            if (Blocker.where(taskId: task.id, blockerTaskId: blocker.id).first() != null) {
+                throw AlreadyBlockedError();
+            }
+            Blocker.create({
+                taskId: task.id,
+                blockerTaskId: blocker.id,
+                blockerNumber: blocker.number,
+                blockerTitle: blocker.title
+            });
+            if (blocker.status != TaskStatus.Done) {
+                task.openBlockers = task.openBlockers + 1;
+                task.save();
+            }
+            logActivity(task, #"is now waiting on {blocker.number}");
+            return task;
+        }
+    }
+
+    // Every task on every project, for someone looking after the whole installation.
+    rest_api TaskDeskAPI : basePath('/api/v1/desk/tasks'), rdbms(taskDb) {
+        resource Task : only(list), auth(required, providers: [identity], roles: [operator]);
+    }
+
+    // For a person's own scripts and dashboards. It answers only with their own tasks.
+    graphql_api TaskGraph : basePath('/graphql/tasks'), rdbms(taskDb), auth(required, providers: [identity]) {
+        type TaskType {
+            String number;
+            String title;
+            String projectName;
+            TaskStatus status;
+            Priority priority;
+            DateTime? dueAt;
+        }
+
+        query myTasks() -> Array<TaskType> {
+            return taskDb.Task.where(assigneeEmail: Auth.identity.email).orderBy(dueAt: asc).limit(100).all();
+        }
+
+        query myTask(String number) -> TaskType {
+            return taskDb.Task.where(assigneeEmail: Auth.identity.email, number: number).firstOrFail();
+        }
+    }
+
+    jobs {
+        // Once a day per task, however often this runs.
+        job TellOverdueTasks {
+            let DateTime now = DateTime.now();
+            let Array<taskDb.Task> late = taskDb.Task.where(dueAt: lt(now)).whereIn(status: [TaskStatus.Todo, TaskStatus.InProgress, TaskStatus.Review]).limit(200).all();
+            foreach task in late {
+                if (task.overdueToldAt == null || task.overdueToldAt < now.startOfDay()) {
+                    task.overdueToldAt = now;
+                    task.save();
+                    dispatch TaskOverdue(task.number, task.title, task.projectName, task.chatChannel, task.assigneeName ?? "Nobody");
+                }
+            }
+        }
+    }
+
+    test("a new task starts in the backlog with nothing blocking it") {
+        let taskDb.Task created = taskDb.Task.create({
+            number: "TST-1",
+            title: "Test task",
+            description: "A test task.",
+            projectId: uuid(),
+            projectName: "Test project",
+            chatChannel: "test"
+        });
+        assert created.status == TaskStatus.Backlog;
+        assert created.openBlockers == 0;
+        assert created.assigneeName == null;
+    }
+}

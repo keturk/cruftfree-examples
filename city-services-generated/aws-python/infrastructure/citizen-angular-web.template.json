@@ -1,0 +1,271 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "CitizenAngularDistributionId": {
+      "Description": "CloudFront distribution id, for deploy.py's post-sync cache invalidation",
+      "Value": {
+        "Ref": "WebDistribution"
+      }
+    }
+  },
+  "Parameters": {
+    "SiteEnabled": {
+      "AllowedValues": [
+        "true",
+        "false"
+      ],
+      "Description": "Whether the distribution serves the site.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "BucketCitizenAngularWeb": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "BucketEncryption": {
+          "ServerSideEncryptionConfiguration": [
+            {
+              "ServerSideEncryptionByDefault": {
+                "SSEAlgorithm": "AES256"
+              }
+            }
+          ]
+        },
+        "BucketName": "citizen-angular-web",
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      },
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "BucketCitizenAngularWebPolicy": {
+      "Properties": {
+        "Bucket": {
+          "Ref": "BucketCitizenAngularWeb"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject"
+              ],
+              "Condition": {
+                "StringEquals": {
+                  "AWS:SourceArn": {
+                    "Fn::Sub": "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${WebDistribution}"
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "cloudfront.amazonaws.com"
+              },
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "BucketCitizenAngularWeb",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:*"
+              ],
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "BucketCitizenAngularWeb",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "BucketCitizenAngularWeb",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::S3::BucketPolicy"
+    },
+    "WebCertificate": {
+      "Properties": {
+        "DomainName": "portalder.example.com",
+        "ValidationMethod": "DNS"
+      },
+      "Type": "AWS::CertificateManager::Certificate"
+    },
+    "WebDistribution": {
+      "Properties": {
+        "DistributionConfig": {
+          "Aliases": [
+            "portalder.example.com"
+          ],
+          "CustomErrorResponses": [
+            {
+              "ErrorCode": 403,
+              "ResponseCode": 404,
+              "ResponsePagePath": "/index.html"
+            },
+            {
+              "ErrorCode": 404,
+              "ResponseCode": 404,
+              "ResponsePagePath": "/index.html"
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
+            "FunctionAssociations": [
+              {
+                "EventType": "viewer-request",
+                "FunctionARN": {
+                  "Fn::GetAtt": [
+                    "WebSpaRouterFunction",
+                    "FunctionARN"
+                  ]
+                }
+              }
+            ],
+            "ResponseHeadersPolicyId": {
+              "Ref": "WebResponseHeadersPolicy"
+            },
+            "TargetOriginId": "BucketCitizenAngularWebOrigin",
+            "ViewerProtocolPolicy": "https-only"
+          },
+          "DefaultRootObject": "index.html",
+          "Enabled": {
+            "Ref": "SiteEnabled"
+          },
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "BucketCitizenAngularWeb",
+                  "RegionalDomainName"
+                ]
+              },
+              "Id": "BucketCitizenAngularWebOrigin",
+              "OriginAccessControlId": {
+                "Fn::GetAtt": [
+                  "WebOriginAccessControl",
+                  "Id"
+                ]
+              },
+              "S3OriginConfig": {
+                "OriginAccessIdentity": ""
+              }
+            }
+          ],
+          "ViewerCertificate": {
+            "AcmCertificateArn": {
+              "Ref": "WebCertificate"
+            },
+            "MinimumProtocolVersion": "TLSv1.2_2021",
+            "SslSupportMethod": "sni-only"
+          }
+        }
+      },
+      "Type": "AWS::CloudFront::Distribution"
+    },
+    "WebOriginAccessControl": {
+      "Properties": {
+        "OriginAccessControlConfig": {
+          "Name": "citizen-angular-web",
+          "OriginAccessControlOriginType": "s3",
+          "SigningBehavior": "always",
+          "SigningProtocol": "sigv4"
+        }
+      },
+      "Type": "AWS::CloudFront::OriginAccessControl"
+    },
+    "WebResponseHeadersPolicy": {
+      "Properties": {
+        "ResponseHeadersPolicyConfig": {
+          "CustomHeadersConfig": {
+            "Items": [
+              {
+                "Header": "Permissions-Policy",
+                "Override": true,
+                "Value": "camera=(), geolocation=()"
+              }
+            ]
+          },
+          "Name": "cityservices-system-citizen-angular-web-response-headers",
+          "SecurityHeadersConfig": {
+            "ContentSecurityPolicy": {
+              "ContentSecurityPolicy": "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://tile.openstreetmap.org; connect-src 'self' https://api.portalder.example.com https://tile.openstreetmap.org; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+              "Override": true
+            },
+            "ContentTypeOptions": {
+              "Override": true
+            },
+            "ReferrerPolicy": {
+              "Override": true,
+              "ReferrerPolicy": "strict-origin-when-cross-origin"
+            },
+            "StrictTransportSecurity": {
+              "AccessControlMaxAgeSec": 31536000,
+              "IncludeSubdomains": true,
+              "Override": true,
+              "Preload": false
+            }
+          }
+        }
+      },
+      "Type": "AWS::CloudFront::ResponseHeadersPolicy"
+    },
+    "WebSpaRouterFunction": {
+      "Properties": {
+        "AutoPublish": true,
+        "FunctionCode": "function handler(event) {\n    var request = event.request;\n    var uri = request.uri;\n    var patterns = [new RegExp('^/$'), new RegExp('^/auth/callback$'), new RegExp('^/auth/forbidden$'), new RegExp('^/auth/login$'), new RegExp('^/auth/logout$'), new RegExp('^/find$'), new RegExp('^/places$'), new RegExp('^/track/[^/]+$')];\n    for (var i = 0; i < patterns.length; i++) {\n        if (patterns[i].test(uri)) {\n            request.uri = '/index.html';\n            return request;\n        }\n    }\n    return request;\n}\n",
+        "FunctionConfig": {
+          "Comment": "cityservices-system-citizen-angular-web-spa-router",
+          "Runtime": "cloudfront-js-1.0"
+        },
+        "Name": "cityservices-system-citizen-angular-web-spa-router"
+      },
+      "Type": "AWS::CloudFront::Function"
+    }
+  }
+}

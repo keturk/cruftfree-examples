@@ -1,0 +1,19 @@
+// What the Quayline services share.
+module logistics.common {
+
+    /// A parcel's path, as the public tracking page and the dispatch desk both show it.
+    enum ShipmentStatus {
+        Booked : tone(warning),
+        Planned : tone(info),
+        OutForDelivery : tone(info),
+        Delivered : tone(success),
+        Failed : tone(danger),
+        WithPartner : tone(neutral)
+    }
+
+    /// A tracking number is the only thing the public page asks for, so it must not be guessable: ten
+    /// characters from an alphabet with nothing that reads like something else.
+    fn newTrackingNumber() -> String {
+        return #"QL-{Random.string(10, 'ABCDEFGHJKMNPQRSTUVWXYZ23456789')}";
+    }
+}

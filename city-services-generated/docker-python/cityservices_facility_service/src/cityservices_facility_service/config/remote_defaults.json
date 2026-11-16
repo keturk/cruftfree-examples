@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "facility_db_database": "cityservices_facility",
+    "facility_db_host": "localhost",
+    "facility_db_port": 5432,
+    "facility_db_user": "postgres"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

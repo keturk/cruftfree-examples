@@ -1,0 +1,147 @@
+// Reader comments. Anyone may submit one, and every comment passes the moderation vendor before
+// a reader can see it: a link waits for an editor, a blocked term is rejected, and if the vendor
+// cannot answer the comment waits too, so a failure never publishes anything.
+service blog.CommentService('config/comment-service.ccfg') : version('2.0.0'), description('Reader comments and moderation') {
+
+    discovery { }
+
+    uses ModerationProvider;
+
+    enum CommentStatus {
+        Pending : tone(warning),
+        Approved : tone(success),
+        Rejected : tone(danger)
+    }
+
+    rdbms commentDb {
+
+        entity Comment extends BaseEntity {
+            UUID postId : index, filterable;
+            String(100) authorName : trim;
+            /// Kept for the editors; no reader ever receives it.
+            Email authorEmail : hidden;
+            String(2000) body;
+            CommentStatus status : filterable = CommentStatus.Pending;
+            String(200)? moderationReason;
+
+            Boolean isVisible := status == CommentStatus.Approved;
+
+            belongsTo Comment? as parent : index;
+            hasMany Comment as replies;
+            index(postId, status);
+
+            afterUpdate {
+                if (isChanged(status) && status == CommentStatus.Approved) {
+                    dispatch CommentApproved(id, postId);
+                }
+            }
+        }
+    }
+
+    pubsub mq {
+        topic CommentEvents {
+            publish CommentApproved(UUID commentId, UUID postId);
+        }
+    }
+
+    struct SubmitCommentRequest {
+        UUID postId;
+        UUID? parentId;
+        String(100) authorName;
+        Email authorEmail;
+        String(2000) body;
+    }
+
+    /// What a reader gets back after submitting: never the comment's internal verdict.
+    struct SubmitCommentResponse {
+        UUID id;
+        Boolean visibleNow;
+    }
+
+    // Applies the vendor's verdict. No answer leaves the comment Pending, for an editor to read.
+    fn moderate(commentDb.Comment comment) {
+        try {
+            let CheckResult result = ModerationProvider.ModerationAPI.post.check(CheckRequest {
+                reference: comment.id.toString(),
+                content: comment.body
+            });
+            if (result.verdict == Verdict.Allow) {
+                comment.status = CommentStatus.Approved;
+            } else if (result.verdict == Verdict.Block) {
+                comment.status = CommentStatus.Rejected;
+                comment.moderationReason = result.reason;
+            } else {
+                comment.moderationReason = result.reason;
+            }
+        } catch (Exception e) {
+            comment.moderationReason = "The moderation vendor did not answer";
+            Log.warn("Comment left for review: moderation failed", { commentId: comment.id });
+        }
+        comment.save();
+    }
+
+    rest_api CommentAPI : basePath('/api/v1/comments'), rdbms(commentDb) {
+        // The approved comments of one article.
+        @path('/article/:postId')
+        get forPost(UUID postId) : auth(public) -> Array<Comment> {
+            return Comment.where(postId: postId, status: CommentStatus.Approved).orderBy(createdAt: asc).all();
+        }
+
+        post submit(SubmitCommentRequest request) : auth(public) -> SubmitCommentResponse {
+            let Comment comment = Comment.create({
+                postId: request.postId,
+                parentId: request.parentId,
+                authorName: request.authorName,
+                authorEmail: request.authorEmail,
+                body: request.body
+            });
+            moderate(comment);
+            return SubmitCommentResponse { id: comment.id, visibleNow: comment.isVisible };
+        }
+    }
+
+    // The moderation queue.
+    rest_api ModerationQueueAPI : basePath('/api/v1/moderation/comments'), rdbms(commentDb) {
+        resource Comment : only(list, get), auth(required, providers: [identity], roles: [editor, admin]);
+
+        @path('/:id/approve')
+        post approve(UUID id) : auth(required, providers: [identity], roles: [editor, admin]) -> Comment {
+            let Comment comment = Comment.findOrFail(id);
+            comment.status = CommentStatus.Approved;
+            comment.save();
+            return comment;
+        }
+
+        @path('/:id/reject')
+        post reject(UUID id) : auth(required, providers: [identity], roles: [editor, admin]) -> Comment {
+            let Comment comment = Comment.findOrFail(id);
+            comment.status = CommentStatus.Rejected;
+            comment.save();
+            return comment;
+        }
+    }
+
+    test("a new comment is not visible") {
+        let Comment comment = commentDb.Comment.create({
+            postId: uuid(),
+            authorName: "Reader",
+            authorEmail: "reader@example.com",
+            body: "Thanks for this"
+        });
+        assert comment.status == CommentStatus.Pending;
+        assert !comment.isVisible;
+    }
+
+    test("approving a comment announces it") {
+        let Comment comment = commentDb.Comment.create({
+            postId: uuid(),
+            authorName: "Reader",
+            authorEmail: "reader@example.com",
+            body: "Thanks for this"
+        });
+        comment.status = CommentStatus.Approved;
+        comment.save();
+        assert comment.isVisible;
+        assert emitted(CommentApproved(comment.id, comment.postId));
+    }
+}

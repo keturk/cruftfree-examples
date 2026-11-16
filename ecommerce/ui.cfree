@@ -1,0 +1,59 @@
+// What the Wrenwood apps share: the brand and the shape of a page.
+module ecommerce.ui {
+
+    theme Brand {
+        color primary      = '#3f5a3c';
+        color onPrimary    = '#ffffff';
+        color surface      = '#ffffff';
+        color onSurface    = '#26291f';
+        color background   = '#f6f3ec';
+        color onBackground = '#26291f';
+        color success      = '#166534';
+        color onSuccess    = '#ffffff';
+        color warning      = '#854d0e';
+        color onWarning    = '#ffffff';
+        color info         = '#1e40af';
+        color onInfo       = '#ffffff';
+        color danger       = '#991b1b';
+        color onDanger     = '#ffffff';
+        color neutral      = '#64665a';
+        color onNeutral    = '#ffffff';
+        space sm           = 8;
+        space md           = 16;
+        space lg           = 24;
+        radius card        = 10;
+        font body          = font('system-ui, sans-serif', 16, 400);
+        font heading       = font('system-ui, sans-serif', 26, 600);
+        breakpoint md      = 768;
+        breakpoint lg      = 1024;
+        scheme dark {
+            color surface      = '#23261f';
+            color onSurface    = '#ecece4';
+            color background   = '#181a15';
+            color onBackground = '#ecece4';
+            color primary      = '#a9c7a3';
+            color onPrimary    = '#1b2a19';
+        }
+    }
+
+    /// Figures across the top of a page.
+    style statRow {
+        columns: 2;
+        gap: space.md;
+        at (md) { columns: 4; }
+    }
+
+    /// Products and categories.
+    style cardGrid {
+        columns: 1;
+        gap: space.md;
+        at (md) { columns: 3; }
+    }
+
+    /// Two panels side by side, once there is room.
+    style twoColumns {
+        columns: 1;
+        gap: space.lg;
+        at (lg) { columns: 2; }
+    }
+}

@@ -1,0 +1,9 @@
+{
+  "connections": {
+    "payment_db_database": "hotel_payment_mock",
+    "payment_db_port": 5432
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

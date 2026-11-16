@@ -1,0 +1,15 @@
+{
+  "connections": {
+    "channel_provider_base_url": "http://hotel-channel-mock:8092",
+    "mq_brokers": "localhost:9092",
+    "mq_port": 9092,
+    "payment_provider_base_url": "http://hotel-payment-mock:8090",
+    "stay_db_database": "hotel_stay",
+    "stay_db_host": "localhost",
+    "stay_db_port": 5432,
+    "stay_db_user": "postgres"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

@@ -1,0 +1,180 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Outputs": {
+    "Issuer": {
+      "Description": "The account's web identity token issuer callees verify tokens against.",
+      "Export": {
+        "Name": "cityservices-system-trusted-caller-Issuer"
+      },
+      "Value": {
+        "Fn::GetAtt": [
+          "OutboundWebIdentityFederation",
+          "IssuerIdentifier"
+        ]
+      }
+    },
+    "MintPolicyArn": {
+      "Description": "ARN of the policy granting the trusted-caller token mint.",
+      "Export": {
+        "Name": "cityservices-system-trusted-caller-MintPolicyArn"
+      },
+      "Value": {
+        "Ref": "MintPolicy"
+      }
+    }
+  },
+  "Parameters": {
+    "OutboundFederationCodeKey": {
+      "AllowedPattern": "[0-9A-Za-z!_.*'()/-]{1,1024}",
+      "ConstraintDescription": "an S3 object key of unreserved characters, 1-1024 long",
+      "Description": "Deployment-bucket key of the uploaded outbound identity federation function package.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "MintPolicy": {
+      "Properties": {
+        "Description": "Mint trusted-caller tokens for urn:cruftfree:trusted-caller:cityservices-system",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:GetWebIdentityToken"
+              ],
+              "Condition": {
+                "ForAllValues:StringEquals": {
+                  "sts:IdentityTokenAudience": [
+                    "urn:cruftfree:trusted-caller:cityservices-system"
+                  ]
+                },
+                "NumericLessThanEquals": {
+                  "sts:DurationSeconds": 300
+                }
+              },
+              "Effect": "Allow",
+              "Resource": [
+                "*"
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::IAM::ManagedPolicy"
+    },
+    "OutboundFederationFn": {
+      "DependsOn": [
+        "OutboundFederationRoleDefaultPolicy",
+        "OutboundFederationRole"
+      ],
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Fn::ImportValue": "cityservices-system-bootstrap-DeploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "OutboundFederationCodeKey"
+          }
+        },
+        "Handler": "index.cfn_handler",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "OutboundFederationLogGroup"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "OutboundFederationRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.13",
+        "Timeout": 60
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "OutboundFederationLogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "OutboundFederationRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "OutboundFederationRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "OutboundFederationLogGroup",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${OutboundFederationLogGroup.Arn}:*"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "iam:EnableOutboundWebIdentityFederation",
+                "iam:GetOutboundWebIdentityFederationInfo"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "*"
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "OutboundFederationRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "OutboundFederationRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    },
+    "OutboundWebIdentityFederation": {
+      "Properties": {
+        "ServiceTimeout": 120,
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "OutboundFederationFn",
+            "Arn"
+          ]
+        }
+      },
+      "Type": "AWS::CloudFormation::CustomResource"
+    }
+  }
+}

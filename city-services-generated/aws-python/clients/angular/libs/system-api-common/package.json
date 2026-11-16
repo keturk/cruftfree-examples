@@ -1,0 +1,10 @@
+{
+  "name": "@portalder/system-api-common",
+  "private": true,
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/common": "22.1.7",
+    "@angular/core": "22.1.7",
+    "rxjs": "7.8.2"
+  }
+}

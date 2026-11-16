@@ -1,0 +1,457 @@
+{
+  "target": "component",
+  "generated_at": "2026-11-16T02:10:02Z",
+  "files": [
+    "config/generated/client-api.front-desk.json",
+    "config/generated/client-api.guest.json",
+    "config/generated/client-runtime-front-desk-angular.test.json",
+    "config/generated/client-runtime-guest-angular.test.json",
+    "config/generated/client-runtime-guest-flutter.test.json",
+    "config/generated/identity-client-identity-FrontDesk-browser.test.json",
+    "config/generated/identity-client-identity-Guest-browser.test.json",
+    "config/generated/identity-client-identity-Guest-native.test.json",
+    "config/generated/identity-providers.json",
+    "config/generated/identity/IDENTITY.md",
+    "hotel_channel_mock/.gitignore",
+    "hotel_channel_mock/README.md",
+    "hotel_channel_mock/scripts/dev.sh",
+    "hotel_channel_mock/scripts/install.sh",
+    "hotel_channel_mock/scripts/lint.sh",
+    "hotel_channel_mock/scripts/seed.sh",
+    "hotel_channel_mock/scripts/test.sh",
+    "hotel_channel_mock/tests/contract/README.md",
+    "hotel_channel_mock/tests/contract/contract.json",
+    "hotel_channel_mock/tests/contract/contract_routes.py",
+    "hotel_channel_mock/tests/contract/contract_support.py",
+    "hotel_channel_mock/tests/contract/pytest.ini",
+    "hotel_channel_mock/tests/contract/requirements.txt",
+    "hotel_email_mock/.gitignore",
+    "hotel_email_mock/README.md",
+    "hotel_email_mock/scripts/dev.sh",
+    "hotel_email_mock/scripts/install.sh",
+    "hotel_email_mock/scripts/lint.sh",
+    "hotel_email_mock/scripts/seed.sh",
+    "hotel_email_mock/scripts/test.sh",
+    "hotel_email_mock/tests/contract/README.md",
+    "hotel_email_mock/tests/contract/contract.json",
+    "hotel_email_mock/tests/contract/contract_routes.py",
+    "hotel_email_mock/tests/contract/contract_support.py",
+    "hotel_email_mock/tests/contract/pytest.ini",
+    "hotel_email_mock/tests/contract/requirements.txt",
+    "hotel_notice_service/.gitignore",
+    "hotel_notice_service/README.md",
+    "hotel_notice_service/scripts/dev.sh",
+    "hotel_notice_service/scripts/install.sh",
+    "hotel_notice_service/scripts/lint.sh",
+    "hotel_notice_service/scripts/test.sh",
+    "hotel_notice_service/tests/contract/README.md",
+    "hotel_notice_service/tests/contract/contract.json",
+    "hotel_notice_service/tests/contract/contract_routes.py",
+    "hotel_notice_service/tests/contract/contract_support.py",
+    "hotel_notice_service/tests/contract/pytest.ini",
+    "hotel_notice_service/tests/contract/requirements.txt",
+    "hotel_payment_mock/.gitignore",
+    "hotel_payment_mock/README.md",
+    "hotel_payment_mock/scripts/dev.sh",
+    "hotel_payment_mock/scripts/install.sh",
+    "hotel_payment_mock/scripts/lint.sh",
+    "hotel_payment_mock/scripts/seed.sh",
+    "hotel_payment_mock/scripts/test.sh",
+    "hotel_payment_mock/tests/contract/README.md",
+    "hotel_payment_mock/tests/contract/contract.json",
+    "hotel_payment_mock/tests/contract/contract_routes.py",
+    "hotel_payment_mock/tests/contract/contract_support.py",
+    "hotel_payment_mock/tests/contract/pytest.ini",
+    "hotel_payment_mock/tests/contract/requirements.txt",
+    "hotel_stay_service/.gitignore",
+    "hotel_stay_service/README.md",
+    "hotel_stay_service/scripts/dev.sh",
+    "hotel_stay_service/scripts/install.sh",
+    "hotel_stay_service/scripts/lint.sh",
+    "hotel_stay_service/scripts/seed.sh",
+    "hotel_stay_service/scripts/test.sh",
+    "hotel_stay_service/tests/contract/README.md",
+    "hotel_stay_service/tests/contract/contract.json",
+    "hotel_stay_service/tests/contract/contract_routes.py",
+    "hotel_stay_service/tests/contract/contract_support.py",
+    "hotel_stay_service/tests/contract/pytest.ini",
+    "hotel_stay_service/tests/contract/requirements.txt",
+    "scripts/prepare-clients.ps1",
+    "scripts/prepare-clients.py",
+    "scripts/prepare-clients.sh",
+    "scripts/sync-angular-client.ps1",
+    "scripts/sync-angular-client.py",
+    "scripts/sync-angular-client.sh",
+    "scripts/sync-flutter-client.ps1",
+    "scripts/sync-flutter-client.py",
+    "scripts/sync-flutter-client.sh"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    "config/generated/client-api.front-desk.json": "5af29cebd528534238af60f7d12e6e1bb93335a777a490bc0499a7e99dbfd5b6",
+    "config/generated/client-api.guest.json": "5af29cebd528534238af60f7d12e6e1bb93335a777a490bc0499a7e99dbfd5b6",
+    "config/generated/client-runtime-front-desk-angular.test.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "config/generated/client-runtime-guest-angular.test.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "config/generated/client-runtime-guest-flutter.test.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "config/generated/identity-client-identity-FrontDesk-browser.test.json": "c3573f36a2f0b8f651add59931f4201a9afdf0ce69aa2b9c72246a5a8f5d0659",
+    "config/generated/identity-client-identity-Guest-browser.test.json": "549c0c99cb16d0fa18c739e12c0f462288a59a43008229ec1b00247af106aa09",
+    "config/generated/identity-client-identity-Guest-native.test.json": "f65dcbb9f3960974a70505b727b37401071d66e5ba420b203a4b4de585bcc8fe",
+    "config/generated/identity-providers.json": "161fa13412cce0eb8a2c8b3e87fed65cb81afe1ae2e0c4a601cc520cd7a48183",
+    "config/generated/identity/IDENTITY.md": "d9389e689fd2e7a594d5b00714a044ab146be3cce199fa3496c27162fd2fc23b",
+    "hotel_channel_mock/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_channel_mock/README.md": "1d65a37588a5c3f548428f87e6ac0ba45017ba5cdcddc6a204148ce3e688ba26",
+    "hotel_channel_mock/scripts/dev.sh": "5891c2c3d702a05564719cfeaf65c5baae24c239470cbaa70ffc2618b0c7a4f2",
+    "hotel_channel_mock/scripts/install.sh": "bed43b820e9fcf7849cfd4398dab79c1fbe47b2fb9f26512fbbdb74cdee82568",
+    "hotel_channel_mock/scripts/lint.sh": "aec6fcca168ae0f4bb20f4c524951ece7b0ec8cd165b31850b5d8561df89144d",
+    "hotel_channel_mock/scripts/seed.sh": "581217bbf657bab5d5cc61e9a0d467eb1bd431f684114e5585054e1cad95244a",
+    "hotel_channel_mock/scripts/test.sh": "aca3f677c427d9a7b77bfb7b34847ecd2b87c38c54a9603d2868a7273ba47e8c",
+    "hotel_channel_mock/tests/contract/README.md": "ddc70c76cf8a6f98276e0401bb49cd20429312c445d9039cc2cc2119265b9411",
+    "hotel_channel_mock/tests/contract/contract.json": "4361696d6ab864f7b332a1f44ec02e45b4e9ee4072335aef3c9b08eb170b9853",
+    "hotel_channel_mock/tests/contract/contract_routes.py": "a8e7e37840f9c0f00e43402c7fe77682415a9a8dbf9d7180695958be1deb598a",
+    "hotel_channel_mock/tests/contract/contract_support.py": "b3bd0c00f3e0e3d9835832ece0d3385a418948441ea6ae510dd31d07b01ce2d4",
+    "hotel_channel_mock/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_channel_mock/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "hotel_email_mock/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_email_mock/README.md": "ca9c622932a807f137fc9d7f1bedafe48de296c924eea09c919e653a49419338",
+    "hotel_email_mock/scripts/dev.sh": "a7601fe94a38a0ca5144b6e136736dfb5482ae302218293c50c5b88de17051b4",
+    "hotel_email_mock/scripts/install.sh": "233426db63559b195f6e3dfde7d39c97c35eef86f427410ebf5b48086781ab9f",
+    "hotel_email_mock/scripts/lint.sh": "60becf524627768f11ce48d0987b753f1ed7a19060850b940c2b45453dceebfb",
+    "hotel_email_mock/scripts/seed.sh": "5a340db1414eaefd1dbd9ef93b00a769aabd8363d3c814a022c1bbfb57bf76aa",
+    "hotel_email_mock/scripts/test.sh": "88b57943a8a6c1922df3b6e47730730a284ee8935622b13b6c6526c4d4122d40",
+    "hotel_email_mock/tests/contract/README.md": "8a2f170acc5dfe7f811a48dd543d4f59d6eee5a716a268bc91a0b855848cb34a",
+    "hotel_email_mock/tests/contract/contract.json": "c4531882769de9b8a6064b08d3d2b43257f08d50926d942838b885ec6a31997c",
+    "hotel_email_mock/tests/contract/contract_routes.py": "fbbddfc0c745a588dcebf58488b6a1ba6a4857f17a932137606c603441f039af",
+    "hotel_email_mock/tests/contract/contract_support.py": "dba7847d283b8295ae4f794c25897e21d2e1cb4325578883cc235646634165dc",
+    "hotel_email_mock/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_email_mock/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "hotel_notice_service/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_notice_service/README.md": "716a0de888137376f2a5c82adb952b24f662fc818175e0406de63f8fde1f6b1d",
+    "hotel_notice_service/scripts/dev.sh": "20840302e5c3499cb2b609e768da1d8127eae005d577cc74e084b0da03f54e09",
+    "hotel_notice_service/scripts/install.sh": "16368cbd66ee4e453ae5b4771b204909ee87eb7923ad3ca574959f5230a34db8",
+    "hotel_notice_service/scripts/lint.sh": "ec4e7111e58a0e9296cbc89c82b74c79ee2ac0d3c1ba44541584c1db89936747",
+    "hotel_notice_service/scripts/test.sh": "2286747af2ce64d0a7bb5df8066a7a3dc42bdcd779ac9cc9436eaefcc926b461",
+    "hotel_notice_service/tests/contract/README.md": "3161132f123c4059a211bcfc43d16b4d9c83b80c200410444e231d72812833a3",
+    "hotel_notice_service/tests/contract/contract.json": "c5270d7cedd01a310963aaf5e7ac7177abfaf45d847563281fa71af7a46632ee",
+    "hotel_notice_service/tests/contract/contract_routes.py": "63a9b472dab80a14fc52fe4d072aa254937c178ba9a3f470ae867a43926b5de8",
+    "hotel_notice_service/tests/contract/contract_support.py": "87ea5c8f1a839cbc43ea41ecec8fbc2f7886135beaed63d7dc96b008d99e9426",
+    "hotel_notice_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_notice_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "hotel_payment_mock/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_payment_mock/README.md": "5809907e404051538e395a0cd9a653bdc9d9478ffdccfbf414d6e86de2d9a3d9",
+    "hotel_payment_mock/scripts/dev.sh": "7efbf49d7908fc9f956bdf1a5d7afe9238746c4e0e20276972daa4535343d216",
+    "hotel_payment_mock/scripts/install.sh": "e82ed17a0200f7c33053a7c0df5c5d1b1beb0af016828586b514ef0b1130cbe6",
+    "hotel_payment_mock/scripts/lint.sh": "f5479a575727bf531a9e9929179438438ffb674b5d429788634c64f4a2b5b3e2",
+    "hotel_payment_mock/scripts/seed.sh": "249e3cdc6ef35da6f623ac69dd9bd1d704d9599ed7ee625e18fed1b3190179fe",
+    "hotel_payment_mock/scripts/test.sh": "309beb8c281ec71366974b1d76c7b0fd8eb959820eb9ff328f906ecf0cb5bc5a",
+    "hotel_payment_mock/tests/contract/README.md": "dd7767d75be543f242d753339249e1063fe0f0c9da8097033728a9c3218e0560",
+    "hotel_payment_mock/tests/contract/contract.json": "41f78cab9bcc0f97f3a95a1b22e3a540d3a13b4719bfc337dc7712ae75ca7221",
+    "hotel_payment_mock/tests/contract/contract_routes.py": "2fcf0b6b1a8bf1cbc96407d3a7620c058ad282f15c91a9e9c1a09d41d396cadc",
+    "hotel_payment_mock/tests/contract/contract_support.py": "609b9d8719a2291190b7341d3232ece52a26cfaf563be9d9d27c55571bcf2299",
+    "hotel_payment_mock/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_payment_mock/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "hotel_stay_service/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_stay_service/README.md": "9dec94b38205d0ca9d4415192d5a0dd0b0f2c4c1511e656124e4639954214dad",
+    "hotel_stay_service/scripts/dev.sh": "07bdce73b5d5614866b7474a005cd99d1db2acdb6c03e04c70849b0ecfcc4c2f",
+    "hotel_stay_service/scripts/install.sh": "63d308df8afa0541f38cfa4421a5801bf2e1607b4b53190b97ed226a4baa8efb",
+    "hotel_stay_service/scripts/lint.sh": "55aa5b4b014c8e893f277931261cf873dc7c608281a872668c2f3fa52b7f7aeb",
+    "hotel_stay_service/scripts/seed.sh": "3fac3e0c938b3463e74723bb6c74bc9fd15562ee435c281b4e4a4dcd807f0e4e",
+    "hotel_stay_service/scripts/test.sh": "433a17e11e2614d56d80af007192bb26d7ceed2d31bffda7d8506af379675db6",
+    "hotel_stay_service/tests/contract/README.md": "46d6742dea018110e5471499678969e6ec3aba5d6221670eb99e2a71aa291201",
+    "hotel_stay_service/tests/contract/contract.json": "c49be732588a82e539cc5c2b113307a70215e3ae351110d1a395e0f0d619db67",
+    "hotel_stay_service/tests/contract/contract_routes.py": "0d5e617d925f788e66360511fcadd914fce13f93b681b006061a04a1cc224b00",
+    "hotel_stay_service/tests/contract/contract_support.py": "0f02ba08a79888506f77ec85ecf1f14fb2380b415ed7bf4bb4b3adf4a72b1554",
+    "hotel_stay_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_stay_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "scripts/prepare-clients.ps1": "2e8106805b2f18d26a36f4ae7d2c7d5c7c7c0214aa0e3a14ebfdb5c56b224319",
+    "scripts/prepare-clients.py": "0594da60fae54940b55529ac10e84cdfbb88b41efe47852b941cb294a84eaf1a",
+    "scripts/prepare-clients.sh": "824a4bf0b676eb5982b0d78767dd7a5d78b2a1836d3ce01003ed5d13e721936a",
+    "scripts/sync-angular-client.ps1": "7cfecc2cbcefa7060637c5a0e0ccf3054934e9e10721ae2b3775eb0d28811236",
+    "scripts/sync-angular-client.py": "86959caaafa6ee8d751d286c7f65770a08ce308cec0d7b9144278ee190ee14d7",
+    "scripts/sync-angular-client.sh": "7a1d7744b9b5097dd916ef4f2393ac6a1e64b6ce1cf5d2d28333ca71400f8e23",
+    "scripts/sync-flutter-client.ps1": "9f727c1d638cac6b7e0843e74a076a0a77658acc5877bd26a4bc11ae4b0640c6",
+    "scripts/sync-flutter-client.py": "e1a85283872f09ed8ffd3a4b30f74dd6c5aa55148cba0b98e81f0450e9e6ec4f",
+    "scripts/sync-flutter-client.sh": "b57d42f59d6b1d0dd82d05e5199b586bc75d6b4afe72566dbc3613d8edab6ba8"
+  },
+  "output_hashes": {
+    "config/generated/client-api.front-desk.json": "5af29cebd528534238af60f7d12e6e1bb93335a777a490bc0499a7e99dbfd5b6",
+    "config/generated/client-api.guest.json": "5af29cebd528534238af60f7d12e6e1bb93335a777a490bc0499a7e99dbfd5b6",
+    "config/generated/client-runtime-front-desk-angular.test.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "config/generated/client-runtime-guest-angular.test.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "config/generated/client-runtime-guest-flutter.test.json": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "config/generated/identity-client-identity-FrontDesk-browser.test.json": "b3eaf6e4fb06c5126ab3eceefcb436608bade86ffded1edea1245e44186f44b6",
+    "config/generated/identity-client-identity-Guest-browser.test.json": "79120033efbb5b6720240195c7e629b69e9e86692cfec6d14da7f0325ce85d66",
+    "config/generated/identity-client-identity-Guest-native.test.json": "db05325ee9f3664a955c82ee12704d469fee4be00288b94affc718aa349a8651",
+    "config/generated/identity-providers.json": "38c919fcefb1ec3cacd2d2269202d8cd5834ef82401cd8b0fea393ba3a5f1d9f",
+    "config/generated/identity/IDENTITY.md": "d9389e689fd2e7a594d5b00714a044ab146be3cce199fa3496c27162fd2fc23b",
+    "hotel_channel_mock/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_channel_mock/README.md": "1d65a37588a5c3f548428f87e6ac0ba45017ba5cdcddc6a204148ce3e688ba26",
+    "hotel_channel_mock/scripts/dev.sh": "5891c2c3d702a05564719cfeaf65c5baae24c239470cbaa70ffc2618b0c7a4f2",
+    "hotel_channel_mock/scripts/install.sh": "bed43b820e9fcf7849cfd4398dab79c1fbe47b2fb9f26512fbbdb74cdee82568",
+    "hotel_channel_mock/scripts/lint.sh": "aec6fcca168ae0f4bb20f4c524951ece7b0ec8cd165b31850b5d8561df89144d",
+    "hotel_channel_mock/scripts/seed.sh": "581217bbf657bab5d5cc61e9a0d467eb1bd431f684114e5585054e1cad95244a",
+    "hotel_channel_mock/scripts/test.sh": "aca3f677c427d9a7b77bfb7b34847ecd2b87c38c54a9603d2868a7273ba47e8c",
+    "hotel_channel_mock/tests/contract/README.md": "ddc70c76cf8a6f98276e0401bb49cd20429312c445d9039cc2cc2119265b9411",
+    "hotel_channel_mock/tests/contract/contract.json": "4361696d6ab864f7b332a1f44ec02e45b4e9ee4072335aef3c9b08eb170b9853",
+    "hotel_channel_mock/tests/contract/contract_routes.py": "a8e7e37840f9c0f00e43402c7fe77682415a9a8dbf9d7180695958be1deb598a",
+    "hotel_channel_mock/tests/contract/contract_support.py": "b3bd0c00f3e0e3d9835832ece0d3385a418948441ea6ae510dd31d07b01ce2d4",
+    "hotel_channel_mock/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_channel_mock/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "hotel_email_mock/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_email_mock/README.md": "ca9c622932a807f137fc9d7f1bedafe48de296c924eea09c919e653a49419338",
+    "hotel_email_mock/scripts/dev.sh": "a7601fe94a38a0ca5144b6e136736dfb5482ae302218293c50c5b88de17051b4",
+    "hotel_email_mock/scripts/install.sh": "233426db63559b195f6e3dfde7d39c97c35eef86f427410ebf5b48086781ab9f",
+    "hotel_email_mock/scripts/lint.sh": "60becf524627768f11ce48d0987b753f1ed7a19060850b940c2b45453dceebfb",
+    "hotel_email_mock/scripts/seed.sh": "5a340db1414eaefd1dbd9ef93b00a769aabd8363d3c814a022c1bbfb57bf76aa",
+    "hotel_email_mock/scripts/test.sh": "88b57943a8a6c1922df3b6e47730730a284ee8935622b13b6c6526c4d4122d40",
+    "hotel_email_mock/tests/contract/README.md": "8a2f170acc5dfe7f811a48dd543d4f59d6eee5a716a268bc91a0b855848cb34a",
+    "hotel_email_mock/tests/contract/contract.json": "c4531882769de9b8a6064b08d3d2b43257f08d50926d942838b885ec6a31997c",
+    "hotel_email_mock/tests/contract/contract_routes.py": "fbbddfc0c745a588dcebf58488b6a1ba6a4857f17a932137606c603441f039af",
+    "hotel_email_mock/tests/contract/contract_support.py": "dba7847d283b8295ae4f794c25897e21d2e1cb4325578883cc235646634165dc",
+    "hotel_email_mock/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_email_mock/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "hotel_notice_service/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_notice_service/README.md": "716a0de888137376f2a5c82adb952b24f662fc818175e0406de63f8fde1f6b1d",
+    "hotel_notice_service/scripts/dev.sh": "20840302e5c3499cb2b609e768da1d8127eae005d577cc74e084b0da03f54e09",
+    "hotel_notice_service/scripts/install.sh": "16368cbd66ee4e453ae5b4771b204909ee87eb7923ad3ca574959f5230a34db8",
+    "hotel_notice_service/scripts/lint.sh": "ec4e7111e58a0e9296cbc89c82b74c79ee2ac0d3c1ba44541584c1db89936747",
+    "hotel_notice_service/scripts/test.sh": "2286747af2ce64d0a7bb5df8066a7a3dc42bdcd779ac9cc9436eaefcc926b461",
+    "hotel_notice_service/tests/contract/README.md": "3161132f123c4059a211bcfc43d16b4d9c83b80c200410444e231d72812833a3",
+    "hotel_notice_service/tests/contract/contract.json": "c5270d7cedd01a310963aaf5e7ac7177abfaf45d847563281fa71af7a46632ee",
+    "hotel_notice_service/tests/contract/contract_routes.py": "63a9b472dab80a14fc52fe4d072aa254937c178ba9a3f470ae867a43926b5de8",
+    "hotel_notice_service/tests/contract/contract_support.py": "87ea5c8f1a839cbc43ea41ecec8fbc2f7886135beaed63d7dc96b008d99e9426",
+    "hotel_notice_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_notice_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "hotel_payment_mock/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_payment_mock/README.md": "5809907e404051538e395a0cd9a653bdc9d9478ffdccfbf414d6e86de2d9a3d9",
+    "hotel_payment_mock/scripts/dev.sh": "7efbf49d7908fc9f956bdf1a5d7afe9238746c4e0e20276972daa4535343d216",
+    "hotel_payment_mock/scripts/install.sh": "e82ed17a0200f7c33053a7c0df5c5d1b1beb0af016828586b514ef0b1130cbe6",
+    "hotel_payment_mock/scripts/lint.sh": "f5479a575727bf531a9e9929179438438ffb674b5d429788634c64f4a2b5b3e2",
+    "hotel_payment_mock/scripts/seed.sh": "249e3cdc6ef35da6f623ac69dd9bd1d704d9599ed7ee625e18fed1b3190179fe",
+    "hotel_payment_mock/scripts/test.sh": "309beb8c281ec71366974b1d76c7b0fd8eb959820eb9ff328f906ecf0cb5bc5a",
+    "hotel_payment_mock/tests/contract/README.md": "dd7767d75be543f242d753339249e1063fe0f0c9da8097033728a9c3218e0560",
+    "hotel_payment_mock/tests/contract/contract.json": "41f78cab9bcc0f97f3a95a1b22e3a540d3a13b4719bfc337dc7712ae75ca7221",
+    "hotel_payment_mock/tests/contract/contract_routes.py": "2fcf0b6b1a8bf1cbc96407d3a7620c058ad282f15c91a9e9c1a09d41d396cadc",
+    "hotel_payment_mock/tests/contract/contract_support.py": "609b9d8719a2291190b7341d3232ece52a26cfaf563be9d9d27c55571bcf2299",
+    "hotel_payment_mock/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_payment_mock/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "hotel_stay_service/.gitignore": "1a65879ac11b45d179cd631d78666d3e3cc840cf9b338764fefb856635822420",
+    "hotel_stay_service/README.md": "9dec94b38205d0ca9d4415192d5a0dd0b0f2c4c1511e656124e4639954214dad",
+    "hotel_stay_service/scripts/dev.sh": "07bdce73b5d5614866b7474a005cd99d1db2acdb6c03e04c70849b0ecfcc4c2f",
+    "hotel_stay_service/scripts/install.sh": "63d308df8afa0541f38cfa4421a5801bf2e1607b4b53190b97ed226a4baa8efb",
+    "hotel_stay_service/scripts/lint.sh": "55aa5b4b014c8e893f277931261cf873dc7c608281a872668c2f3fa52b7f7aeb",
+    "hotel_stay_service/scripts/seed.sh": "3fac3e0c938b3463e74723bb6c74bc9fd15562ee435c281b4e4a4dcd807f0e4e",
+    "hotel_stay_service/scripts/test.sh": "433a17e11e2614d56d80af007192bb26d7ceed2d31bffda7d8506af379675db6",
+    "hotel_stay_service/tests/contract/README.md": "46d6742dea018110e5471499678969e6ec3aba5d6221670eb99e2a71aa291201",
+    "hotel_stay_service/tests/contract/contract.json": "c49be732588a82e539cc5c2b113307a70215e3ae351110d1a395e0f0d619db67",
+    "hotel_stay_service/tests/contract/contract_routes.py": "0d5e617d925f788e66360511fcadd914fce13f93b681b006061a04a1cc224b00",
+    "hotel_stay_service/tests/contract/contract_support.py": "0f02ba08a79888506f77ec85ecf1f14fb2380b415ed7bf4bb4b3adf4a72b1554",
+    "hotel_stay_service/tests/contract/pytest.ini": "14e732b147dd912041c730c6c65596ee572a8430ca966be8eb4b99710122c0c4",
+    "hotel_stay_service/tests/contract/requirements.txt": "3143d9e513c78bef0d582744dd90483223b93bbfeecd122897e89322c075742d",
+    "scripts/prepare-clients.ps1": "2e8106805b2f18d26a36f4ae7d2c7d5c7c7c0214aa0e3a14ebfdb5c56b224319",
+    "scripts/prepare-clients.py": "0594da60fae54940b55529ac10e84cdfbb88b41efe47852b941cb294a84eaf1a",
+    "scripts/prepare-clients.sh": "824a4bf0b676eb5982b0d78767dd7a5d78b2a1836d3ce01003ed5d13e721936a",
+    "scripts/sync-angular-client.ps1": "7cfecc2cbcefa7060637c5a0e0ccf3054934e9e10721ae2b3775eb0d28811236",
+    "scripts/sync-angular-client.py": "86959caaafa6ee8d751d286c7f65770a08ce308cec0d7b9144278ee190ee14d7",
+    "scripts/sync-angular-client.sh": "7a1d7744b9b5097dd916ef4f2393ac6a1e64b6ce1cf5d2d28333ca71400f8e23",
+    "scripts/sync-flutter-client.ps1": "9f727c1d638cac6b7e0843e74a076a0a77658acc5877bd26a4bc11ae4b0640c6",
+    "scripts/sync-flutter-client.py": "e1a85283872f09ed8ffd3a4b30f74dd6c5aa55148cba0b98e81f0450e9e6ec4f",
+    "scripts/sync-flutter-client.sh": "b57d42f59d6b1d0dd82d05e5199b586bc75d6b4afe72566dbc3613d8edab6ba8"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "hotel_channel_mock/.gitignore": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/README.md": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/scripts/dev.sh": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/scripts/install.sh": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/scripts/lint.sh": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/scripts/seed.sh": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/scripts/test.sh": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/tests/contract/README.md": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/tests/contract/contract.json": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/tests/contract/contract_routes.py": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/tests/contract/contract_support.py": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/tests/contract/pytest.ini": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_channel_mock/tests/contract/requirements.txt": [
+      "hotel.ChannelMock"
+    ],
+    "hotel_email_mock/.gitignore": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/README.md": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/scripts/dev.sh": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/scripts/install.sh": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/scripts/lint.sh": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/scripts/seed.sh": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/scripts/test.sh": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/tests/contract/README.md": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/tests/contract/contract.json": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/tests/contract/contract_routes.py": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/tests/contract/contract_support.py": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/tests/contract/pytest.ini": [
+      "hotel.EmailMock"
+    ],
+    "hotel_email_mock/tests/contract/requirements.txt": [
+      "hotel.EmailMock"
+    ],
+    "hotel_notice_service/.gitignore": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/README.md": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/scripts/dev.sh": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/scripts/install.sh": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/scripts/lint.sh": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/scripts/test.sh": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/tests/contract/README.md": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/tests/contract/contract.json": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/tests/contract/contract_routes.py": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/tests/contract/contract_support.py": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/tests/contract/pytest.ini": [
+      "hotel.NoticeService"
+    ],
+    "hotel_notice_service/tests/contract/requirements.txt": [
+      "hotel.NoticeService"
+    ],
+    "hotel_payment_mock/.gitignore": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/README.md": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/scripts/dev.sh": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/scripts/install.sh": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/scripts/lint.sh": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/scripts/seed.sh": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/scripts/test.sh": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/tests/contract/README.md": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/tests/contract/contract.json": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/tests/contract/contract_routes.py": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/tests/contract/contract_support.py": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/tests/contract/pytest.ini": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_payment_mock/tests/contract/requirements.txt": [
+      "hotel.PaymentMock"
+    ],
+    "hotel_stay_service/.gitignore": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/README.md": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/scripts/dev.sh": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/scripts/install.sh": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/scripts/lint.sh": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/scripts/seed.sh": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/scripts/test.sh": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/tests/contract/README.md": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/tests/contract/contract.json": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/tests/contract/contract_routes.py": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/tests/contract/contract_support.py": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/tests/contract/pytest.ini": [
+      "hotel.StayService"
+    ],
+    "hotel_stay_service/tests/contract/requirements.txt": [
+      "hotel.StayService"
+    ]
+  },
+  "kept_output_hashes": {}
+}

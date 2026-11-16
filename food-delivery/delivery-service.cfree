@@ -1,0 +1,240 @@
+from fooddelivery.common import OrderStatus;
+
+// Getting the food to the door. An order that is ready becomes a delivery any driver on shift can
+// claim, with a route from the maps vendor. Two drivers claiming at once cannot both win, because
+// the claim locks the row. Each step the driver takes is reported back to the order.
+service fooddelivery.DeliveryService('config/delivery-service.ccfg') : version('2.0.0'), description('Drivers and deliveries') {
+
+    discovery { }
+
+    uses OrderService;
+    uses RouteProvider;
+
+    exceptions {
+        AlreadyClaimedError : status(409), message("Another driver just took this delivery");
+        NotYourDeliveryError : status(404), message("Delivery not found");
+        WrongStepError : status(409), message("This delivery is not at that step");
+        NotOnShiftError : status(409), message("Start your shift first");
+    }
+
+    enum DeliveryStatus {
+        Waiting : tone(warning),
+        Claimed : tone(info),
+        OnTheWay : tone(info),
+        Done : tone(success)
+    }
+
+    enum DriverStatus {
+        OffShift : tone(neutral),
+        OnShift : tone(success)
+    }
+
+    rdbms deliveryDb {
+
+        entity Driver extends BaseEntity {
+            String(64) userId : unique;
+            String(200) name : filterable;
+            DriverStatus status : filterable = DriverStatus.OffShift;
+        }
+
+        entity Delivery extends BaseEntity {
+            UUID orderId : unique;
+            String(20) orderNumber : filterable;
+            String(200) restaurantName;
+            DeliveryStatus status : filterable = DeliveryStatus.Waiting;
+            String(300) pickupAddress;
+            Float pickupLatitude;
+            Float pickupLongitude;
+            String(300) dropoffAddress;
+            Float dropoffLatitude;
+            Float dropoffLongitude;
+            Float? distanceKm;
+            Int? minutes;
+            String(64)? driverUserId : index;
+
+            index(status);
+        }
+    }
+
+    // A service reads another service's topics through a pubsub block of its own.
+    pubsub mq { }
+
+    subscribe OrderEvents {
+        // A route vendor failing must not lose the delivery, so it is created either way.
+        on OrderStatusChanged(UUID orderId, String orderNumber, String restaurantName, OrderStatus oldStatus, OrderStatus newStatus, String pickupAddress, Float pickupLatitude, Float pickupLongitude, String dropoffAddress, Float dropoffLatitude, Float dropoffLongitude) {
+            if (newStatus == OrderStatus.ReadyForPickup && deliveryDb.Delivery.where(orderId: orderId).first() == null) {
+                let deliveryDb.Delivery created = deliveryDb.Delivery.create({
+                    orderId: orderId,
+                    orderNumber: orderNumber,
+                    restaurantName: restaurantName,
+                    pickupAddress: pickupAddress,
+                    pickupLatitude: pickupLatitude,
+                    pickupLongitude: pickupLongitude,
+                    dropoffAddress: dropoffAddress,
+                    dropoffLatitude: dropoffLatitude,
+                    dropoffLongitude: dropoffLongitude
+                });
+                plan(created);
+            }
+        }
+    }
+
+    struct RouteView {
+        deliveryDb.Delivery delivery;
+        Array<GeoPoint> route;
+        GeoPoint pickup;
+        GeoPoint dropoff;
+    }
+
+    struct ShiftRequest {
+        Boolean onShift;
+    }
+
+    struct DeskSummary {
+        Int waiting;
+        Int onTheRoad;
+        Int driversOnShift;
+    }
+
+    fn plan(deliveryDb.Delivery delivery) {
+        try {
+            let RoutePlan route = RouteProvider.RouteAPI.post.planRoute(PlanRouteRequest {
+                fromLatitude: delivery.pickupLatitude,
+                fromLongitude: delivery.pickupLongitude,
+                toLatitude: delivery.dropoffLatitude,
+                toLongitude: delivery.dropoffLongitude
+            });
+            delivery.distanceKm = route.distanceKm;
+            delivery.minutes = route.minutes;
+            delivery.save();
+        } catch (Exception e) {
+            Log.warn("Delivery kept without a route: planning failed", { orderNumber: delivery.orderNumber });
+        }
+    }
+
+    fn pointOf(Float latitude, Float longitude) -> GeoPoint {
+        return GeoPoint { latitude: latitude, longitude: longitude };
+    }
+
+    fn viewOf(deliveryDb.Delivery delivery) -> RouteView {
+        let GeoPoint pickup = pointOf(delivery.pickupLatitude, delivery.pickupLongitude);
+        let GeoPoint dropoff = pointOf(delivery.dropoffLatitude, delivery.dropoffLongitude);
+        return RouteView { delivery: delivery, route: [pickup, dropoff], pickup: pickup, dropoff: dropoff };
+    }
+
+    fn ownedDelivery(UUID id, String userId) -> deliveryDb.Delivery {
+        let deliveryDb.Delivery delivery = deliveryDb.Delivery.findOrFail(id);
+        if (delivery.driverUserId != userId) {
+            throw NotYourDeliveryError();
+        }
+        return delivery;
+    }
+
+    // What a driver works with.
+    rest_api DriverAPI : basePath('/api/v1/driver'), rdbms(deliveryDb) {
+        @path('/me')
+        get me() : auth(required, providers: [identity], roles: [driver]) -> Driver {
+            let Driver? driver = Driver.where(userId: Auth.userId()).first();
+            if (driver != null) {
+                return driver;
+            }
+            return Driver.create({ userId: Auth.userId(), name: Auth.identity.fullName ?? Auth.identity.email.toString() });
+        }
+
+        @path('/me/shift')
+        post setShift(ShiftRequest request) : auth(required, providers: [identity], roles: [driver]) -> Driver {
+            let Driver? existing = Driver.where(userId: Auth.userId()).first();
+            let Driver driver = existing ?? Driver.create({ userId: Auth.userId(), name: Auth.identity.fullName ?? Auth.identity.email.toString() });
+            driver.status = request.onShift ? DriverStatus.OnShift : DriverStatus.OffShift;
+            driver.save();
+            return driver;
+        }
+
+        @path('/waiting')
+        get waiting() : auth(required, providers: [identity], roles: [driver]) -> Array<Delivery> {
+            return Delivery.where(status: DeliveryStatus.Waiting).orderBy(createdAt: asc).limit(50).all();
+        }
+
+        @path('/mine')
+        get mine() : auth(required, providers: [identity], roles: [driver]) -> Array<Delivery> {
+            return Delivery.where(driverUserId: Auth.userId()).orderBy(updatedAt: desc).limit(50).all();
+        }
+
+        @path('/deliveries/:id')
+        get route(UUID id) : auth(required, providers: [identity], roles: [driver]) -> RouteView {
+            return viewOf(ownedDelivery(id, Auth.userId()));
+        }
+
+        @path('/deliveries/:id/claim')
+        post claim(UUID id) : auth(required, providers: [identity], roles: [driver]) -> Delivery {
+            let Driver? driver = Driver.where(userId: Auth.userId()).first();
+            if (driver == null || driver.status != DriverStatus.OnShift) {
+                throw NotOnShiftError();
+            }
+            transaction(deliveryDb) {
+                let Delivery delivery = Delivery.where(id: id).forUpdate().firstOrFail();
+                if (delivery.status != DeliveryStatus.Waiting) {
+                    throw AlreadyClaimedError();
+                }
+                delivery.status = DeliveryStatus.Claimed;
+                delivery.driverUserId = Auth.userId();
+                delivery.save();
+            }
+            return Delivery.findOrFail(id);
+        }
+
+        @path('/deliveries/:id/picked-up')
+        post pickedUp(UUID id) : auth(required, providers: [identity], roles: [driver]) -> Delivery {
+            let Delivery delivery = ownedDelivery(id, Auth.userId());
+            if (delivery.status != DeliveryStatus.Claimed) {
+                throw WrongStepError();
+            }
+            OrderService.CourierUpdateAPI.post.markOutForDelivery(id: delivery.orderId);
+            delivery.status = DeliveryStatus.OnTheWay;
+            delivery.save();
+            return delivery;
+        }
+
+        @path('/deliveries/:id/delivered')
+        post delivered(UUID id) : auth(required, providers: [identity], roles: [driver]) -> Delivery {
+            let Delivery delivery = ownedDelivery(id, Auth.userId());
+            if (delivery.status != DeliveryStatus.OnTheWay) {
+                throw WrongStepError();
+            }
+            OrderService.CourierUpdateAPI.post.markDelivered(id: delivery.orderId);
+            delivery.status = DeliveryStatus.Done;
+            delivery.save();
+            return delivery;
+        }
+    }
+
+    // What the kitchen's manager sees of the road.
+    rest_api DispatchAPI : basePath('/api/v1/dispatch'), rdbms(deliveryDb) {
+        resource Delivery : only(list), auth(required, providers: [identity], roles: [kitchen]);
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [kitchen]) -> DeskSummary {
+            return DeskSummary {
+                waiting: Delivery.where(status: DeliveryStatus.Waiting).count(),
+                onTheRoad: Delivery.where(status: DeliveryStatus.OnTheWay).count(),
+                driversOnShift: Driver.where(status: DriverStatus.OnShift).count()
+            };
+        }
+    }
+
+    test("a new delivery waits for a driver") {
+        let Delivery delivery = deliveryDb.Delivery.create({
+            orderId: uuid(),
+            orderNumber: "SB-TEST01",
+            restaurantName: "Lemongrass",
+            pickupAddress: "4 Market Row",
+            pickupLatitude: 45.51,
+            pickupLongitude: -122.67,
+            dropoffAddress: "9 Oak Street, Riverside",
+            dropoffLatitude: 45.53,
+            dropoffLongitude: -122.65
+        });
+        assert delivery.status == DeliveryStatus.Waiting;
+        assert delivery.driverUserId == null;
+    }
+}

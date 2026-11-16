@@ -1,0 +1,10 @@
+// What the Rookery services and apps share.
+module social.common {
+
+    /// Where a post is. Only a Published post is ever shown to anyone but its author.
+    enum PostStatus {
+        Published : tone(success),
+        Held : tone(warning),
+        Removed : tone(danger)
+    }
+}

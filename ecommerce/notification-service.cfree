@@ -1,0 +1,112 @@
+// Sends the shop's email: OrderService queues what to say and this service says it through the EmailProvider
+// contract, keeping a row for every send. Being a queue consumer, a slow email vendor never slows an order.
+// It also keeps the messages visitors write in the public site's contact form.
+service ecommerce.NotificationService('config/notification-service.ccfg')
+    : version('2.0.0'), description('Customer email, sent from the order queues, and the site contact messages') {
+
+    discovery {
+        ecommerce.OrderService { loadBalance: roundRobin, healthyOnly: true }
+    }
+
+    uses ecommerce.EmailProvider;
+
+    rdbms notificationDb {
+
+        entity NotificationAudit extends BaseEntity {
+            UUID orderId : index;
+            Email recipientEmail;
+            String(30) orderNumber;
+            String(200) subject;
+            Boolean delivered;
+        }
+
+        /// A message a visitor wrote in the site's contact form, kept for the shop to answer.
+        entity ContactRequest extends BaseEntity {
+            String(120) name;
+            Email email;
+            String(2000) message;
+        }
+    }
+
+    /// What a visitor writes in the site's contact form.
+    struct ContactMessage {
+        String(2, 120) name;
+        Email email;
+        String(10, 2000) message;
+    }
+
+    /// What the site is told once a message is kept.
+    struct ContactReceipt {
+        UUID id;
+    }
+
+    // Where the contact route's per-address throttle keeps its counts.
+    cache redis {
+    }
+
+    // The site's contact form posts here: anyone may write, nobody signs in, and every message
+    // is kept for the shop to answer. A visitor's address is throttled so the form cannot flood it.
+    rest_api ContactAPI : basePath('/api/v1/contact'), rdbms(notificationDb) {
+
+        @rateLimit(requests: 5, window: 60)
+        @path('/messages')
+        post sendMessage(ContactMessage request) : auth(public) -> ContactReceipt {
+            let ContactRequest row = notificationDb.ContactRequest.create({
+                name: request.name,
+                email: request.email,
+                message: request.message
+            });
+            return ContactReceipt { id: row.id };
+        }
+    }
+
+    fn send(UUID orderId, Email recipient, String orderNumber, String subject, String body) {
+        let Delivery delivery = EmailProvider.EmailAPI.post.sendEmail(SendEmailRequest {
+            to: recipient.toString(),
+            subject: subject,
+            body: body,
+            idempotencyKey: #"{orderId}-{subject}"
+        });
+        notificationDb.NotificationAudit.create({
+            orderId: orderId,
+            recipientEmail: recipient,
+            orderNumber: orderNumber,
+            subject: subject,
+            delivered: delivery.status == DeliveryStatus.Delivered
+        });
+    }
+
+    enqueue ecommerce.OrderService.SendOrderConfirmation(UUID orderId, Email customerEmail, String orderNumber) {
+        send(
+            orderId,
+            customerEmail,
+            orderNumber,
+            #"We have your order {orderNumber}",
+            "Thank you. We will write again as soon as your payment has gone through and when your parcel leaves us."
+        );
+    }
+
+    enqueue ecommerce.OrderService.SendOrderUpdate(UUID orderId, Email customerEmail, String orderNumber, String subject, String body) {
+        send(orderId, customerEmail, orderNumber, subject, body);
+    }
+
+    test("an audit row names the order it was sent for") {
+        let NotificationAudit row = notificationDb.NotificationAudit.create({
+            orderId: uuid(),
+            recipientEmail: "ana@example.com",
+            orderNumber: "WW-260101-000001",
+            subject: "We have your order",
+            delivered: true
+        });
+        assert row.delivered == true;
+    }
+
+    test("a contact message is kept with what the visitor wrote") {
+        let ContactRequest row = notificationDb.ContactRequest.create({
+            name: "Ana",
+            email: "ana@example.com",
+            message: "Do you ship to the islands?"
+        });
+        assert row.name == "Ana";
+    }
+}

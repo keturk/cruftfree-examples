@@ -1,0 +1,318 @@
+from fooddelivery.common import OrderStatus, generateOrderNumber;
+
+// The order's life. A customer fills a cart the server keeps, priced by the restaurant service, and
+// checking out charges the card through the vendor. Each change of status goes out as an event: the
+// delivery service acts on it, and the customer gets a text at most once per step. A cancelled order
+// is refunded.
+service fooddelivery.OrderService('config/order-service.ccfg') : version('2.0.0'), description('Carts and orders') {
+
+    discovery { }
+
+    uses RestaurantService;
+    uses PaymentProvider;
+    uses SmsProvider;
+
+    exceptions {
+        EmptyCartError : status(422), message("Your cart is empty");
+        CartHasAnotherRestaurantError : status(409), message("Your cart holds dishes from another restaurant. Empty it first");
+        CardDeclinedError : status(402), message("Your card was declined");
+        NoSuchMoveError : status(409), message("An order cannot move there from where it is");
+    }
+
+    rdbms orderDb {
+
+        /// A dish waiting in someone's cart, at the price the restaurant gave when it was added.
+        entity CartLine extends BaseEntity {
+            String(64) userId : index;
+            UUID restaurantId;
+            String(200) restaurantName;
+            UUID menuItemId;
+            String(200) name;
+            Money unitPrice;
+            Int quantity : min(1) = 1;
+        }
+
+        entity Order extends BaseEntity {
+            String(20) orderNumber : unique, filterable;
+            String(64) userId : index;
+            UUID restaurantId : index;
+            String(200) restaurantName : filterable;
+            OrderStatus status : filterable = OrderStatus.Placed;
+            String(300) pickupAddress;
+            Float pickupLatitude;
+            Float pickupLongitude;
+            String(300) dropoffAddress;
+            Float dropoffLatitude;
+            Float dropoffLongitude;
+            Phone? phone : hidden;
+            Money subtotal;
+            Money deliveryFee;
+            Money total;
+            String(40) chargeId;
+
+            hasMany OrderItem;
+            index(restaurantId, status);
+
+            afterUpdate {
+                if (isChanged(status)) {
+                    dispatch OrderStatusChanged(id, orderNumber, restaurantName, oldValue(status), status, pickupAddress, pickupLatitude, pickupLongitude, dropoffAddress, dropoffLatitude, dropoffLongitude);
+                }
+            }
+        }
+
+        entity OrderItem extends BaseEntity {
+            UUID menuItemId;
+            String(200) name;
+            Money unitPrice;
+            Int quantity : min(1);
+
+            belongsTo Order : index;
+        }
+
+        /// What happened to an order, in order. The table refuses every change and delete.
+        entity OrderUpdate extends BaseEntity : appendOnly {
+            UUID orderId : index;
+            OrderStatus status;
+        }
+    }
+
+    pubsub mq {
+        topic OrderEvents {
+            publish OrderStatusChanged(UUID orderId, String orderNumber, String restaurantName, OrderStatus oldStatus, OrderStatus newStatus, String pickupAddress, Float pickupLatitude, Float pickupLongitude, String dropoffAddress, Float dropoffLatitude, Float dropoffLongitude) {
+                ensure oldStatus != newStatus;
+            }
+        }
+    }
+
+    subscribe OrderEvents {
+        on OrderStatusChanged(UUID orderId, String orderNumber, String restaurantName, OrderStatus oldStatus, OrderStatus newStatus, String pickupAddress, Float pickupLatitude, Float pickupLongitude, String dropoffAddress, Float dropoffLatitude, Float dropoffLongitude) {
+            orderDb.OrderUpdate.create({ orderId: orderId, status: newStatus });
+            let orderDb.Order? order = orderDb.Order.find(orderId);
+            if (order != null) {
+                if (newStatus == OrderStatus.Cancelled) {
+                    refund(order);
+                }
+                if (order.phone != null) {
+                    textCustomer(order.phone, #"status-{orderId}-{newStatus}", #"Saltbox: order {orderNumber} is now {newStatus}.");
+                }
+            }
+        }
+    }
+
+    struct AddToCartRequest {
+        UUID menuItemId;
+        Int quantity;
+    }
+
+    struct Cart {
+        Array<orderDb.CartLine> lines;
+        Money subtotal;
+    }
+
+    struct CheckoutRequest {
+        UUID zoneId;
+        String(300) street;
+        Phone? phone;
+        /// The vendor's token for the card, never the card itself.
+        String(60) cardToken;
+    }
+
+    struct OrderDetail {
+        orderDb.Order order;
+        Array<orderDb.OrderItem> items;
+        Array<orderDb.OrderUpdate> history;
+    }
+
+    struct MoveOrderRequest {
+        OrderStatus status;
+    }
+
+    /// A text failing must not fail the change that caused it.
+    fn textCustomer(Phone to, String key, String body) {
+        try {
+            SmsProvider.SmsAPI.post.sendSms(SendSmsRequest { to: to, body: body, idempotencyKey: key });
+        } catch (Exception e) {
+            Log.warn("Status text not sent", { key: key });
+        }
+    }
+
+    fn refund(orderDb.Order order) {
+        try {
+            PaymentProvider.PaymentAPI.post.refundCharge(RefundChargeRequest { chargeId: order.chargeId, idempotencyKey: #"refund-{order.id}" });
+        } catch (Exception e) {
+            Log.error("Refund not issued", { orderNumber: order.orderNumber });
+        }
+    }
+
+    fn subtotalOf(Array<orderDb.CartLine> lines) -> Money {
+        let Money total = 0.00;
+        foreach line in lines {
+            total = total + line.unitPrice * line.quantity;
+        }
+        return total;
+    }
+
+    /// The moves a kitchen may make from a board column.
+    fn kitchenMayMove(OrderStatus from, OrderStatus to) -> Boolean {
+        return (from == OrderStatus.Placed && to == OrderStatus.Preparing)
+            || (from == OrderStatus.Preparing && to == OrderStatus.ReadyForPickup)
+            || (from == OrderStatus.Placed && to == OrderStatus.Cancelled)
+            || (from == OrderStatus.Preparing && to == OrderStatus.Cancelled);
+    }
+
+    // A signed-in customer's own cart and orders.
+    rest_api CustomerAPI : basePath('/api/v1/customer'), rdbms(orderDb) {
+        @path('/cart')
+        get cart() : auth(required, providers: [identity]) -> Cart {
+            let Array<CartLine> lines = CartLine.where(userId: Auth.userId()).all();
+            return Cart { lines: lines, subtotal: subtotalOf(lines) };
+        }
+
+        @path('/cart/items')
+        post addToCart(AddToCartRequest request) : auth(required, providers: [identity]) -> Cart {
+            let PricedItem priced = RestaurantService.PricingAPI.get.priceItem(id: request.menuItemId);
+            let Array<CartLine> existing = CartLine.where(userId: Auth.userId()).all();
+            if (existing.length > 0 && existing[0].restaurantId != priced.restaurantId) {
+                throw CartHasAnotherRestaurantError();
+            }
+            CartLine.create({
+                userId: Auth.userId(),
+                restaurantId: priced.restaurantId,
+                restaurantName: priced.restaurantName,
+                menuItemId: priced.menuItemId,
+                name: priced.name,
+                unitPrice: priced.price,
+                quantity: request.quantity
+            });
+            let Array<CartLine> lines = CartLine.where(userId: Auth.userId()).all();
+            return Cart { lines: lines, subtotal: subtotalOf(lines) };
+        }
+
+        @path('/cart/items/:id/remove')
+        post removeFromCart(UUID id) : auth(required, providers: [identity]) -> Cart {
+            let CartLine? line = CartLine.where(id: id, userId: Auth.userId()).first();
+            if (line != null) {
+                line.delete();
+            }
+            let Array<CartLine> lines = CartLine.where(userId: Auth.userId()).all();
+            return Cart { lines: lines, subtotal: subtotalOf(lines) };
+        }
+
+        // The card is charged before the order exists, under a key held by the cart, so paying
+        // twice for one cart charges once.
+        @path('/checkout')
+        post checkout(CheckoutRequest request) : auth(required, providers: [identity]) -> Order {
+            let Array<CartLine> lines = CartLine.where(userId: Auth.userId()).all();
+            if (lines.length == 0) {
+                throw EmptyCartError();
+            }
+            let PricedDelivery delivery = RestaurantService.PricingAPI.get.priceDelivery(restaurantId: lines[0].restaurantId, zoneId: request.zoneId);
+            let Money subtotal = subtotalOf(lines);
+            let Money total = subtotal + delivery.fee;
+            let String orderNumber = generateOrderNumber();
+            let Charge charge = PaymentProvider.PaymentAPI.post.createCharge(CreateChargeRequest {
+                cardToken: request.cardToken,
+                amount: total,
+                currency: "USD",
+                reference: orderNumber,
+                // Per cart and per card: a retry cannot charge twice, and a declined card can be swapped for another.
+                idempotencyKey: #"cart-{lines[0].id}-{request.cardToken}"
+            });
+            if (charge.status == ChargeStatus.Declined) {
+                throw CardDeclinedError();
+            }
+            let Order created = Order.create({
+                orderNumber: orderNumber,
+                userId: Auth.userId(),
+                restaurantId: lines[0].restaurantId,
+                restaurantName: delivery.restaurantName,
+                pickupAddress: delivery.pickupAddress,
+                pickupLatitude: delivery.pickupLatitude,
+                pickupLongitude: delivery.pickupLongitude,
+                dropoffAddress: #"{request.street}, {delivery.zoneName}",
+                dropoffLatitude: delivery.dropoffLatitude,
+                dropoffLongitude: delivery.dropoffLongitude,
+                phone: request.phone,
+                subtotal: subtotal,
+                deliveryFee: delivery.fee,
+                total: total,
+                chargeId: charge.id
+            });
+            foreach line in lines {
+                OrderItem.create({ orderId: created.id, menuItemId: line.menuItemId, name: line.name, unitPrice: line.unitPrice, quantity: line.quantity });
+                line.delete();
+            }
+            OrderUpdate.create({ orderId: created.id, status: OrderStatus.Placed });
+            return created;
+        }
+
+        @path('/orders')
+        get myOrders() : auth(required, providers: [identity]) -> Array<Order> {
+            return Order.where(userId: Auth.userId()).orderBy(createdAt: desc).limit(50).all();
+        }
+
+        @path('/orders/:id')
+        get myOrder(UUID id) : auth(required, providers: [identity]) -> OrderDetail {
+            let Order order = Order.where(id: id, userId: Auth.userId()).firstOrFail();
+            return OrderDetail {
+                order: order,
+                items: OrderItem.where(orderId: id).all(),
+                history: OrderUpdate.where(orderId: id).orderBy(createdAt: asc).all()
+            };
+        }
+    }
+
+    // What the kitchen works with.
+    rest_api KitchenAPI : basePath('/api/v1/kitchen/orders'), rdbms(orderDb) {
+        @path('/board/:restaurantId')
+        get board(UUID restaurantId) : auth(required, providers: [identity], roles: [kitchen]) -> Array<Order> {
+            return Order.where(restaurantId: restaurantId).orderBy(createdAt: desc).limit(100).all();
+        }
+
+        @path('/:id/move')
+        post moveOrder(UUID id, MoveOrderRequest request) : auth(required, providers: [identity], roles: [kitchen]) -> Order {
+            let Order order = Order.findOrFail(id);
+            if (!kitchenMayMove(order.status, request.status)) {
+                throw NoSuchMoveError();
+            }
+            order.status = request.status;
+            order.save();
+            return order;
+        }
+
+        @path('/:id/items')
+        get itemsOf(UUID id) : auth(required, providers: [identity], roles: [kitchen]) -> Array<OrderItem> {
+            return OrderItem.where(orderId: id).all();
+        }
+    }
+
+    // What DeliveryService reports. Only a service with a machine credential reaches these.
+    rest_api CourierUpdateAPI : basePath('/api/v1/internal/orders'), rdbms(orderDb) {
+        @path('/:id/out-for-delivery')
+        post markOutForDelivery(UUID id) : auth(service, providers: [machine]) -> Order {
+            let Order order = Order.findOrFail(id);
+            if (order.status != OrderStatus.ReadyForPickup) {
+                throw NoSuchMoveError();
+            }
+            order.status = OrderStatus.OutForDelivery;
+            order.save();
+            return order;
+        }
+
+        @path('/:id/delivered')
+        post markDelivered(UUID id) : auth(service, providers: [machine]) -> Order {
+            let Order order = Order.findOrFail(id);
+            if (order.status != OrderStatus.OutForDelivery) {
+                throw NoSuchMoveError();
+            }
+            order.status = OrderStatus.Delivered;
+            order.save();
+            return order;
+        }
+    }
+
+    test("the kitchen may start an order but not deliver it") {
+        assert kitchenMayMove(OrderStatus.Placed, OrderStatus.Preparing);
+        assert !kitchenMayMove(OrderStatus.Placed, OrderStatus.Delivered);
+    }
+}

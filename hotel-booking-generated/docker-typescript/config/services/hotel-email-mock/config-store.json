@@ -1,0 +1,11 @@
+{
+  "connections": {
+    "email_db_database": "hotel_email_mock",
+    "email_db_host": "hotel-system-postgresql",
+    "email_db_port": 5432,
+    "email_db_user": "hotel_email_mock_email_db_rw"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

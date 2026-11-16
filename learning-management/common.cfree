@@ -1,0 +1,9 @@
+// What the Larkhill services share.
+module lms.common {
+
+    enum QuizOption {
+        OptionA,
+        OptionB,
+        OptionC
+    }
+}

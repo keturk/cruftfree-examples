@@ -1,0 +1,352 @@
+﻿// Alderbrook People runs two ways. `test` and `production` are one docker-compose stack on a developer
+// machine: nginx in front, one Kafka, PostgreSQL, a self-hosted Zitadel for sign-in and the
+// observability stack. `development` is the Azure deployment: Web App for Containers behind API
+// Management, Flexible Server, Event Hubs, Azure Monitor and Entra ID. The mocks run in either; where a
+// contract points is a choice that lives in config/providers/.
+config system hr.System {
+  // `base` holds only what is true on every deployment target. Anything that names a target-native
+  // mechanism (the nginx rate limiter, the docker observability stack, the self-hosted Zitadel, the
+  // Azure services) lives in the profile of the target that realizes it: a profile can override a
+  // value it inherits, but it cannot un-declare one.
+  base {
+    schemaConvergence {
+      enabled = true;
+    }
+    defaultTimeout = 30000;
+    maxPageSize = 100;
+    defaultLocale = "en-US";
+    gateway {
+      auth {
+        jwt {
+          algorithm = "RS256";
+          issuer = "alderbrook";
+          expiresIn = 86400;
+        }
+      }
+    }
+    observability {
+      metrics {
+        endpoint = "/metrics";
+        includeDefault = true;
+      }
+      tracing {
+        samplingRate = 0.1;
+      }
+      logging {
+        level = "info";
+        format = "json";
+      }
+    }
+    configStore {
+      applicationName = "alderbrook";
+      environment = "local";
+      profiles {
+        settings {
+          kind = "freeform";
+          keys {
+            Boolean debugMode : description("Enable debug mode.") = false;
+          }
+        }
+      }
+    }
+  }
+
+  // Everything the docker-compose realization needs: the nginx gateway, Prometheus / Jaeger / Loki /
+  // Grafana / Alertmanager, a file-backed config store and a self-hosted Zitadel.
+  profile compose as "compose" extends base {
+    alias env = "COMPOSE";
+    alias resource = "compose";
+
+    deployment {
+      runtime = "docker-compose";
+      provider = "local";
+    }
+    platforms {
+      docker {
+        kafka_default_retention_ms = 604800000;
+        infra {
+          defaultHealthcheck {
+            interval = "10s";
+            timeout = "10s";
+            retries = 10;
+            startPeriod = "30s";
+          }
+          kafkaHealthcheck {
+            interval = "10s";
+            timeout = "15s";
+            retries = 20;
+            startPeriod = "60s";
+          }
+          jobWorkerHealthcheck {
+            interval = "30s";
+            timeout = "10s";
+            retries = 3;
+            startPeriod = "40s";
+          }
+          observabilityHealthcheck {
+            interval = "15s";
+            timeout = "10s";
+            retries = 5;
+            startPeriod = "30s";
+          }
+          pgbouncer {
+            maxClientConn = 200;
+            defaultPoolSize = 20;
+          }
+          initScript {
+            maxRetries = 30;
+            retryDelaySeconds = 2;
+          }
+          multiRdbmsStartPeriodSeconds = 120;
+          // Desktop Docker hosts mount `/` privately, which the container-metrics collector's
+          // host binds need, so this example declares the host most people run it on.
+          sharedMountPropagation = false;
+        }
+      }
+    }
+    gateway {
+      rateLimit {
+        default {
+          requests = 300;
+          window = "1m";
+          key = "ip";
+        }
+      }
+    }
+    observability {
+      metrics {
+        provider = "prometheus";
+      }
+      tracing {
+        provider = "jaeger";
+      }
+      logging {
+        provider = "loki";
+      }
+      visualization {
+        provider = "grafana";
+      }
+      alerting {
+        provider = "alertmanager";
+      }
+    }
+    zitadelIdentity {
+      host = "zitadel";
+      port = 8080;
+      externalDomain = "localhost";
+      externalSecure = false;
+      adminUser = "admin";
+      adminPassword = "identity_zitadel_admin_password";
+      masterKey = "identity_zitadel_master_key";
+      publicOrigins {
+        test = "http://localhost:8085";
+        production = "http://localhost:8085";
+      }
+      providers {
+        identity {
+          project = "alderbrook-identity";
+          clientId = "alderbrook-identity-app";
+        }
+        machine {
+          project = "alderbrook-machine";
+          clientId = "alderbrook-machine-app";
+        }
+      }
+    }
+    configStore {
+      engine = "file";
+      flavor = "container";
+    }
+  }
+
+  profile test as "test" extends compose {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile production as "prod" extends compose {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+
+  // Azure target: Web App for Containers behind API Management, Flexible Server, Event Hubs, Azure
+  // Monitor / Application Insights telemetry, App Configuration as the config store, and Entra ID for
+  // the people who sign in and for machine callers.
+  profile azure as "azure" extends base {
+    alias env = "AZURE";
+    alias resource = "azure";
+
+    deployment {
+      runtime = "azure-app-service-container";
+      provider = "azure";
+    }
+    gateway {
+      type = "managed";
+      auth {
+        jwt {
+          issuer = "https://login.microsoftonline.com/alderbrook.onmicrosoft.com/v2.0";
+          audience = "alderbrook-identity-app";
+        }
+      }
+      domain {
+        name = "api.alderbrook.example.com";
+        certificate = "api_tls_certificate";
+      }
+    }
+    secrets {
+      secret api_tls_certificate {
+        required = true;
+        purpose = "TLS certificate for the API custom domain.";
+      }
+      // The Employee app's mobile release signing material: the app's android { } block names these
+      // handles, the operator supplies their values.
+      secret android_keystore {
+        required = true;
+        purpose = "Android upload keystore for the Employee mobile release.";
+      }
+      secret android_key_alias {
+        required = true;
+        purpose = "Alias of the upload key inside the Android keystore.";
+      }
+      secret android_store_password {
+        required = true;
+        purpose = "Password of the Android upload keystore.";
+      }
+      secret android_key_password {
+        required = true;
+        purpose = "Password of the Android upload key.";
+      }
+    }
+    observability {
+      metrics {
+        provider = "azure-monitor";
+      }
+      tracing {
+        provider = "application-insights";
+      }
+      logging {
+        provider = "log-analytics";
+      }
+      visualization {
+        provider = "azure-monitor";
+      }
+      alerting {
+        provider = "azure-monitor-alerts";
+      }
+    }
+    configStore {
+      engine = "azure-managed";
+      flavor = "managed";
+      sku = "standard";
+    }
+    azureIdentity {
+      entraTenantId = "alderbrook.onmicrosoft.com";
+    }
+    // Every service's `mq` block is the same Kafka bus (the topics cross service boundaries), so on
+    // Azure they pool onto one Event Hubs namespace instead of one namespace per block.
+    namespaceGroups {
+      alderbrook-events {
+        sku = "Standard";
+        capacity = 2;
+      }
+    }
+    region = "eastus";
+    platforms {
+      azure {
+        // eastus cannot host an Azure Static Web App, so the web bundles (web.domain) are hosted from
+        // eastus2; the static sites are served globally, so their region need not match the backend's.
+        staticWebAppLocation = "eastus2";
+        appServicePlanSku = "P1v3";
+        appServicePlanCapacity = 1;
+        servicebusMessageTtl = "P14D";
+        servicebusMaxDeliveryCount = 10;
+        diagnostics {
+          retentionDays = 30;
+        }
+        appInsights {
+        }
+        migrationJob {
+          cpu = "0.25";
+          memoryGi = "0.5Gi";
+        }
+        replicaJob {
+          timeoutSeconds = 300;
+          retryLimit = 2;
+        }
+        subnets {
+          vnetAddressPrefix = "10.0.0.0/16";
+          apps = "10.0.0.0/21";
+          database = "10.0.8.0/24";
+          cache = "10.0.9.0/24";
+          messaging = "10.0.10.0/24";
+          storage = "10.0.11.0/24";
+          keyvault = "10.0.12.0/24";
+          appServiceIntegration = "10.0.13.0/24";
+          appServicePrivateEndpoints = "10.0.14.0/24";
+          pgDelegated = ["10.0.20.0/28", "10.0.20.16/28", "10.0.20.32/28", "10.0.20.48/28", "10.0.20.64/28", "10.0.20.80/28", "10.0.20.96/28", "10.0.20.112/28", "10.0.20.128/28"];
+        }
+        postgresPrivateDnsZone = "alderbrook.private.postgres.database.azure.com";
+        alarms {
+          rdbmsCpuPercent = 80.0;
+          rdbmsStoragePercent = 85.0;
+          rdbmsActiveConnectionsPercent = 80.0;
+          redisCpuPercent = 75.0;
+          redisMemoryPercent = 80.0;
+          redisEvictionsPerMin = 100.0;
+          servicebusActiveMessages = 1000.0;
+          servicebusDeadLetterMessages = 0.0;
+          servicebusQueueLength = 5000.0;
+          cosmosdbNormalizedRuPercent = 80.0;
+          cosmosdbThrottledRequests = 0.0;
+          cosmosdbAvailabilityPercent = 99.9;
+          containerAppsCpuPercent = 80.0;
+          containerAppsMemoryPercent = 80.0;
+          appServiceHttp5xxCount = 0.0;
+          appServiceResponseTimeSeconds = 5.0;
+        }
+        databaseDefaults {
+          haMode = "Disabled";
+          backupRetentionDays = 7;
+          geoRedundant = false;
+          haStandbyZone = "2";
+        }
+        pgbouncer {
+          defaultPoolSize = 50;
+        }
+        waf {
+          mode = "Prevention";
+          sku = "Premium_AzureFrontDoor";
+        }
+        functions {
+          planSku = "Y1";
+        }
+        eventHubs {
+          retentionDays = 7;
+          partitionCount = 4;
+          maxThroughputUnits = 20;
+        }
+        cosmos {
+          consistencyLevel = "Session";
+          capacityMode = "Provisioned";
+        }
+        keyVault {
+          softDeleteRetentionDays = 30;
+        }
+        frontDoor {
+          healthProbeSampleSize = 4;
+          successfulSamplesRequired = 3;
+          probeIntervalSeconds = 30;
+        }
+        apiManagement {
+          sku = "Developer";
+          capacity = 1;
+        }
+      }
+    }
+  }
+
+  profile development as "dev" extends azure {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+}

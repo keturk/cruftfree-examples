@@ -1,0 +1,355 @@
+from realestate.common import ListingStatus;
+
+// The homes for sale. Anyone may browse and search what is on the market, and what they get back is the
+// home and the agent's name, never an agent's address or a draft. An agent works only on their own
+// listings. A price change is kept for ever and told to anyone with a viewing coming up.
+service realestate.ListingService('config/listing-service.ccfg') : version('2.0.0'), description('Homes for sale') {
+
+    discovery { }
+
+    identity {
+        provider identity config('config/identity/identity.ccfg') {
+            Email email;
+            String? fullName;
+            group "agent" as agent;
+            group "operator" as operator;
+        }
+        provider machine config('config/identity/machine.ccfg') { }
+        provider mortgageKeys config('config/identity/mortgage-keys.ccfg') { }
+        provider signatureKeys config('config/identity/signature-keys.ccfg') { }
+        provider emailKeys config('config/identity/email-keys.ccfg') { }
+    }
+
+    exceptions {
+        NotYourListingError : status(404), message("Listing not found");
+        NotPublicError : status(404), message("That home is not on the market");
+        WrongStepError : status(409), message("This listing is not at that step");
+        SamePriceError : status(422), message("That is already the price");
+    }
+
+    enum PropertyKind {
+        House,
+        Apartment,
+        Townhouse,
+        Cottage,
+        Land
+    }
+
+    rdbms listingDb {
+
+        /// A neighbourhood the agency works in. Choosing one places a home on the map.
+        entity Neighbourhood extends BaseEntity {
+            String(120) name : unique;
+            String(120) city;
+            Float latitude;
+            Float longitude;
+        }
+
+        entity Listing extends BaseEntity {
+            String(200) title : filterable;
+            String(120) neighbourhoodName : filterable;
+            PropertyKind kind : filterable;
+            Money price;
+            Int bedrooms;
+            Int bathrooms;
+            Int areaSqm;
+            ListingStatus status : filterable = ListingStatus.Draft;
+            String(200) agentName : filterable;
+            DateTime? publishedAt;
+            Text summary;
+            String(120) city;
+            Float latitude;
+            Float longitude;
+            Email agentEmail : index;
+
+            fulltext(title, summary, neighbourhoodName);
+            index(status);
+        }
+
+        /// Every price a home has asked. Never changed once written.
+        entity PriceChange extends BaseEntity : appendOnly {
+            UUID listingId : index;
+            Money oldPrice;
+            Money newPrice;
+        }
+    }
+
+    pubsub mq {
+        topic ListingEvents {
+            publish ListingPriceChanged(UUID listingId, String title, Money oldPrice, Money newPrice) {
+                ensure oldPrice != newPrice;
+            }
+        }
+    }
+
+    struct NewListing {
+        String(200) title;
+        UUID neighbourhoodId;
+        PropertyKind kind;
+        Money price;
+        Int bedrooms;
+        Int bathrooms;
+        Int areaSqm;
+        Text summary;
+    }
+
+    struct NewPrice {
+        UUID listingId;
+        Money price;
+    }
+
+    /// A home in a search. The agent's address stays on the server.
+    struct ListingCard {
+        UUID id;
+        String title;
+        String neighbourhoodName;
+        String city;
+        PropertyKind kind;
+        Money price;
+        Int bedrooms;
+        Int bathrooms;
+        Int areaSqm;
+        ListingStatus status;
+    }
+
+    struct PriceStep {
+        Money oldPrice;
+        Money newPrice;
+        DateTime at;
+    }
+
+    struct ListingPage {
+        ListingCard home;
+        Text summary;
+        String agentName;
+        GeoPoint point;
+        Array<PriceStep> priceHistory;
+    }
+
+    struct HomePin {
+        UUID id;
+        String title;
+        GeoPoint point;
+    }
+
+    struct AgentSummary {
+        Int onTheMarket;
+        Int drafts;
+        Int underOffer;
+        Int sold;
+    }
+
+    struct ListingFacts {
+        String title;
+        ListingStatus status;
+        Money price;
+        String agentName;
+        Email agentEmail;
+    }
+
+    struct ListingNotice {
+        UUID listingId;
+    }
+
+    fn cardOf(listingDb.Listing listing) -> ListingCard {
+        return ListingCard {
+            id: listing.id,
+            title: listing.title,
+            neighbourhoodName: listing.neighbourhoodName,
+            city: listing.city,
+            kind: listing.kind,
+            price: listing.price,
+            bedrooms: listing.bedrooms,
+            bathrooms: listing.bathrooms,
+            areaSqm: listing.areaSqm,
+            status: listing.status
+        };
+    }
+
+    fn pageOf(listingDb.Listing listing) -> ListingPage {
+        let Array<listingDb.PriceChange> changes = listingDb.PriceChange.where(listingId: listing.id).orderBy(createdAt: desc).limit(20).all();
+        return ListingPage {
+            home: cardOf(listing),
+            summary: listing.summary,
+            agentName: listing.agentName,
+            point: GeoPoint { latitude: listing.latitude, longitude: listing.longitude },
+            priceHistory: changes.map(c => PriceStep { oldPrice: c.oldPrice, newPrice: c.newPrice, at: c.createdAt })
+        };
+    }
+
+    fn ownListing(UUID id) -> listingDb.Listing {
+        let listingDb.Listing listing = listingDb.Listing.findOrFail(id);
+        if (listing.agentEmail.toString() != Auth.identity.email.toString()) {
+            throw NotYourListingError();
+        }
+        return listing;
+    }
+
+    // What anyone can see. Only what is on the market or being sold is public.
+    rest_api HomesAPI : basePath('/api/v1/homes'), rdbms(listingDb) {
+        @path('/')
+        get onTheMarket() : auth(public) -> Array<ListingCard> {
+            let Array<Listing> listings = Listing.where(status: ListingStatus.Active).orderBy(publishedAt: desc).limit(60).all();
+            return listings.map(l => cardOf(l));
+        }
+
+        @path('/search')
+        get search(String q) : auth(public) -> Array<ListingCard> {
+            let Array<Listing> listings = Listing.where(status: ListingStatus.Active).fulltext(q).limit(60).all();
+            return listings.map(l => cardOf(l));
+        }
+
+        @path('/pins')
+        get pins() : auth(public) -> Array<HomePin> {
+            let Array<Listing> listings = Listing.where(status: ListingStatus.Active).limit(200).all();
+            return listings.map(l => HomePin { id: l.id, title: l.title, point: GeoPoint { latitude: l.latitude, longitude: l.longitude } });
+        }
+
+        @path('/home/:id')
+        get home(UUID id) : auth(public) -> ListingPage {
+            let Listing listing = Listing.findOrFail(id);
+            if (listing.status == ListingStatus.Draft || listing.status == ListingStatus.Withdrawn) {
+                throw NotPublicError();
+            }
+            return pageOf(listing);
+        }
+    }
+
+    // What an agent works with.
+    rest_api AgentListingAPI : basePath('/api/v1/agent/listings'), rdbms(listingDb) {
+        resource Listing : only(list), auth(required, providers: [identity], roles: [agent]);
+        resource Neighbourhood : only(list), auth(required, providers: [identity], roles: [agent]);
+
+        @path('/summary')
+        get summary() : auth(required, providers: [identity], roles: [agent]) -> AgentSummary {
+            let String me = Auth.identity.email.toString();
+            return AgentSummary {
+                onTheMarket: Listing.where(agentEmail: me, status: ListingStatus.Active).count(),
+                drafts: Listing.where(agentEmail: me, status: ListingStatus.Draft).count(),
+                underOffer: Listing.where(agentEmail: me, status: ListingStatus.UnderOffer).count(),
+                sold: Listing.where(agentEmail: me, status: ListingStatus.Sold).count()
+            };
+        }
+
+        @path('/page/:id')
+        get page(UUID id) : auth(required, providers: [identity], roles: [agent]) -> ListingPage {
+            return pageOf(ownListing(id));
+        }
+
+        @path('/new')
+        post createListing(NewListing request) : auth(required, providers: [identity], roles: [agent]) -> Listing {
+            let Neighbourhood place = Neighbourhood.findOrFail(request.neighbourhoodId);
+            return Listing.create({
+                title: request.title,
+                neighbourhoodName: place.name,
+                city: place.city,
+                latitude: place.latitude,
+                longitude: place.longitude,
+                kind: request.kind,
+                price: request.price,
+                bedrooms: request.bedrooms,
+                bathrooms: request.bathrooms,
+                areaSqm: request.areaSqm,
+                summary: request.summary,
+                agentName: (Auth.identity.fullName ?? Auth.identity.email).toString(),
+                agentEmail: Auth.identity.email
+            });
+        }
+
+        @path('/publish/:id')
+        post publish(UUID id) : auth(required, providers: [identity], roles: [agent]) -> Listing {
+            let Listing listing = ownListing(id);
+            if (listing.status != ListingStatus.Draft && listing.status != ListingStatus.Withdrawn) {
+                throw WrongStepError();
+            }
+            listing.status = ListingStatus.Active;
+            listing.publishedAt = DateTime.now();
+            listing.save();
+            return listing;
+        }
+
+        @path('/withdraw/:id')
+        post withdraw(UUID id) : auth(required, providers: [identity], roles: [agent]) -> Listing {
+            let Listing listing = ownListing(id);
+            if (listing.status != ListingStatus.Active) {
+                throw WrongStepError();
+            }
+            listing.status = ListingStatus.Withdrawn;
+            listing.save();
+            return listing;
+        }
+
+        @path('/price')
+        post changePrice(NewPrice request) : auth(required, providers: [identity], roles: [agent]) -> Listing {
+            let Listing listing = ownListing(request.listingId);
+            if (listing.price == request.price) {
+                throw SamePriceError();
+            }
+            let Money oldPrice = listing.price;
+            listing.price = request.price;
+            listing.save();
+            PriceChange.create({ listingId: listing.id, oldPrice: oldPrice, newPrice: request.price });
+            dispatch ListingPriceChanged(listing.id, listing.title, oldPrice, request.price);
+            return listing;
+        }
+    }
+
+    // What viewings and deals need.
+    rest_api ListingInternalAPI : basePath('/internal/listings'), rdbms(listingDb) {
+        @path('/facts/:id')
+        get facts(UUID id) : auth(service, providers: [machine]) -> ListingFacts {
+            let Listing listing = Listing.findOrFail(id);
+            return ListingFacts {
+                title: listing.title,
+                status: listing.status,
+                price: listing.price,
+                agentName: listing.agentName,
+                agentEmail: listing.agentEmail
+            };
+        }
+
+        @path('/under-offer')
+        post markUnderOffer(ListingNotice notice) : auth(service, providers: [machine]) -> ListingCard {
+            let Listing listing = Listing.findOrFail(notice.listingId);
+            listing.status = ListingStatus.UnderOffer;
+            listing.save();
+            return cardOf(listing);
+        }
+
+        @path('/sold')
+        post markSold(ListingNotice notice) : auth(service, providers: [machine]) -> ListingCard {
+            let Listing listing = Listing.findOrFail(notice.listingId);
+            listing.status = ListingStatus.Sold;
+            listing.save();
+            return cardOf(listing);
+        }
+
+        @path('/reopen')
+        post reopen(ListingNotice notice) : auth(service, providers: [machine]) -> ListingCard {
+            let Listing listing = Listing.findOrFail(notice.listingId);
+            listing.status = ListingStatus.Active;
+            listing.save();
+            return cardOf(listing);
+        }
+    }
+
+    test("a new listing is a draft") {
+        let listingDb.Listing created = listingDb.Listing.create({
+            title: "Test home",
+            neighbourhoodName: "Riverside",
+            city: "Portland",
+            kind: PropertyKind.Cottage,
+            price: 410000.00,
+            bedrooms: 2,
+            bathrooms: 1,
+            areaSqm: 80,
+            summary: "A test home.",
+            agentName: "Dana Whitlock",
+            agentEmail: "dana@cobblestone.example.com",
+            latitude: 45.5,
+            longitude: -122.6
+        });
+        assert created.status == ListingStatus.Draft;
+        assert cardOf(created).title == "Test home";
+    }
+}

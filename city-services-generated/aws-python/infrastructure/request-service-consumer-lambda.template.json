@@ -1,0 +1,310 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "RequestServiceConsumersImageTag": {
+      "AllowedPattern": "[0-9a-f]{64}",
+      "ConstraintDescription": "a lowercase SHA-256 hex content hash computed by the deploy script; never a floating tag such as 'latest'",
+      "Description": "Resolved content-hash tag of the 'request_service_consumers' image, pushed by the deploy script.",
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "ConsumeRequestEventsEventSourceMapping": {
+      "Properties": {
+        "BatchSize": 10,
+        "EventSourceArn": {
+          "Fn::ImportValue": "cityservices-system-cityservices-request-service-RequestEventsQueueArn"
+        },
+        "FunctionName": {
+          "Ref": "ConsumeRequestEventsFn"
+        }
+      },
+      "Type": "AWS::Lambda::EventSourceMapping"
+    },
+    "ConsumeRequestEventsFn": {
+      "DependsOn": [
+        "ConsumeRequestEventsRoleDefaultPolicy",
+        "ConsumeRequestEventsRole"
+      ],
+      "Properties": {
+        "Code": {
+          "ImageUri": {
+            "Fn::Sub": [
+              "${Repository}:${Tag}",
+              {
+                "Repository": {
+                  "Fn::ImportValue": "cityservices-system-bootstrap-RequestServiceConsumersRepositoryUri"
+                },
+                "Tag": {
+                  "Ref": "RequestServiceConsumersImageTag"
+                }
+              }
+            ]
+          }
+        },
+        "Environment": {
+          "Variables": {
+            "CRUFTFREE_CALLER_AUDIENCE": "urn:cruftfree:trusted-caller:cityservices-system",
+            "CRUFTFREE_CALLER_EXPECTED_ISSUER": {
+              "Fn::ImportValue": "cityservices-system-trusted-caller-Issuer"
+            },
+            "CRUFTFREE_CALLER_TRUSTED_PRINCIPAL_IDS": {
+              "Fn::Join": [
+                ",",
+                [
+                  {
+                    "Fn::Sub": [
+                      "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/${RoleName}",
+                      {
+                        "RoleName": "cityservices-system-gateway-minter"
+                      }
+                    ]
+                  }
+                ]
+              ]
+            },
+            "REQUESTDB_DATABASE_HOST": {
+              "Fn::ImportValue": "cityservices-system-cityservices-request-service-data-RequestDbDbHost"
+            },
+            "REQUESTDB_DATABASE_NAME": "cityservices_request",
+            "REQUESTDB_DATABASE_PORT": "5432",
+            "SERVICE_NAME": "request_service"
+          }
+        },
+        "FunctionName": "request_service-consume_request_events",
+        "ImageConfig": {
+          "Command": [
+            "consumers/lambda_adapters/consume_request_events.handler"
+          ]
+        },
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "ConsumeRequestEventsLogGroup"
+          }
+        },
+        "MemorySize": 512,
+        "PackageType": "Image",
+        "Role": {
+          "Fn::GetAtt": [
+            "ConsumeRequestEventsRole",
+            "Arn"
+          ]
+        },
+        "Timeout": 300,
+        "VpcConfig": {
+          "SecurityGroupIds": [
+            {
+              "Fn::ImportValue": "cityservices-system-cityservices-request-service-ServiceSecurityGroupId"
+            }
+          ],
+          "SubnetIds": [
+            {
+              "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet1Id"
+            },
+            {
+              "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet2Id"
+            }
+          ]
+        }
+      },
+      "Type": "AWS::Lambda::Function"
+    },
+    "ConsumeRequestEventsLogGroup": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/request_service-consume_request_events",
+        "RetentionInDays": 30
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Delete"
+    },
+    "ConsumeRequestEventsRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::ImportValue": "cityservices-system-trusted-caller-MintPolicyArn"
+          }
+        ],
+        "RoleName": "cityservices-system-request_service-consume_request_eve-9015ed0f"
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "ConsumeRequestEventsRoleDefaultPolicy": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "ConsumeRequestEventsLogGroup",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Sub": "${ConsumeRequestEventsLogGroup.Arn}:*"
+                }
+              ]
+            },
+            {
+              "Action": [
+                "appconfig:StartConfigurationSession",
+                "appconfig:GetLatestConfiguration"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:appconfig:${AWS::Region}:${AWS::AccountId}:application/${Application}/environment/${Environment}/configuration/*",
+                    {
+                      "Application": {
+                        "Fn::ImportValue": "cityservices-system-cityservices-request-service-AppConfigApplicationId"
+                      },
+                      "Environment": {
+                        "Fn::ImportValue": "cityservices-system-cityservices-request-service-AppConfigEnvironmentId"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}-??????",
+                    {
+                      "SecretName": "cityservices-request-service/cityservices_request_service_request_db_rw_password"
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}-??????",
+                    {
+                      "SecretName": "cityservices-request-service/geocoder_provider_api_key"
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}-??????",
+                    {
+                      "SecretName": "cityservices-request-service/machine_identity_client_secret"
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretName}-??????",
+                    {
+                      "SecretName": "cityservices-request-service/sms_provider_api_key"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ec2:CreateNetworkInterface",
+                "ec2:DeleteNetworkInterface",
+                "ec2:AssignPrivateIpAddresses",
+                "ec2:UnassignPrivateIpAddresses"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Sub": "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:network-interface/*"
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:security-group/${Group}",
+                    {
+                      "Group": {
+                        "Fn::ImportValue": "cityservices-system-cityservices-request-service-ServiceSecurityGroupId"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:subnet/${Subnet}",
+                    {
+                      "Subnet": {
+                        "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet1Id"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:subnet/${Subnet}",
+                    {
+                      "Subnet": {
+                        "Fn::ImportValue": "cityservices-system-vpc-PrivateSubnet2Id"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DescribeSubnets"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::ImportValue": "cityservices-system-cityservices-request-service-RequestEventsQueueArn"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "ConsumeRequestEventsRoleDefaultPolicy",
+        "Roles": [
+          {
+            "Ref": "ConsumeRequestEventsRole"
+          }
+        ]
+      },
+      "Type": "AWS::IAM::Policy"
+    }
+  }
+}

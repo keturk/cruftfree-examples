@@ -1,0 +1,82 @@
+{
+  "target": "docker",
+  "generated_at": "2026-11-16T02:21:32Z",
+  "files": [
+    "cityservices_district_service/.dockerignore",
+    "cityservices_district_service/Dockerfile",
+    "cityservices_facility_service/.dockerignore",
+    "cityservices_facility_service/Dockerfile",
+    "cityservices_geocoder_mock/.dockerignore",
+    "cityservices_geocoder_mock/Dockerfile",
+    "cityservices_request_service/.dockerignore",
+    "cityservices_request_service/Dockerfile",
+    "cityservices_sms_mock/.dockerignore",
+    "cityservices_sms_mock/Dockerfile",
+    "python-base/Dockerfile",
+    "python-base/requirements.txt"
+  ],
+  "user_files": [],
+  "user_file_hashes": {},
+  "generated_hashes": {
+    "cityservices_district_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_district_service/Dockerfile": "65e62fcf202b4966670587ad88e53fa993b526a986e64055b2f07d581f786405",
+    "cityservices_facility_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_facility_service/Dockerfile": "90012fa13ac91fbb29b834f91eab2cd3e7eca5a5963d400c4dbc4ec25f1cdafd",
+    "cityservices_geocoder_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_geocoder_mock/Dockerfile": "51a11d158fc3cba61d6aaf6740340b3631f0673ebf51a35e444b464a27eef202",
+    "cityservices_request_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_request_service/Dockerfile": "99154cbcae084ac562fde8f1cf6873217a69ec48b45963c10e98b666c3689bc6",
+    "cityservices_sms_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_sms_mock/Dockerfile": "142f83c695ec6b291fa0a74d506f564d5aebe3c58a9e9be1cbe9535276e44f09",
+    "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
+    "python-base/requirements.txt": "3c942376f971ca1c8605f26a5b40818e6fd191c7e60396315e45021bce48781b"
+  },
+  "output_hashes": {
+    "cityservices_district_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_district_service/Dockerfile": "65e62fcf202b4966670587ad88e53fa993b526a986e64055b2f07d581f786405",
+    "cityservices_facility_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_facility_service/Dockerfile": "90012fa13ac91fbb29b834f91eab2cd3e7eca5a5963d400c4dbc4ec25f1cdafd",
+    "cityservices_geocoder_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_geocoder_mock/Dockerfile": "51a11d158fc3cba61d6aaf6740340b3631f0673ebf51a35e444b464a27eef202",
+    "cityservices_request_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_request_service/Dockerfile": "99154cbcae084ac562fde8f1cf6873217a69ec48b45963c10e98b666c3689bc6",
+    "cityservices_sms_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
+    "cityservices_sms_mock/Dockerfile": "142f83c695ec6b291fa0a74d506f564d5aebe3c58a9e9be1cbe9535276e44f09",
+    "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
+    "python-base/requirements.txt": "3c942376f971ca1c8605f26a5b40818e6fd191c7e60396315e45021bce48781b"
+  },
+  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "file_owners": {
+    "cityservices_district_service/.dockerignore": [
+      "cityservices.DistrictService"
+    ],
+    "cityservices_district_service/Dockerfile": [
+      "cityservices.DistrictService"
+    ],
+    "cityservices_facility_service/.dockerignore": [
+      "cityservices.FacilityService"
+    ],
+    "cityservices_facility_service/Dockerfile": [
+      "cityservices.FacilityService"
+    ],
+    "cityservices_geocoder_mock/.dockerignore": [
+      "cityservices.GeocoderMock"
+    ],
+    "cityservices_geocoder_mock/Dockerfile": [
+      "cityservices.GeocoderMock"
+    ],
+    "cityservices_request_service/.dockerignore": [
+      "cityservices.RequestService"
+    ],
+    "cityservices_request_service/Dockerfile": [
+      "cityservices.RequestService"
+    ],
+    "cityservices_sms_mock/.dockerignore": [
+      "cityservices.SmsMock"
+    ],
+    "cityservices_sms_mock/Dockerfile": [
+      "cityservices.SmsMock"
+    ]
+  },
+  "kept_output_hashes": {}
+}

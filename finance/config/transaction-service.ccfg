@@ -1,0 +1,102 @@
+config service finance.TransactionService {
+  import "config/templates/infrastructure.ccfg";
+
+  base {
+    port = 8002;
+    language = "python";  // ComplianceService's agent needs Python, and one system generates in one language.
+    replicas = 1;
+    healthCheck {
+      path = "/health";
+      initialDelay = "10s";
+    }
+    rdbms ledgerDb from postgresContainer(id: "2aabd4d1-7569-4bca-a105-9fff7bf76c91", database: "finance_ledger");
+    pubsub mq from kafkaContainer();
+    httpSecurity from localHttpSecurity(host: "finance-transaction-service");
+    outboxOps from outboxBatches();
+    kafkaOps from kafkaPolling();
+    serviceCredentialOps from machineCredential();
+    microserviceClientOps from peerClient();
+    retryBudgetOps from retryBudget();
+    jobs {
+      jobs {
+        ReconcileYesterday {
+          schedule = "5 0 * * *";
+          timeout = "300s";
+        }
+      }
+    }
+    resilience {
+      defaults {
+        timeout = "10s";
+      }
+      dependencyPolicy {
+        defaults {
+          rdbms from standardDatabasePolicy();
+        }
+      }
+    }
+    secrets {
+      // Each default only exists on a local stack, where it matches the hash seeded in that mock's
+      // seed file, so the example runs with nothing to configure. Any other deployment must supply
+      // the handle's value.
+      secret bank_provider_api_key {
+        required = true;
+        purpose = "API key for the payment network (BankProvider contract).";
+        localDefault = "dev-only-bank-key-not-a-credential";
+      }
+      secret sanctions_provider_api_key {
+        required = true;
+        purpose = "API key for the sanctions vendor (SanctionsProvider contract).";
+        localDefault = "dev-only-sanctions-key-not-a-credential";
+      }
+    }
+  }
+
+  profile test as "test" extends base {
+    alias env = "TEST";
+    alias resource = "test";
+  }
+
+  profile aws as "aws" extends base {
+    alias env = "AWS";
+    alias resource = "aws";
+
+    remoteConfigOps {
+      appconfigMinPollSeconds = 15;
+    }
+    resources {
+      requests {
+        cpu = "100m";
+        memory = "256Mi";
+      }
+      limits {
+        cpu = "500m";
+        memory = "512Mi";
+      }
+    }
+    // Consumers run as SQS-triggered Lambdas: the `mq` topics cross service boundaries, which on AWS
+    // means SNS/SQS, and no language target runs an SQS pubsub consumer inside the service process.
+    runtime { consumers = "decoupled"; }
+
+    replicas = 2;
+    scaling {
+      replicas {
+        min = 2;
+        max = 4;
+      }
+      triggers = [];
+    }
+    replace rdbms ledgerDb from rdsPostgres(id: "2aabd4d1-7569-4bca-a105-9fff7bf76c91", database: "finance_ledger", poolSize: 20, maxOverflow: 10);
+    replace pubsub mq from snsSqs();
+  }
+
+  profile development as "dev" extends aws {
+    alias env = "DEV";
+    alias resource = "dev";
+  }
+
+  profile production as "prod" extends base {
+    alias env = "PROD";
+    alias resource = "prod";
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "audience": "customer",
+  "authority": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity",
+  "clientIdRef": "IdentityGuestBrowserPublicClientId",
+  "flows": [
+    "authorization_code"
+  ],
+  "issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity",
+  "logoutUris": [
+    "https://stay.marram.example.com/auth/logout"
+  ],
+  "providerName": "identity",
+  "redirectUris": [
+    "https://stay.marram.example.com/auth/callback"
+  ],
+  "roleMappings": {
+    "frontdesk": "frontDesk",
+    "operators": "operator"
+  },
+  "rolesClaim": "cognito:groups",
+  "scopes": [
+    "openid",
+    "profile",
+    "email"
+  ],
+  "tokenValidation": {
+    "allowedAlgorithms": [
+      "RS256"
+    ],
+    "allowedAudiences": [
+      "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity"
+    ],
+    "issuer": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity",
+    "jwksUri": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_MarramIdentity/.well-known/jwks.json"
+  }
+}

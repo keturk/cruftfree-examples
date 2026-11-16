@@ -1,0 +1,69 @@
+@if (__loadProblem(); as problem) {
+<div data-kind="callout" data-tone="danger" role="alert" data-state="error" data-size="card">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">
+    @if (__messages.failureText(problem, __site); as worded) {
+    <span data-part="title">{{ worded }}</span>
+    } @else {
+    <span data-part="title">{{ __messages.problemTitle(problem) }}</span>
+    @if (problem.detail) {
+    <span data-part="detail">{{ problem.detail }}</span>
+    }
+    }
+  </span>
+  <div data-part="actions">
+    <button type="button" (click)="__retryLoad()">{{ __messages.key(&#39;framework.retry&#39;).text }}</button>
+  </div>
+</div>
+
+} @else if (!__loaded()) {
+<div role="status" aria-busy="true" data-state="loading" data-size="card">{{ __messages.key(&#39;framework.loading&#39;).text }}</div>
+
+} @else {
+<form [formGroup]="__form" (ngSubmit)="__submit()">
+<label>
+  <span>{{ __messages.key(&#39;field.KnownAddress.address&#39;).text }}</span>
+  <input type="text" [formControlName]="&#39;address&#39;" name="address" required [attr.aria-invalid]="__invalid(__form.get(&#39;address&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;address&#39;))" />
+</label>
+@if (__serverError(__form.get('address')) ?? __fieldError(__form.get('address')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;address&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.KnownAddress.formattedAddress&#39;).text }}</span>
+  <input type="text" [formControlName]="&#39;formattedAddress&#39;" name="formattedAddress" required [attr.aria-invalid]="__invalid(__form.get(&#39;formattedAddress&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;formattedAddress&#39;))" />
+</label>
+@if (__serverError(__form.get('formattedAddress')) ?? __fieldError(__form.get('formattedAddress')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;formattedAddress&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.KnownAddress.latitude&#39;).text }}</span>
+  <input type="number" [formControlName]="&#39;latitude&#39;" name="latitude" required step="any" [attr.aria-invalid]="__invalid(__form.get(&#39;latitude&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;latitude&#39;))" />
+</label>
+@if (__serverError(__form.get('latitude')) ?? __fieldError(__form.get('latitude')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;latitude&#39;))">{{ message }}</span>
+}
+
+
+<label>
+  <span>{{ __messages.key(&#39;field.KnownAddress.longitude&#39;).text }}</span>
+  <input type="number" [formControlName]="&#39;longitude&#39;" name="longitude" required step="any" [attr.aria-invalid]="__invalid(__form.get(&#39;longitude&#39;))" [attr.aria-describedby]="__describedBy(__form.get(&#39;longitude&#39;))" />
+</label>
+@if (__serverError(__form.get('longitude')) ?? __fieldError(__form.get('longitude')); as message) {
+<span role="alert" [attr.id]="__errorId(__form.get(&#39;longitude&#39;))">{{ message }}</span>
+}
+
+
+  @if (__formError(); as message) {
+  <div data-kind="callout" data-tone="danger" role="alert" data-state="error">
+  <span class="material-symbols-outlined" aria-hidden="true">error</span>
+  <span data-part="text">{{ message }}</span>
+</div>
+
+  }
+  <button type="submit" data-kind="button" [disabled]="__submitting()" [attr.aria-busy]="__submitting() ? 'true' : null" [attr.data-busy]="__submitting() ? 'true' : null">{{ __messages.key(&#39;framework.submit&#39;).text }}</button>
+</form>
+}

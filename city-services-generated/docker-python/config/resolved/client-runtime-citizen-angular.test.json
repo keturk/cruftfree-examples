@@ -1,0 +1,7 @@
+{
+  "apiBaseUrl": "http://localhost:8080",
+  "map": {
+    "attribution": "Map data from OpenStreetMap contributors",
+    "tiles": "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+  }
+}

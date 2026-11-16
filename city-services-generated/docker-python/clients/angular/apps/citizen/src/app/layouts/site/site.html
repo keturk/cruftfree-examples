@@ -1,0 +1,44 @@
+<a class="ui-skip-link" href="#" (click)="$event.preventDefault(); $any($event.currentTarget).ownerDocument.querySelector('[data-skip-target]')?.focus()">{{ __messages.key(&#39;framework.skipToContent&#39;).text }}</a>
+
+<div data-kind="stack">
+<header data-kind="topBar">
+<div data-kind="brand">
+<div data-part="tile">
+{{ __format.initials(__arg0()) }}
+</div>
+<span data-part="label">{{ __arg0() }}</span>
+</div>
+<div data-kind="spacer" aria-hidden="true">
+</div>
+<nav class="ui-nav">
+  <button type="button" class="ui-nav-toggle" [attr.popovertarget]="__navLinks.id" [attr.aria-label]="__messages.key('framework.menu').text">
+    <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+  </button>
+  <ul cruftfreePopover #__navLinks="cruftfreePopover" class="ui-nav-links" popover (click)="__navLinks.hide()">
+    <li>
+      <a routerLink="/" routerLinkActive="ui-active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-symbols-outlined" aria-hidden="true">warning</span>
+        {{ __navLabel0() }}
+      </a>
+    </li>
+    <li>
+      <a routerLink="/find" routerLinkActive="ui-active" ariaCurrentWhenActive="page">
+        <span class="material-symbols-outlined" aria-hidden="true">search</span>
+        {{ __navLabel1() }}
+      </a>
+    </li>
+    <li>
+      <a routerLink="/places" routerLinkActive="ui-active" ariaCurrentWhenActive="page">
+        <span class="material-symbols-outlined" aria-hidden="true">map</span>
+        {{ __navLabel2() }}
+      </a>
+    </li>
+  </ul>
+</nav>
+
+</header>
+<main class="ui-content" data-skip-target tabindex="-1">
+<router-outlet />
+</main>
+</div>
+

@@ -1,0 +1,37 @@
+{
+  "audience": "customer",
+  "authority": "https://login.microsoftonline.com/lanternpost.onmicrosoft.com/v2.0",
+  "clientIdRef": "IdentityHelpCentreBrowserPublicClientId",
+  "flows": [
+    "authorization_code"
+  ],
+  "issuer": "https://login.microsoftonline.com/lanternpost.onmicrosoft.com/v2.0",
+  "logoutUris": [
+    "https://help.lanternpost.example.com/auth/logout"
+  ],
+  "providerName": "identity",
+  "redirectUris": [
+    "https://help.lanternpost.example.com/auth/callback"
+  ],
+  "roleMappings": {
+    "agents": "agent",
+    "operators": "operator"
+  },
+  "rolesClaim": "roles",
+  "scopes": [
+    "openid",
+    "profile",
+    "email",
+    "api://lanternpost.onmicrosoft.com/identity-development/access_as_user"
+  ],
+  "tokenValidation": {
+    "allowedAlgorithms": [
+      "RS256"
+    ],
+    "allowedAudiences": [
+      "https://login.microsoftonline.com/lanternpost.onmicrosoft.com/v2.0"
+    ],
+    "issuer": "https://login.microsoftonline.com/lanternpost.onmicrosoft.com/v2.0",
+    "jwksUri": "https://login.microsoftonline.com/lanternpost.onmicrosoft.com/discovery/v2.0/keys"
+  }
+}

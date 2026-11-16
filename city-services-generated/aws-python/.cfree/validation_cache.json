@@ -1,0 +1,8 @@
+{
+  "version": "2",
+  "verdicts": {
+    "python": "733f745ad74fac112fe9d5fd7e4baacbeca7c2df7de5c2472d392c18a07657b4",
+    "clients/angular": "459b505dda7a7512f00d2d89b21a4bcaf490a373b0f5e149d8258363d2d0fe5a",
+    "clients/flutter": "5dd4ba4eb2001da38d02979d45cbb326c4aa4907fa781cd97237b82fa1a89cc9"
+  }
+}

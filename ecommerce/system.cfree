@@ -1,0 +1,24 @@
+include 'common.cfree';
+include 'providers/payment-provider.cfree';
+include 'providers/carrier-provider.cfree';
+include 'providers/email-provider.cfree';
+include 'user-service.cfree';
+include 'product-service.cfree';
+include 'order-service.cfree';
+include 'payment-service.cfree';
+include 'shipping-service.cfree';
+include 'notification-service.cfree';
+include 'mocks/payment-mock.cfree';
+include 'mocks/carrier-mock.cfree';
+include 'mocks/email-mock.cfree';
+include 'ui.cfree';
+include 'storefront-app.cfree';
+include 'admin-app.cfree';
+include 'desk-app.cfree';
+include 'site-app.cfree';
+
+/// Wrenwood: a homeware shop. A customer browses, pays and follows a parcel to their door; staff run the
+/// catalog, the orders and the refunds; a public site tells the story in two languages. The card vendor, the
+/// carrier and the email vendor run as mocks in the same stack, so all of it works with nothing to sign up for.
+system ecommerce.System('config/system.ccfg') : version('2.0.0') {
+}

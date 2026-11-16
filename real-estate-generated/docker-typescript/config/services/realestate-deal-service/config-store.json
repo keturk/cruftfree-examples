@@ -1,0 +1,15 @@
+{
+  "connections": {
+    "deal_db_database": "realestate_deal",
+    "deal_db_host": "realestate-system-postgresql",
+    "deal_db_port": 5432,
+    "deal_db_user": "realestate_deal_service_deal_db_rw",
+    "email_provider_base_url": "http://realestate-email-mock:8092",
+    "mortgage_provider_base_url": "http://realestate-mortgage-mock:8090",
+    "realestate_listing_service_base_url": "http://realestate-listing-service:8001",
+    "signature_provider_base_url": "http://realestate-signature-mock:8091"
+  },
+  "settings": {
+    "debugMode": false
+  }
+}

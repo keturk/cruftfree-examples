@@ -1,0 +1,112 @@
+from cityservices.common import FacilityType, pointWkt;
+
+// Public facilities and parks. Finding what is near a resident is a spatial query ordered by
+// distance. Coordinates are plain columns a person can read, and a job keeps the spatial column
+// in step with them, because seed data can write only plain columns.
+service cityservices.FacilityService('config/facility-service.ccfg') : version('2.0.0'), description('Public facilities and parks') {
+
+    discovery { }
+
+    rdbms facilityDb {
+
+        entity Facility extends BaseEntity {
+            String(200) name : trim, filterable, sortable;
+            FacilityType type : filterable;
+            Float latitude;
+            Float longitude;
+            Geometry? location;
+            String(300) address : trim;
+            Phone phone;
+            Boolean isOperational : filterable = true;
+        }
+
+        entity Park extends BaseEntity {
+            String(200) name : trim, filterable;
+            Text boundaryGeoJson;
+            Geometry? boundary;
+            Boolean isOpen = true;
+            Text? amenities;
+        }
+    }
+
+    jobs {
+        job ConvertShapes {
+            foreach facility in facilityDb.Facility.whereNull(location).all() {
+                facility.location = GeoShape.fromWkt(pointWkt(facility.latitude, facility.longitude));
+                facility.save();
+            }
+            foreach park in facilityDb.Park.whereNull(boundary).all() {
+                park.boundary = GeoShape.fromGeoJson(park.boundaryGeoJson);
+                park.save();
+            }
+        }
+    }
+
+    /// One facility on a map.
+    struct FacilityPin {
+        UUID id;
+        String name;
+        FacilityType type;
+        String address;
+        GeoPoint point;
+    }
+
+    struct SetOperationalRequest {
+        Boolean isOperational;
+    }
+
+    fn pinOf(facilityDb.Facility facility) -> FacilityPin {
+        return FacilityPin {
+            id: facility.id,
+            name: facility.name,
+            type: facility.type,
+            address: facility.address,
+            point: GeoPoint { latitude: facility.latitude, longitude: facility.longitude }
+        };
+    }
+
+    rest_api FacilityAPI : basePath('/api/v1/facilities'), rdbms(facilityDb) {
+        resource Facility : only(list), auth(public);
+
+        @path('/map')
+        get pins() : auth(public) -> Array<FacilityPin> {
+            let Array<Facility> open = Facility.where(isOperational: true).orderBy(name: asc).all();
+            return open.map(f => pinOf(f));
+        }
+
+        // GeoSql.withinDistanceMeters lowers to ST_DWithin and distanceMeters to ST_Distance.
+        @path('/nearby')
+        get nearby(Float latitude, Float longitude, Float radiusMeters) : auth(public) -> Array<Facility> {
+            return Facility
+                .where(isOperational: true)
+                .where(GeoSql.withinDistanceMeters(location, latitude, longitude, radiusMeters))
+                .orderBy(GeoSql.distanceMeters(location, latitude, longitude))
+                .all();
+        }
+
+        @path('/parks')
+        get parks() : auth(public) -> Array<Park> {
+            return Park.where(isOpen: true).orderBy(name: asc).all();
+        }
+
+        @path('/:id/operational')
+        post setOperational(UUID id, SetOperationalRequest request) : auth(required, providers: [identity], roles: [admin]) -> Facility {
+            let Facility facility = Facility.findOrFail(id);
+            facility.isOperational = request.isOperational;
+            facility.save();
+            return facility;
+        }
+    }
+
+    test("a new facility is operational") {
+        let Facility facility = facilityDb.Facility.create({
+            name: "Harborside Library",
+            type: FacilityType.Library,
+            latitude: 47.6,
+            longitude: -122.3,
+            address: "12 Harbor Street",
+            phone: "+14155550123"
+        });
+        assert facility.isOperational;
+    }
+}

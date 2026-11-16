@@ -1,0 +1,39 @@
+groups:
+  - name: hotel-stay-service-standard
+    rules:
+      - alert: HighErrorRate
+        expr: sum(rate(http_errors_total{service="hotel-stay-service",status_code=~"5.."}[5m])) / clamp_min(sum(rate(http_requests_total{service="hotel-stay-service"}[5m])), 1e-9) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: hotel-stay-service
+        annotations:
+          summary: "High error rate on hotel-stay-service"
+          description: "5xx error rate above 5% for 5 minutes."
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{service="hotel-stay-service"}[5m])) by (le)) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: hotel-stay-service
+        annotations:
+          summary: "High P95 latency on hotel-stay-service"
+          description: "P95 latency above 2 seconds for 5 minutes."
+      - alert: DatabaseConnectionPoolExhausted
+        expr: sum(sqlalchemy_pool_checked_out{service="hotel-stay-service"}) / clamp_min(sum(sqlalchemy_pool_size{service="hotel-stay-service"}), 1) > 0.9
+        for: 2m
+        labels:
+          severity: critical
+          service: hotel-stay-service
+        annotations:
+          summary: "DB pool nearly exhausted on hotel-stay-service"
+          description: "Checked-out connections exceed 90% of configured pool capacity."
+      - alert: JobFailureRate
+        expr: increase(job_failures_total{service="hotel-stay-service"}[1h]) > 0
+        for: 10m
+        labels:
+          severity: warning
+          service: hotel-stay-service
+        annotations:
+          summary: "Background job failures on hotel-stay-service"
+          description: "At least one job failure recorded in the last hour."

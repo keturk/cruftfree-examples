@@ -1,0 +1,15 @@
+include 'common.cfree';
+include 'ui.cfree';
+include 'providers/email-provider.cfree';
+include 'ticket-service.cfree';
+include 'knowledge-service.cfree';
+include 'notice-service.cfree';
+include 'mocks/email-mock.cfree';
+include 'help-app.cfree';
+include 'console-app.cfree';
+
+/// Lanternpost: the support desk of a small web host. Customers read the help centre and open tickets, agents
+/// work a queue against a response clock, and a job raises whatever is about to be late. The email vendor runs
+/// as a mock in the same stack.
+system helpdesk.System('config/system.ccfg') : version('1.0.0') {
+}

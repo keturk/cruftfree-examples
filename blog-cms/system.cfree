@@ -1,0 +1,26 @@
+// Fieldnotes: a publishing platform. Authors write, editors review and schedule, readers
+// read and comment, and subscribers get new articles by email. See README.md.
+
+// Shared module and the contracts of the outside world.
+include 'common.cfree';
+include 'providers/mail-provider.cfree';
+include 'providers/moderation-provider.cfree';
+
+// The product.
+include 'author-service.cfree';
+include 'content-service.cfree';
+include 'comment-service.cfree';
+include 'newsletter-service.cfree';
+
+// In-stack mocks that implement the contracts, so the application runs offline.
+include 'mocks/mail-mock.cfree';
+include 'mocks/moderation-mock.cfree';
+
+// The apps.
+include 'ui.cfree';
+include 'reader-app.cfree';
+include 'studio-app.cfree';
+include 'provider-desk-app.cfree';
+
+system blog.System('config/system.ccfg') : version('2.0.0') {
+}
