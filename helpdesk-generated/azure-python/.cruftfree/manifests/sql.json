@@ -1,6 +1,6 @@
 {
   "target": "sql",
-  "generated_at": "2026-11-16T02:28:03Z",
+  "generated_at": "2026-11-16T06:54:29Z",
   "files": [
     "helpdesk_email_mock/sql/email_db/schema.sql",
     "helpdesk_knowledge_service/sql/knowledge_db/schema.sql",
@@ -459,7 +459,7 @@
     "scripts/schema/lib/cruftfree_rdbms_schema/undeclared_objects.py": "f6f0d07487f876c2c15a445f3010cc611c09edb459b22ff078a784ea34b9b359",
     "scripts/schema/schema.py": "26299aa70c2737cf2f3afdee2957b59847c3eb0a7f9ffde6b790c5dae1e1232a"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "helpdesk_email_mock/sql/email_db/schema.sql": [
       "helpdesk.EmailMock"

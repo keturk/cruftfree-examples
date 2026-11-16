@@ -1,0 +1,26 @@
+{
+  "hero": "clinic-today",
+  "sites": [
+    {
+      "name": "portal",
+      "url": "http://localhost:4200",
+      "signIn": true,
+      "shots": [
+        {"path": "/clinicians", "file": "portal-find-care", "caption": "Patient portal: finding a clinician"},
+        {"path": "/clinicians/1ed3d96b-3ffd-50c5-8dab-f46093cfca5c", "file": "portal-clinician", "caption": "Patient portal: a clinician and their open times"}
+      ]
+    },
+    {
+      "name": "clinic",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "clinic-today", "caption": "Clinic app: today's board"},
+        {"path": "/calendar", "file": "clinic-calendar", "caption": "Clinic app: the calendar"},
+        {"path": "/patients", "file": "clinic-patients", "caption": "Clinic app: patients"},
+        {"path": "/notes", "file": "clinic-notes", "caption": "Clinic app: visit notes"},
+        {"path": "/billing", "file": "clinic-billing", "caption": "Clinic app: billing and insurer claims"}
+      ]
+    }
+  ]
+}

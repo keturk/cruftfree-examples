@@ -1,6 +1,6 @@
 {
   "target": "angular",
-  "generated_at": "2026-11-16T02:10:02Z",
+  "generated_at": "2026-11-16T06:33:28Z",
   "files": [
     "clients/angular/MANIFEST.json",
     "clients/angular/README.md",
@@ -1218,7 +1218,7 @@
     "clients/angular/tsconfig.base.json": "f11cb9e066df362325a7de0aaf483a309f446e9e36f387b7e80d75cc09a549c4",
     "clients/angular/tsconfig.libs.json": "b8fa8f90d16c07d38a62d4ced8449e856d7d034425b56da4f811ca64ae432208"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {},
   "kept_output_hashes": {}
 }

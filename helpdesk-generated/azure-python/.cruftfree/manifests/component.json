@@ -1,6 +1,6 @@
 {
   "target": "component",
-  "generated_at": "2026-11-16T02:28:02Z",
+  "generated_at": "2026-11-16T06:54:28Z",
   "files": [
     "config/generated/client-api.console.json",
     "config/generated/client-api.help-centre.json",
@@ -207,7 +207,7 @@
     "scripts/sync-angular-client.py": "fd97fdb99ecb380d60fd1257908316130fe8e125d111dbb9867a888e864b0bc1",
     "scripts/sync-angular-client.sh": "7a1d7744b9b5097dd916ef4f2393ac6a1e64b6ce1cf5d2d28333ca71400f8e23"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "helpdesk_email_mock/.gitignore": [
       "helpdesk.EmailMock"

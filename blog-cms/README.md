@@ -2,6 +2,26 @@
 
 A small publication, built as a complete application: a public site readers use on the web and on a phone, a studio where writers and editors work, and two outside vendors running as mocks in the same stack. Nothing here needs an account with anyone.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Reader: the articles, with search](screenshots/reader-articles.webp) | ![Reader: the writers](screenshots/reader-writers.webp) |
+|---|---|
+| Reader: the articles, with search | Reader: the writers |
+
+| ![Reader: subscribing to the newsletter](screenshots/reader-newsletter.webp) | ![Studio: the editors' desk](screenshots/studio-desk.webp) |
+|---|---|
+| Reader: subscribing to the newsletter | Studio: the editors' desk |
+
+| ![Studio: every article and where it stands](screenshots/studio-all-articles.webp) | ![Studio: comment moderation](screenshots/studio-moderation.webp) |
+|---|---|
+| Studio: every article and where it stands | Studio: comment moderation |
+
+| ![Studio: the newsletter audience](screenshots/studio-audience.webp) | ![Provider Desk: the moderation vendor's blocked terms](screenshots/desk-blocked-terms.webp) |
+|---|---|
+| Studio: the newsletter audience | Provider Desk: the moderation vendor's blocked terms |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

@@ -1,0 +1,27 @@
+{
+  "hero": "guest-rooms",
+  "sites": [
+    {
+      "name": "guest",
+      "url": "http://localhost:4200",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "guest-rooms", "caption": "Guest site: searching for a room"},
+        {"path": "/rooms/ad506a08-5943-5704-bf22-6862797a2726", "file": "guest-room", "caption": "Guest site: a room and its price"}
+      ]
+    },
+    {
+      "name": "front-desk",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "desk-today", "caption": "Front desk: arrivals and departures today"},
+        {"path": "/calendar", "file": "desk-calendar", "caption": "Front desk: the calendar"},
+        {"path": "/housekeeping", "file": "desk-housekeeping", "caption": "Front desk: housekeeping"},
+        {"path": "/stays", "file": "desk-stays", "caption": "Front desk: every stay"},
+        {"path": "/room-types", "file": "desk-rooms-and-rates", "caption": "Front desk: rooms and rates"},
+        {"path": "/channel", "file": "desk-travel-sites", "caption": "Front desk: travel sites"}
+      ]
+    }
+  ]
+}

@@ -22,6 +22,7 @@ $env:CRUFTFREE_SCREENSHOT_PASSWORD = "..."       # never on the command line
 scripts/screenshots/screenshots.ps1 -Domain blog-cms
 scripts/screenshots/screenshots.ps1 -Domain blog-cms -Site studio     # one site only
 scripts/screenshots/screenshots.ps1 -Domain blog-cms -Markdown        # print the README gallery
+scripts/screenshots/screenshots.ps1 -Domain blog-cms -UpdateReadme    # write it into blog-cms/README.md
 scripts/screenshots/screenshots.ps1 -SelfTest
 ```
 

@@ -565,7 +565,7 @@ services:
         max-size: 10m
         max-file: '3'
   cityservices-system-engine-api-proxy:
-    image: python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159
+    image: python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
     container_name: cityservices-system-engine-api-proxy
     volumes:
     - ./config/engine-api-proxy/engine_api_proxy.py:/opt/cruftfree/engine_api_proxy.py:ro
@@ -677,7 +677,7 @@ services:
         max-size: 10m
         max-file: '3'
   cityservices-system-zitadel-db:
-    image: postgres:16-alpine@sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab
+    image: postgres:16-alpine@sha256:81e77a4833487b8132fe4b00bedd39dc3f74b8641e387f19312a48f7de218c2e
     container_name: cityservices-system-zitadel-db
     environment:
       POSTGRES_DB: zitadel
@@ -780,7 +780,7 @@ services:
         max-size: 10m
         max-file: '3'
   cityservices-system-zitadel-init:
-    image: python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159
+    image: python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
     container_name: cityservices-system-zitadel-init
     environment:
       ZITADEL_INSTANCE_URL: http://cityservices-system-zitadel:8080
@@ -816,7 +816,7 @@ services:
         max-size: 10m
         max-file: '3'
   cruftfree-test-jwks:
-    image: python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159
+    image: python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
     container_name: cityservices-system-cruftfree-test-jwks
     volumes:
     - ./scripts/test_jwks_server.py:/jwks/test_jwks_server.py:ro
@@ -1405,7 +1405,7 @@ services:
         max-size: 10m
         max-file: '3'
   cityservices-system-client-contract:
-    image: python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159
+    image: python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
     container_name: cityservices-system-client-contract
     volumes:
     - ./config/client-contract/write_client_contract.py:/cruftfree/write_client_contract.py:ro

@@ -133,6 +133,8 @@ def text_checks(report: Report) -> None:
         "scripts/git/git-scripts.local.env": True, "scripts/git/git-scripts.example.env": False,
         "x/.env": True, "x/.env.example": True, "a-generated/docker-python/secrets/k": True,
         "a-generated/aws-python/.cruftfree/snapshots/s.json": True, "a/node_modules/m.js": True,
+        "a-generated/docker-python/config/resolved/client-contract.test.json": True,
+        "a-generated/docker-python/config/generated/client-contract.test.json": False,
         "x/android/local.properties": True, "a/ui.cfree": False, "a-generated/aws-python/infra/main.yaml": False,
         "a/environment.md": False,
     }
@@ -182,6 +184,7 @@ def refusal_checks(report: Report, repo: Path, settings_file: Path) -> None:
         "a .env file": (secret, {}),
         "blocked text": (("demo/notes.md", "see private-host-name\n"), leak_env),
         "a token shape": (("demo/t.md", "key " + "AKIA" + "A" * 16 + "\n"), {}),
+        "a Google API key shape": (("demo/g.md", "key " + "AIza" + "x" * 35 + "\n"), {}),
         "a private key outside tests": (("demo/k.pem", "-----BEGIN " + "RSA PRIVATE KEY-----\n"), {}),
     }
     trials["a host from the settings file"] = (("demo/hosts.md", "model server 192.0.2.55 here\n"), {})

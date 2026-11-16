@@ -1,6 +1,6 @@
 {
   "target": "sql",
-  "generated_at": "2026-11-16T02:37:42Z",
+  "generated_at": "2026-11-16T07:06:58Z",
   "files": [
     "realestate_deal_service/sql/deal_db/schema.sql",
     "realestate_email_mock/sql/email_db/schema.sql",
@@ -477,7 +477,7 @@
     "scripts/schema/lib/cruftfree_rdbms_schema/undeclared_objects.py": "e6fed6512bc086b34aa74ded56ec2521da48517e479312569a41f16ad136e521",
     "scripts/schema/schema.py": "013299b69655abdf8166b70d269546d7c6ff3351a48527f3c3e6a6346fe0574a"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "realestate_deal_service/sql/deal_db/schema.sql": [
       "realestate.DealService"

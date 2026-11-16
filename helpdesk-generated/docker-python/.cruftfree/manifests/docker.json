@@ -1,6 +1,6 @@
 {
   "target": "docker",
-  "generated_at": "2026-11-16T02:07:59Z",
+  "generated_at": "2026-11-16T06:31:12Z",
   "files": [
     ".cruftfree/runtime-requirements.json",
     ".env.example",
@@ -106,7 +106,7 @@
     "config/web-static-site/console-angular.dockerfile": "d41b7aaa0eb071873ece207f251522b5d5d90ce6f3848e908c28ba1e29175de8",
     "config/web-static-site/help-centre-angular.dockerfile": "6eda71a0093464cf269d3bb5386b9fdb1548cf716dc8eeb9f89256ca238b6515",
     "docker-compose.clients.yml": "9e28cea6b6051b677ffd96483c1feb38447dee632e9bde7a55650a4b6501ec68",
-    "docker-compose.yml": "2a24e696c7e90ccccd6b2b9b4f71e2bc0896bec7c71928ca98a7e91de3fbc511",
+    "docker-compose.yml": "688a4081c28fbabe7ce1d3e280d01f896cc8566669ca015fbeed7a36f9490dac",
     "helpdesk_email_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
     "helpdesk_email_mock/Dockerfile": "ffc041dbc5aca2dc8e3c4e0d1d2ade0e83c7bcfcd100958ee41a0b0412f5fabd",
     "helpdesk_knowledge_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
@@ -172,7 +172,7 @@
     "config/web-static-site/console-angular.dockerfile": "d41b7aaa0eb071873ece207f251522b5d5d90ce6f3848e908c28ba1e29175de8",
     "config/web-static-site/help-centre-angular.dockerfile": "6eda71a0093464cf269d3bb5386b9fdb1548cf716dc8eeb9f89256ca238b6515",
     "docker-compose.clients.yml": "9e28cea6b6051b677ffd96483c1feb38447dee632e9bde7a55650a4b6501ec68",
-    "docker-compose.yml": "2a24e696c7e90ccccd6b2b9b4f71e2bc0896bec7c71928ca98a7e91de3fbc511",
+    "docker-compose.yml": "688a4081c28fbabe7ce1d3e280d01f896cc8566669ca015fbeed7a36f9490dac",
     "helpdesk_email_mock/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
     "helpdesk_email_mock/Dockerfile": "ffc041dbc5aca2dc8e3c4e0d1d2ade0e83c7bcfcd100958ee41a0b0412f5fabd",
     "helpdesk_knowledge_service/.dockerignore": "fd110815ea3a738ae8b490cde090acf71edaaee719f3a366bdb24ac3cde48779",
@@ -201,7 +201,7 @@
     "secrets/helpdesk-notice-service/notice_db_password": "7a1a72a35b5829cab9790846b752f9ba05843274ad4adf4b749e3a6ac8a10807",
     "secrets/helpdesk-ticket-service/ticket_db_password": "3735254351d9f5f998e40f2e7ce09ab17723331e9b9bff5537c7469444f91832"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "config/prometheus/rules/helpdesk-email-mock_alerts.yml": [
       "helpdesk.EmailMock"

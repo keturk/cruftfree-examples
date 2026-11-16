@@ -1,0 +1,24 @@
+{
+  "hero": "console-queue",
+  "sites": [
+    {
+      "name": "help-centre",
+      "url": "http://localhost:4200",
+      "signIn": false,
+      "shots": [
+        {"path": "/", "file": "help-centre-home", "caption": "Help centre: search and popular articles"},
+        {"path": "/articles/3e95a150-740e-559e-bf3e-19f51c42db52", "file": "help-centre-article", "caption": "Help centre: an article"}
+      ]
+    },
+    {
+      "name": "console",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/queue", "file": "console-queue", "caption": "Console: the agent's queue"},
+        {"path": "/tickets", "file": "console-all-tickets", "caption": "Console: every ticket"},
+        {"path": "/saved-replies", "file": "console-saved-replies", "caption": "Console: saved replies"}
+      ]
+    }
+  ]
+}

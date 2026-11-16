@@ -22,7 +22,7 @@ EXIT_ERROR: Final = 2
 
 #: Folders and files that are never published. A path with one of these as a segment is refused.
 FORBIDDEN_SEGMENT: Final = re.compile(
-    r"(^|/)(\.env|\.env\..*|secrets|snapshots|node_modules|\.venv|\.dart_tool|\.git|ephemeral)(/|$)"
+    r"(^|/)(\.env|\.env\..*|secrets|snapshots|node_modules|\.venv|\.dart_tool|\.git|ephemeral|config/resolved)(/|$)"
 )
 #: Flutter's machine-local files, written with the paths of the machine that built the app.
 FORBIDDEN_FILE: Final = re.compile(
@@ -30,8 +30,11 @@ FORBIDDEN_FILE: Final = re.compile(
     r"|\.flutter-plugins-dependencies|flutter_native_integration\.env"
     rf"|{re.escape(machine.FILE_NAME)})$"
 )
-#: The shape of a cloud, GitHub, Slack or OpenAI credential.
-TOKEN_SHAPES: Final = r"AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|xox[baprs]-[A-Za-z0-9-]{10,}|sk-[A-Za-z0-9]{32,}"
+#: The shape of a cloud, GitHub, Slack, OpenAI or Google API credential.
+TOKEN_SHAPES: Final = (
+    r"AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|xox[baprs]-[A-Za-z0-9-]{10,}|sk-[A-Za-z0-9]{32,}"
+    r"|AIza[0-9A-Za-z_-]{35}"
+)
 PRIVATE_KEY_HEADER: Final = r"BEGIN [A-Z ]*PRIVATE KEY"
 #: Extra text that must not be published (project names, host names), comma separated.
 BLOCKED_TEXT_ENV: Final = machine.BLOCKED_TEXT

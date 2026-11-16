@@ -48,6 +48,9 @@ SIGN_IN_SETTLE_MS: Final = 3000
 FILE_PATTERN: Final = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 LOCAL_HOSTS: Final = frozenset({"localhost", "127.0.0.1", "::1"})
 MAX_PROBLEMS_SHOWN: Final = 24
+GALLERY_START: Final = "<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->"
+GALLERY_END: Final = "<!-- screenshots:end -->"
+README_NAME: Final = "README.md"
 
 
 class ManifestError(ValueError):
@@ -282,6 +285,27 @@ def gallery_markdown(manifest: Manifest, columns: int = 2) -> str:
     return "\n\n".join(tables)
 
 
+def with_gallery(readme: str, gallery: str) -> str:
+    """*readme* with its gallery section set to *gallery*.
+
+    The section sits between the ``GALLERY_START`` and ``GALLERY_END`` markers and is replaced when they are
+    there. A README without them gets the section before its first ``## `` heading.
+
+    Raises:
+        ManifestError: when the markers are unpaired or there is no heading to place the section before.
+    """
+    section = f"{GALLERY_START}\n## Screenshots\n\n{gallery}\n{GALLERY_END}\n"
+    start, end = readme.find(GALLERY_START), readme.find(GALLERY_END)
+    if (start < 0) != (end < 0) or end < start:
+        raise ManifestError("the README has one gallery marker without the other")
+    if start >= 0:
+        return readme[:start] + section + "\n" + readme[end + len(GALLERY_END) :].lstrip("\n")
+    heading = re.search(r"^## ", readme, re.MULTILINE)
+    if heading is None:
+        raise ManifestError("the README has no '## ' heading to place the gallery before")
+    return readme[: heading.start()] + section + "\n" + readme[heading.start() :]
+
+
 def remove_stale(out_dir: Path, manifest: Manifest) -> list[str]:
     """Delete the ``.webp`` files in *out_dir* that no shot of *manifest* produces; their names."""
     wanted = {f"{name}.webp" for name in manifest.files}
@@ -315,6 +339,13 @@ def run(args: argparse.Namespace) -> int:
     manifest, folder = load_manifest(repo, args.domain)
     if args.markdown:
         print(gallery_markdown(manifest))
+        return EXIT_OK
+    if args.update_readme:
+        readme = folder / README_NAME
+        if not readme.is_file():
+            raise ManifestError(f"{readme} does not exist")
+        readme.write_text(with_gallery(readme.read_text(encoding="utf-8"), gallery_markdown(manifest)), encoding="utf-8", newline="\n")
+        print(f"Updated the gallery in {args.domain}/{README_NAME}.")
         return EXIT_OK
     user = args.user or os.environ.get(USER_ENV, "")
     password = os.environ.get(PASSWORD_ENV, "")
@@ -351,6 +382,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--site", default="", help="capture only this site of the manifest")
     parser.add_argument("--user", default="", help=f"sign-in user; default: ${USER_ENV}. The password is ${PASSWORD_ENV}.")
     parser.add_argument("--markdown", action="store_true", help="print the README gallery for the manifest and exit")
+    parser.add_argument("--update-readme", action="store_true", help="write the gallery into <domain>/README.md and exit")
     parser.add_argument("--repo", default="", help=argparse.SUPPRESS)
     parser.add_argument("--self-test", action="store_true", help="run the script's own checks, then exit")
     return parser

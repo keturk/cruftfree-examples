@@ -1,6 +1,6 @@
 {
   "target": "azure",
-  "generated_at": "2026-11-16T02:28:04Z",
+  "generated_at": "2026-11-16T06:54:30Z",
   "files": [
     ".cruftfree/runtime-requirements.json",
     "DEPLOYMENT.md",
@@ -309,7 +309,7 @@
     "scripts/deploy.sh": "ff8a704f16b174c7eaa0da832d64b6f7e5de540a24e8102d684f23d2cdb94740",
     "scripts/operating-hours.ps1": "f03838f9a12e13366cb8af46235b28ef84008b92e4397f321b4565b349e3e045"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "config/identity-provider-plan.json": [
       "helpdesk.TicketService"

@@ -1,6 +1,6 @@
 {
   "target": "docker",
-  "generated_at": "2026-11-16T02:17:16Z",
+  "generated_at": "2026-11-16T06:39:50Z",
   "files": [
     ".cruftfree/runtime-requirements.json",
     ".env.example",
@@ -129,7 +129,7 @@
     "config/web-static-site/console-angular.dockerfile": "d41b7aaa0eb071873ece207f251522b5d5d90ce6f3848e908c28ba1e29175de8",
     "config/web-static-site/homes-angular.dockerfile": "0368adf8b22fff4a90b85a8beba9162f50e035263e70ec930f1d04524affad79",
     "docker-compose.clients.yml": "eed46fd593d1bc3ca3cf237adab75309515a45d897ed18b93f53619f38aa2364",
-    "docker-compose.yml": "d6c34f5c7098db09aab77ad11edf8cc310020f0841362ab660c1cebf3ec8615a",
+    "docker-compose.yml": "b2ec8174f4d8dd30f6306d6482e59753ab382f17bae2d24421778cf6974bb5f4",
     "realestate_deal_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
     "realestate_deal_service/Dockerfile": "813f09179a9a1384d851d86d200c2143dd38d33b5921ba9972854a56a7247fc3",
     "realestate_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
@@ -212,7 +212,7 @@
     "config/web-static-site/console-angular.dockerfile": "d41b7aaa0eb071873ece207f251522b5d5d90ce6f3848e908c28ba1e29175de8",
     "config/web-static-site/homes-angular.dockerfile": "0368adf8b22fff4a90b85a8beba9162f50e035263e70ec930f1d04524affad79",
     "docker-compose.clients.yml": "eed46fd593d1bc3ca3cf237adab75309515a45d897ed18b93f53619f38aa2364",
-    "docker-compose.yml": "d6c34f5c7098db09aab77ad11edf8cc310020f0841362ab660c1cebf3ec8615a",
+    "docker-compose.yml": "b2ec8174f4d8dd30f6306d6482e59753ab382f17bae2d24421778cf6974bb5f4",
     "realestate_deal_service/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
     "realestate_deal_service/Dockerfile": "813f09179a9a1384d851d86d200c2143dd38d33b5921ba9972854a56a7247fc3",
     "realestate_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
@@ -252,7 +252,7 @@
     "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
     "typescript-base/package.json": "3bc4b17db9184d1b21f587ae2d90fd69ba5f602bbbb08d7dab3ada3b62e73c55"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "config/prometheus/rules/realestate-deal-service_alerts.yml": [
       "realestate.DealService"

@@ -2,6 +2,22 @@
 
 Cold-storage monitoring built as a complete application: every fridge in a chain of cold stores reports its temperature, a reading out of range opens an alert and pages someone, a technician takes it and says what they fixed, and new firmware rolls out a few devices at a time. The devices and the paging vendor run as mocks in the same stack, and the simulated fleet really does send readings every minute, so nothing here needs hardware or an account with anyone. Coldframe is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Operations: cold stores](screenshots/operations-sites.webp) | ![Operations: devices and their latest readings](screenshots/operations-devices.webp) |
+|---|---|
+| Operations: cold stores | Operations: devices and their latest readings |
+
+| ![Operations: alerts for readings out of range](screenshots/operations-alerts.webp) | ![Operations: the simulated fleet](screenshots/operations-simulator.webp) |
+|---|---|
+| Operations: alerts for readings out of range | Operations: the simulated fleet |
+
+| ![Technician app: where the sites are](screenshots/technician-where.webp) |   |
+|---|---|
+| Technician app: where the sites are |   |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

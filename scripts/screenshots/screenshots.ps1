@@ -30,6 +30,9 @@
 .PARAMETER Markdown
     Print the README gallery for the manifest and exit.
 
+.PARAMETER UpdateReadme
+    Write the gallery into <domain>/README.md (between its screenshots markers) and exit.
+
 .PARAMETER SelfTest
     Run the script's own checks, then exit.
 #>
@@ -39,6 +42,7 @@ param(
     [string]$Site = '',
     [string]$User = '',
     [switch]$Markdown,
+    [switch]$UpdateReadme,
     [switch]$SelfTest
 )
 
@@ -67,6 +71,7 @@ if ($Domain) { $arguments += @('--domain', $Domain) }
 if ($Site) { $arguments += @('--site', $Site) }
 if ($User) { $arguments += @('--user', $User) }
 if ($Markdown) { $arguments += '--markdown' }
+if ($UpdateReadme) { $arguments += '--update-readme' }
 if ($SelfTest) { $arguments += '--self-test' }
 
 $env:PYTHONIOENCODING = 'utf-8'

@@ -102,6 +102,20 @@ def manifest_checks(report: Report) -> None:
         report.check("refused: a file name used twice", True)
     parsed = capture.parse_manifest(manifest_text(), "t")
     report.check("the gallery names each image", "![The home page](screenshots/home.webp)" in capture.gallery_markdown(parsed))
+    gallery = capture.gallery_markdown(parsed)
+    plain = "# App\n\nIntro.\n\n## What it shows\n\nText.\n"
+    placed = capture.with_gallery(plain, gallery)
+    report.check("the gallery goes before the first section", placed.index("## Screenshots") < placed.index("## What it shows"))
+    report.check("a second run changes nothing", capture.with_gallery(placed, gallery) == placed)
+    other = capture.gallery_markdown(capture.parse_manifest(manifest_text(caption="Another caption"), "t"))
+    replaced = capture.with_gallery(placed, other)
+    report.check("a changed gallery replaces the old one", "Another caption" in replaced and "The home page" not in replaced
+                 and replaced.count("## Screenshots") == 1 and "## What it shows" in replaced)
+    try:
+        capture.with_gallery("# App\n\nno sections\n", gallery)
+        report.check("refused: a README with no section heading", False, "no error")
+    except capture.ManifestError:
+        report.check("refused: a README with no section heading", True)
     report.check("local hosts are judged, others are not", capture.is_local("http://localhost:4200/x")
                  and not capture.is_local("https://tile.openstreetmap.org/1.png"))
 

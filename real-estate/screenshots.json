@@ -1,0 +1,25 @@
+{
+  "hero": "buyer-homes",
+  "sites": [
+    {
+      "name": "buyer",
+      "url": "http://localhost:4200",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "buyer-homes", "caption": "Buyer site: homes for sale"},
+        {"path": "/map", "file": "buyer-map", "caption": "Buyer site: homes on a map", "settleMs": 7000}
+      ]
+    },
+    {
+      "name": "agent",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/listings", "file": "agent-listings", "caption": "Agent console: listings"},
+        {"path": "/viewings", "file": "agent-viewings", "caption": "Agent console: viewings"},
+        {"path": "/offers", "file": "agent-offers", "caption": "Agent console: offers"},
+        {"path": "/vendors/lender", "file": "agent-lender", "caption": "Agent console: the lender pre-approval vendor"}
+      ]
+    }
+  ]
+}

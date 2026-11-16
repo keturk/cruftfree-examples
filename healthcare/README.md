@@ -2,6 +2,26 @@
 
 A small clinic built as a complete application: a patient books a visit on the web or a phone, the front desk runs the day from a board, a clinician signs the note and sends the prescription, and the insurer settles the claim. The insurer, the pharmacy and the text message vendor run as mocks in the same stack, so nothing here needs an account with anyone. Ferncrest is invented, and so is everyone in it.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Patient portal: finding a clinician](screenshots/portal-find-care.webp) | ![Patient portal: a clinician and their open times](screenshots/portal-clinician.webp) |
+|---|---|
+| Patient portal: finding a clinician | Patient portal: a clinician and their open times |
+
+| ![Clinic app: today's board](screenshots/clinic-today.webp) | ![Clinic app: the calendar](screenshots/clinic-calendar.webp) |
+|---|---|
+| Clinic app: today's board | Clinic app: the calendar |
+
+| ![Clinic app: patients](screenshots/clinic-patients.webp) | ![Clinic app: visit notes](screenshots/clinic-notes.webp) |
+|---|---|
+| Clinic app: patients | Clinic app: visit notes |
+
+| ![Clinic app: billing and insurer claims](screenshots/clinic-billing.webp) |   |
+|---|---|
+| Clinic app: billing and insurer claims |   |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

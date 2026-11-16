@@ -2,6 +2,26 @@
 
 A place to post short notes and follow people, built as a complete application. Anyone can read. Every post goes past a moderation vendor before anyone sees it, and a person on the Trust and Safety desk decides what the vendor is unsure of. The moderation, push and email vendors run as mocks in the same stack, so nothing here needs an account with anyone. Rookery is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Member app: explore](screenshots/member-explore.webp) | ![Member app: posts under a tag](screenshots/member-tag.webp) |
+|---|---|
+| Member app: explore | Member app: posts under a tag |
+
+| ![Member app: a person's profile](screenshots/member-person.webp) | ![Trust and safety desk: today](screenshots/desk-today.webp) |
+|---|---|
+| Member app: a person's profile | Trust and safety desk: today |
+
+| ![Trust and safety desk: every post and how it was judged](screenshots/desk-posts.webp) | ![Trust and safety desk: reports from members](screenshots/desk-reports.webp) |
+|---|---|
+| Trust and safety desk: every post and how it was judged | Trust and safety desk: reports from members |
+
+| ![Trust and safety desk: people](screenshots/desk-people.webp) |   |
+|---|---|
+| Trust and safety desk: people |   |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

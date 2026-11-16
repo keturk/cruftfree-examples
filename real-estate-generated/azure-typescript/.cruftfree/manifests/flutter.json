@@ -1,6 +1,6 @@
 {
   "target": "flutter",
-  "generated_at": "2026-11-16T02:37:41Z",
+  "generated_at": "2026-11-16T07:06:58Z",
   "files": [
     "clients/flutter/.gitignore",
     "clients/flutter/MANIFEST.json",
@@ -738,7 +738,7 @@
     "clients/flutter/test/state/core/client_sort_test.dart": "553b68053290f2972394dea496c3f602f5668e012253c5e75b71b1e4645d8534",
     "clients/flutter/test/state/core/format_fixture_test.dart": "d560117fff2d3fb2df49b81abf4fbb8ae0bb40f6335c2d5e213d3ffa865381f5"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {},
   "kept_output_hashes": {}
 }

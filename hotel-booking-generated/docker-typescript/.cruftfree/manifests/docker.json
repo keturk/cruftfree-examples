@@ -1,6 +1,6 @@
 {
   "target": "docker",
-  "generated_at": "2026-11-16T02:10:03Z",
+  "generated_at": "2026-11-16T06:33:29Z",
   "files": [
     ".cruftfree/runtime-requirements.json",
     ".env.example",
@@ -118,7 +118,7 @@
     "config/web-static-site/front-desk-angular.dockerfile": "abdf66761384ff04b8ec558608b363edf4a965f63162cb1ebfb29e2c6eddfdd2",
     "config/web-static-site/guest-angular.dockerfile": "1cdc3351264531626e66d2ffff32a402b1ece744b1a01cdf6858fb22c3e63b14",
     "docker-compose.clients.yml": "6572b457cbee786d09ea2f18d3cab638f78a4b8fc3a4f7cc2cef4defe7536f7b",
-    "docker-compose.yml": "6bd34af578ae40753a359b918ecd87e435878f23945cdbbc6d4b962e025bb3f9",
+    "docker-compose.yml": "7d10157e48954db32eb747dfffe871aac9f5c3c0c3de8896de63b72be378e640",
     "hotel_channel_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
     "hotel_channel_mock/Dockerfile": "103b0fcc159b449457abaf265a1bc1253352ea75d425b0d988f741eef9eecb57",
     "hotel_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
@@ -193,7 +193,7 @@
     "config/web-static-site/front-desk-angular.dockerfile": "abdf66761384ff04b8ec558608b363edf4a965f63162cb1ebfb29e2c6eddfdd2",
     "config/web-static-site/guest-angular.dockerfile": "1cdc3351264531626e66d2ffff32a402b1ece744b1a01cdf6858fb22c3e63b14",
     "docker-compose.clients.yml": "6572b457cbee786d09ea2f18d3cab638f78a4b8fc3a4f7cc2cef4defe7536f7b",
-    "docker-compose.yml": "6bd34af578ae40753a359b918ecd87e435878f23945cdbbc6d4b962e025bb3f9",
+    "docker-compose.yml": "7d10157e48954db32eb747dfffe871aac9f5c3c0c3de8896de63b72be378e640",
     "hotel_channel_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
     "hotel_channel_mock/Dockerfile": "103b0fcc159b449457abaf265a1bc1253352ea75d425b0d988f741eef9eecb57",
     "hotel_email_mock/.dockerignore": "97121d61351492e6bb44cf50642aeb24f4a23488766dbaeeeeb6ce1988126c6f",
@@ -228,7 +228,7 @@
     "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
     "typescript-base/package.json": "3bc4b17db9184d1b21f587ae2d90fd69ba5f602bbbb08d7dab3ada3b62e73c55"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "config/prometheus/rules/hotel-channel-mock_alerts.yml": [
       "hotel.ChannelMock"

@@ -2,6 +2,22 @@
 
 A support desk for a small hosting company, built as a complete application. Customers search a help centre and open tickets. Agents work them on a board, write notes the customer never sees, and answer against a clock that a job watches. The email vendor runs as a mock in the same stack, so nothing here needs an account with anyone. Lanternpost is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Help centre: search and popular articles](screenshots/help-centre-home.webp) | ![Help centre: an article](screenshots/help-centre-article.webp) |
+|---|---|
+| Help centre: search and popular articles | Help centre: an article |
+
+| ![Console: the agent's queue](screenshots/console-queue.webp) | ![Console: every ticket](screenshots/console-all-tickets.webp) |
+|---|---|
+| Console: the agent's queue | Console: every ticket |
+
+| ![Console: saved replies](screenshots/console-saved-replies.webp) |   |
+|---|---|
+| Console: saved replies |   |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

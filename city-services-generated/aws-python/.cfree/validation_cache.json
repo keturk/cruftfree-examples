@@ -1,8 +1,8 @@
 {
   "version": "2",
   "verdicts": {
-    "python": "733f745ad74fac112fe9d5fd7e4baacbeca7c2df7de5c2472d392c18a07657b4",
-    "clients/angular": "459b505dda7a7512f00d2d89b21a4bcaf490a373b0f5e149d8258363d2d0fe5a",
-    "clients/flutter": "5dd4ba4eb2001da38d02979d45cbb326c4aa4907fa781cd97237b82fa1a89cc9"
+    "python": "a232693be5e54dec58bc91e6ad8b79fb59ad63cee693fd5dece743274221b9c2",
+    "clients/angular": "459fceac66501012b516ca97195997ace46f9b990facb43628dcdacfaa51a714",
+    "clients/flutter": "87732d9fbeaf935be3ae855b15342fcfe5163d8b6fd58b5b9b5cdbff1daf5853"
   }
 }

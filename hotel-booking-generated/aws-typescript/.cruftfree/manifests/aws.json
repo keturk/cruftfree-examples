@@ -1,6 +1,6 @@
 {
   "target": "aws",
-  "generated_at": "2026-11-16T02:30:28Z",
+  "generated_at": "2026-11-16T06:57:43Z",
   "files": [
     ".cruftfree/runtime-requirements.json",
     "DEPLOYMENT.md",
@@ -129,7 +129,7 @@
     "infrastructure/trusted-caller.template.json": "3970f4b250db2d18e8bcb173cb224fabc38cdc3828277afb5406a0cabbc7a481",
     "infrastructure/vpc.template.json": "b0a399202a8f5b955003e3d0bbdc9d4a8e520deb89c583bba8207e84616a2222"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "hotel_notice_service/src/consumers/lambda_adapters/Dockerfile": [
       "hotel.NoticeService"

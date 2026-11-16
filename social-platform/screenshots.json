@@ -1,0 +1,26 @@
+{
+  "hero": "member-explore",
+  "sites": [
+    {
+      "name": "member",
+      "url": "http://localhost:4200",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "member-explore", "caption": "Member app: explore"},
+        {"path": "/tag/waders", "file": "member-tag", "caption": "Member app: posts under a tag"},
+        {"path": "/people/iris", "file": "member-person", "caption": "Member app: a person's profile"}
+      ]
+    },
+    {
+      "name": "desk",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "desk-today", "caption": "Trust and safety desk: today"},
+        {"path": "/posts", "file": "desk-posts", "caption": "Trust and safety desk: every post and how it was judged"},
+        {"path": "/reports", "file": "desk-reports", "caption": "Trust and safety desk: reports from members"},
+        {"path": "/people", "file": "desk-people", "caption": "Trust and safety desk: people"}
+      ]
+    }
+  ]
+}

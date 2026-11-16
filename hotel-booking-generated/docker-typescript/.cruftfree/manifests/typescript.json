@@ -1,6 +1,6 @@
 {
   "target": "typescript",
-  "generated_at": "2026-11-16T02:10:02Z",
+  "generated_at": "2026-11-16T06:33:29Z",
   "files": [
     ".gitignore",
     ".npmrc",
@@ -2418,7 +2418,7 @@
     "tests/tsconfig.json": "643eb12b7ca62fa7f6635e4e3c8453c19161b679169ff4ec5ec56a67dd8f11b2",
     "tests/unit-tests.js": "6dd1f91ee1f55404c5b28108396b45f00254aa48f590dd572b1633304162111d"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "hotel_channel_mock/ENV.md": [
       "hotel.ChannelMock"

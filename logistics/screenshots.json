@@ -1,0 +1,27 @@
+{
+  "hero": "dispatch-today",
+  "sites": [
+    {
+      "name": "tracking",
+      "url": "http://localhost:4200",
+      "signIn": false,
+      "shots": [
+        {"path": "/", "file": "tracking-home", "caption": "Public tracking: look a parcel up"}
+      ]
+    },
+    {
+      "name": "dispatch",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "dispatch-today", "caption": "Dispatch: today"},
+        {"path": "/shipments", "file": "dispatch-parcels", "caption": "Dispatch: every parcel"},
+        {"path": "/routes", "file": "dispatch-routes", "caption": "Dispatch: planned routes"},
+        {"path": "/routes/f51be1af-8e88-5841-9e5e-2ba1ae310f06", "file": "dispatch-route", "caption": "Dispatch: a route and its stops"},
+        {"path": "/fleet", "file": "dispatch-fleet", "caption": "Dispatch: the fleet"},
+        {"path": "/notices", "file": "dispatch-texts", "caption": "Dispatch: texts sent to recipients"},
+        {"path": "/vendors/carrier", "file": "dispatch-partner-carrier", "caption": "Dispatch: the partner carrier hand-off"}
+      ]
+    }
+  ]
+}

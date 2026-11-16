@@ -2,6 +2,18 @@
 
 A learning platform built as a complete application: a student finds a course, pays for it, reads each lesson and answers its question, asks a tutor when stuck, and gets a certificate or, if an instructor agrees, their money back. The card vendor, the email vendor and the model behind the tutor run as mocks in the same stack, so nothing here needs an account with anyone and no money moves. Larkhill is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Student app: the course catalog](screenshots/student-catalog.webp) | ![Student app: a course, with its lessons and a way to pay](screenshots/student-course.webp) |
+|---|---|
+| Student app: the course catalog | Student app: a course, with its lessons and a way to pay |
+
+| ![Studio: courses, with a form to start one](screenshots/studio-courses.webp) |   |
+|---|---|
+| Studio: courses, with a form to start one |   |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

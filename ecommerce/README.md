@@ -22,6 +22,26 @@ powershell -File scripts/deploy.ps1 deploy     # or: bash scripts/deploy.sh depl
 The hosted login is Zitadel at <http://localhost:8085>. A new sign-up is a customer. To see the Admin and the
 Provider Desk, give that user the `admins` or `operators` group in Zitadel's console.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Storefront: the home page](screenshots/storefront-home.webp) | ![Storefront: the shop](screenshots/storefront-shop.webp) |
+|---|---|
+| Storefront: the home page | Storefront: the shop |
+
+| ![Storefront: a category](screenshots/storefront-category.webp) | ![Storefront: a product](screenshots/storefront-product.webp) |
+|---|---|
+| Storefront: a category | Storefront: a product |
+
+| ![Admin: the dashboard](screenshots/admin-dashboard.webp) | ![Admin: products](screenshots/admin-products.webp) |
+|---|---|
+| Admin: the dashboard | Admin: products |
+
+| ![Admin: the catalog](screenshots/admin-catalog.webp) | ![Admin: stock alerts](screenshots/admin-stock.webp) |
+|---|---|
+| Admin: the catalog | Admin: stock alerts |
+<!-- screenshots:end -->
+
 ## Try this
 
 1. **Look around as a visitor.** Open the Storefront. Nothing asks you to sign in until you reach the checkout.

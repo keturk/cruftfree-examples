@@ -1,7 +1,7 @@
 {
   "version": "2",
   "verdicts": {
-    "clients/angular": "a717280160239983286724bae0f10eaddc0eb791ed4c7b68ba66c80ad1bcc5db",
-    "clients/flutter": "8eeceecc1f325315604f3a656eb1616a0d5b44bae45223a787474e573bc949e1"
+    "clients/angular": "5b4276d5aabd3722e19b7c253af838c1de9c895554f2f96f4c1037fa222f4cbb",
+    "clients/flutter": "279c8c4a323867f1e928365824f5f27a23b479ede964c680f25ec1af7100c31d"
   }
 }

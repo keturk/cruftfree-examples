@@ -1,0 +1,36 @@
+{
+  "hero": "console-dashboard",
+  "sites": [
+    {
+      "name": "employee",
+      "url": "http://localhost:4200",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "employee-home", "caption": "Employee app: balances and what is next"},
+        {"path": "/time-off", "file": "employee-time-off", "caption": "Employee app: time off"},
+        {"path": "/payslips", "file": "employee-payslips", "caption": "Employee app: payslips"},
+        {"path": "/directory", "file": "employee-directory", "caption": "Employee app: the directory"}
+      ]
+    },
+    {
+      "name": "console",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "console-dashboard", "caption": "Staff console: the HR dashboard"},
+        {"path": "/people", "file": "console-people", "caption": "Staff console: people"},
+        {"path": "/time-off", "file": "console-time-off", "caption": "Staff console: time-off requests"},
+        {"path": "/pay", "file": "console-pay-runs", "caption": "Staff console: pay runs, approved by two people"}
+      ]
+    },
+    {
+      "name": "careers",
+      "url": "http://localhost:4400",
+      "signIn": false,
+      "shots": [
+        {"path": "/", "file": "careers-open-roles", "caption": "Careers site: open roles"},
+        {"path": "/roles/08df82c4-23c1-56b7-9d30-0bcf36e9ced2", "file": "careers-role", "caption": "Careers site: a role"}
+      ]
+    }
+  ]
+}

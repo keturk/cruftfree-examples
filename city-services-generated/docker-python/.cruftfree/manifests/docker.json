@@ -1,6 +1,6 @@
 {
   "target": "docker",
-  "generated_at": "2026-11-16T02:01:22Z",
+  "generated_at": "2026-11-16T06:23:56Z",
   "files": [
     ".cruftfree/runtime-requirements.json",
     ".env.example",
@@ -127,7 +127,7 @@
     "config/web-static-site/citizen-angular.dockerfile": "57c26fc661dbb6ee0740f74a5dbb6f6e059dae000e68bc2a43080d52557bce70",
     "config/web-static-site/operations-angular.dockerfile": "90019a0c32dd5acddee9ee2e103f92e80dbd56292de0bd8bffad28da32b86628",
     "docker-compose.clients.yml": "22852a8b9c991deb935a00353f247b83b55d761332956aec155479d58c32d88b",
-    "docker-compose.yml": "be279f8065c27612480e5324fd963d266311f3a55acf1fa8a89b085d1dcc750f",
+    "docker-compose.yml": "e583eab71401f08817404ae52bce74b7e85d020ccca5233d8dc207692dc6d1d2",
     "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
     "python-base/requirements.txt": "076f1108d302c5460a4dd7b5392b96440fa5835b6373ce6538fabdbb08661e15",
     "scripts/db-access/cityservices-district-service-district-db.sql": "0365b4b9bd734cfee1b6e9c108e6b0eee89374fc9c55bf718ec33e03050dd031",
@@ -201,7 +201,7 @@
     "config/web-static-site/citizen-angular.dockerfile": "57c26fc661dbb6ee0740f74a5dbb6f6e059dae000e68bc2a43080d52557bce70",
     "config/web-static-site/operations-angular.dockerfile": "90019a0c32dd5acddee9ee2e103f92e80dbd56292de0bd8bffad28da32b86628",
     "docker-compose.clients.yml": "22852a8b9c991deb935a00353f247b83b55d761332956aec155479d58c32d88b",
-    "docker-compose.yml": "be279f8065c27612480e5324fd963d266311f3a55acf1fa8a89b085d1dcc750f",
+    "docker-compose.yml": "e583eab71401f08817404ae52bce74b7e85d020ccca5233d8dc207692dc6d1d2",
     "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
     "python-base/requirements.txt": "076f1108d302c5460a4dd7b5392b96440fa5835b6373ce6538fabdbb08661e15",
     "scripts/db-access/cityservices-district-service-district-db.sql": "0365b4b9bd734cfee1b6e9c108e6b0eee89374fc9c55bf718ec33e03050dd031",
@@ -225,7 +225,7 @@
     "secrets/cityservices-request-service/sms_provider_api_key": "483e402ac2aa5c69d36bee53b0852c97a62c6c994810863b7db5e8bf5f9e6900",
     "secrets/cityservices-sms-mock/sms_db_password": "281fffac4764d34b910e125401fc91794f84dd0553fbfd27ec9bf30d7ec08fc8"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "cityservices_district_service/.dockerignore": [
       "cityservices.DistrictService"

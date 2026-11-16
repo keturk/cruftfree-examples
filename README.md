@@ -4,6 +4,21 @@ Fifteen complete applications, each written as a handful of `.cfree` specificati
 
 The specs are the source. The generated folders are what comes out, so you can read the output without installing anything.
 
+Each of these screenshots is a page of the generated application, running on its local Docker stack and signed in as an invented user. Select one to see the rest of that application.
+
+| | | |
+|---|---|---|
+| [![Fieldnotes](blog-cms/screenshots/reader-articles.webp)](blog-cms) | [![Port Alder 311](city-services/screenshots/operations-queue.webp)](city-services) | [![Wrenwood](ecommerce/screenshots/storefront-home.webp)](ecommerce) |
+| **Fieldnotes**, a publication | **Port Alder 311**, a city service desk | **Wrenwood**, a homeware shop |
+| [![Quillon Bank](finance/screenshots/back-office-dashboard.webp)](finance) | [![Saltbox](food-delivery/screenshots/customer-restaurants.webp)](food-delivery) | [![Ferncrest Clinic](healthcare/screenshots/clinic-today.webp)](healthcare) |
+| **Quillon Bank**, a retail bank | **Saltbox**, food delivery | **Ferncrest Clinic**, a clinic |
+| [![Lanternpost](helpdesk/screenshots/console-queue.webp)](helpdesk) | [![Larkhill Academy](learning-management/screenshots/student-catalog.webp)](learning-management) | [![Marram House](hotel-booking/screenshots/guest-rooms.webp)](hotel-booking) |
+| **Lanternpost**, a support desk | **Larkhill Academy**, courses | **Marram House**, a coastal hotel |
+| [![Alderbrook People](hr-platform/screenshots/console-dashboard.webp)](hr-platform) | [![Coldframe](iot-platform/screenshots/operations-devices.webp)](iot-platform) | [![Quayline Freight](logistics/screenshots/dispatch-today.webp)](logistics) |
+| **Alderbrook People**, HR | **Coldframe**, cold-storage monitoring | **Quayline Freight**, a parcel carrier |
+| [![Cobblestone Homes](real-estate/screenshots/buyer-homes.webp)](real-estate) | [![Rookery](social-platform/screenshots/member-explore.webp)](social-platform) | [![Millrace](task-management/screenshots/workspace-board.webp)](task-management) |
+| **Cobblestone Homes**, real estate | **Rookery**, short posts | **Millrace**, team projects |
+
 |  |  |
 |---|---|
 | Applications | 15, from a blog to a bank, each with its own invented company, data and vendors |

@@ -1,6 +1,6 @@
 {
   "target": "docker",
-  "generated_at": "2026-11-16T02:21:32Z",
+  "generated_at": "2026-11-16T06:45:28Z",
   "files": [
     "cityservices_district_service/.dockerignore",
     "cityservices_district_service/Dockerfile",
@@ -45,7 +45,7 @@
     "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
     "python-base/requirements.txt": "3c942376f971ca1c8605f26a5b40818e6fd191c7e60396315e45021bce48781b"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "cityservices_district_service/.dockerignore": [
       "cityservices.DistrictService"

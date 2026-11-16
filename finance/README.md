@@ -2,6 +2,22 @@
 
 A small retail bank, built as a complete application: customers open accounts and move money on the web or a phone, and staff check customers, take deposits and review alerts. A real double-entry ledger sits underneath, and an AI analyst reads an alert for an officer and can propose freezing the account, which waits for a second officer. The payment network, the identity check, the sanctions list and the model run as mocks in the same stack, so nothing here needs an account with anyone and no real money moves. Quillon Bank is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Back office: the dashboard](screenshots/back-office-dashboard.webp) | ![Back office: customers](screenshots/back-office-customers.webp) |
+|---|---|
+| Back office: the dashboard | Back office: customers |
+
+| ![Back office: transfers](screenshots/back-office-transfers.webp) | ![Back office: alerts for an officer to review](screenshots/back-office-alerts.webp) |
+|---|---|
+| Back office: transfers | Back office: alerts for an officer to review |
+
+| ![Back office: the double-entry ledger](screenshots/back-office-ledger.webp) |   |
+|---|---|
+| Back office: the double-entry ledger |   |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

@@ -11,7 +11,7 @@ config app ecommerce.Storefront {
     // Firebase client registration: public client identifiers, never secrets.
     firebase {
       projectId = "example-store";
-      apiKey = "AIzaSyD-example-public-client-key-00000";
+      apiKey = "example-public-web-api-key";
       messagingSenderId = "123456789012";
       androidAppId = "1:123456789012:android:0a1b2c3d4e5f6a7b";
       iosAppId = "1:123456789012:ios:0a1b2c3d4e5f6a7b";

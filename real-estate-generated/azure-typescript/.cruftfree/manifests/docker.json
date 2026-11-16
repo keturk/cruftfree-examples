@@ -1,6 +1,6 @@
 {
   "target": "docker",
-  "generated_at": "2026-11-16T02:37:42Z",
+  "generated_at": "2026-11-16T07:06:59Z",
   "files": [
     "realestate_deal_service/.dockerignore",
     "realestate_deal_service/Dockerfile",
@@ -51,7 +51,7 @@
     "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
     "typescript-base/package.json": "9e26092d662fae31a7bdfe4b2071f29820c63515295623e772bebec9c79ebbc6"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "realestate_deal_service/.dockerignore": [
       "realestate.DealService"

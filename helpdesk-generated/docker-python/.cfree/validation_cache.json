@@ -1,7 +1,7 @@
 {
   "version": "2",
   "verdicts": {
-    "python": "4e763af8a90032c03531d15b30eeef63a22c4b8a580ecfdceccf713adb9a0f25",
-    "clients/angular": "845af76929e99e8a573a35c1fd01879976261ca6d3e784c26ca53fe37fa15346"
+    "python": "757678eb99a9e45ae9360b6f17fa3693a7ea64f9c49a9d90870be696ee212730",
+    "clients/angular": "b2599ff41d1ffc8ad3c5c891f2f3b8dff010242ee309f44b2c6bbf9159ffe71c"
   }
 }

@@ -2,6 +2,26 @@
 
 A parcel carrier built as a complete application: a dispatcher books a parcel, plans it onto a van's route and sends the route out, a driver follows it stop by stop, and the recipient follows it on a public page and by text. A parcel outside the delivery area goes to a partner carrier. The carrier, the geocoder and the text vendor run as mocks in the same stack, so nothing here needs an account with anyone and no parcel moves. Quayline is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Public tracking: look a parcel up](screenshots/tracking-home.webp) | ![Dispatch: today](screenshots/dispatch-today.webp) |
+|---|---|
+| Public tracking: look a parcel up | Dispatch: today |
+
+| ![Dispatch: every parcel](screenshots/dispatch-parcels.webp) | ![Dispatch: planned routes](screenshots/dispatch-routes.webp) |
+|---|---|
+| Dispatch: every parcel | Dispatch: planned routes |
+
+| ![Dispatch: a route and its stops](screenshots/dispatch-route.webp) | ![Dispatch: the fleet](screenshots/dispatch-fleet.webp) |
+|---|---|
+| Dispatch: a route and its stops | Dispatch: the fleet |
+
+| ![Dispatch: texts sent to recipients](screenshots/dispatch-texts.webp) | ![Dispatch: the partner carrier hand-off](screenshots/dispatch-partner-carrier.webp) |
+|---|---|
+| Dispatch: texts sent to recipients | Dispatch: the partner carrier hand-off |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

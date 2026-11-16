@@ -1,0 +1,22 @@
+{
+  "hero": "student-catalog",
+  "sites": [
+    {
+      "name": "student",
+      "url": "http://localhost:4200",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "student-catalog", "caption": "Student app: the course catalog"},
+        {"path": "/courses/2aea6261-7c43-5a29-9b7c-3f52f79acdc0", "file": "student-course", "caption": "Student app: a course, with its lessons and a way to pay"}
+      ]
+    },
+    {
+      "name": "studio",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/courses", "file": "studio-courses", "caption": "Studio: courses, with a form to start one"}
+      ]
+    }
+  ]
+}

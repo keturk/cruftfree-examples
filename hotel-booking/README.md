@@ -2,6 +2,26 @@
 
 A small hotel on the coast, built as a complete application. A guest searches for dates, holds a room for ten minutes while they pay, and looks after the stay afterwards. The front desk runs arrivals, departures and housekeeping. The card vendor, the email vendor and the channel manager run as mocks in the same stack, so nothing here needs an account with anyone. Marram House is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Guest site: searching for a room](screenshots/guest-rooms.webp) | ![Guest site: a room and its price](screenshots/guest-room.webp) |
+|---|---|
+| Guest site: searching for a room | Guest site: a room and its price |
+
+| ![Front desk: arrivals and departures today](screenshots/desk-today.webp) | ![Front desk: the calendar](screenshots/desk-calendar.webp) |
+|---|---|
+| Front desk: arrivals and departures today | Front desk: the calendar |
+
+| ![Front desk: housekeeping](screenshots/desk-housekeeping.webp) | ![Front desk: every stay](screenshots/desk-stays.webp) |
+|---|---|
+| Front desk: housekeeping | Front desk: every stay |
+
+| ![Front desk: rooms and rates](screenshots/desk-rooms-and-rates.webp) | ![Front desk: travel sites](screenshots/desk-travel-sites.webp) |
+|---|---|
+| Front desk: rooms and rates | Front desk: travel sites |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

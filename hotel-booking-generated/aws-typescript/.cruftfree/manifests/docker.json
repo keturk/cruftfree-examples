@@ -1,6 +1,6 @@
 {
   "target": "docker",
-  "generated_at": "2026-11-16T02:30:28Z",
+  "generated_at": "2026-11-16T06:57:43Z",
   "files": [
     "hotel_channel_mock/.dockerignore",
     "hotel_channel_mock/Dockerfile",
@@ -45,7 +45,7 @@
     "typescript-base/Dockerfile": "1d87eabd371a15593e076f6194b849bce1bc982e8b2aa89da79ebbd4bbffe949",
     "typescript-base/package.json": "b520544bf419f6c0d560c59f3aba9174461391e43c55a56ccfa16200daa82397"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "hotel_channel_mock/.dockerignore": [
       "hotel.ChannelMock"

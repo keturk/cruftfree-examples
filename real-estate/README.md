@@ -2,6 +2,22 @@
 
 A home-selling agency built as a complete application: anyone can search the homes for sale, a buyer books a viewing and makes an offer, with a lender's pre-approval if they need one, and an agent accepts one offer and sends the contract for signature. The lender, the e-signature vendor and the email vendor run as mocks in the same stack, so nothing here needs an account with anyone and no money moves. Cobblestone is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Buyer site: homes for sale](screenshots/buyer-homes.webp) | ![Buyer site: homes on a map](screenshots/buyer-map.webp) |
+|---|---|
+| Buyer site: homes for sale | Buyer site: homes on a map |
+
+| ![Agent console: listings](screenshots/agent-listings.webp) | ![Agent console: viewings](screenshots/agent-viewings.webp) |
+|---|---|
+| Agent console: listings | Agent console: viewings |
+
+| ![Agent console: offers](screenshots/agent-offers.webp) | ![Agent console: the lender pre-approval vendor](screenshots/agent-lender.webp) |
+|---|---|
+| Agent console: offers | Agent console: the lender pre-approval vendor |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

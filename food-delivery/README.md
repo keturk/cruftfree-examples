@@ -2,6 +2,18 @@
 
 Food delivery with its three audiences, built as a complete application: a customer orders on the web or a phone, a kitchen moves the order across a board, and a driver follows a route to the door. Card payments, routes and texts run as mocks in the same stack, so nothing here needs an account with anyone and no card is ever touched. Saltbox is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Customer app: restaurants near you](screenshots/customer-restaurants.webp) | ![Customer app: a restaurant's menu](screenshots/customer-menu.webp) |
+|---|---|
+| Customer app: restaurants near you | Customer app: a restaurant's menu |
+
+| ![Kitchen app: restaurants and their status](screenshots/kitchen-restaurants.webp) | ![Kitchen app: dishes, with a form to add one](screenshots/kitchen-dishes.webp) |
+|---|---|
+| Kitchen app: restaurants and their status | Kitchen app: dishes, with a form to add one |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

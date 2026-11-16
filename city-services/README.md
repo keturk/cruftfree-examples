@@ -2,6 +2,22 @@
 
 A city's service desk, built as a complete application: residents report a problem from a street address on the web or a phone, and city staff work the queue, with spatial answers from PostGIS. The text and address vendors run as mocks in the same stack, so nothing here needs an account with anyone. Port Alder is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Citizen app: reporting a problem in three steps](screenshots/citizen-report.webp) | ![Citizen app: city places on a map](screenshots/citizen-places.webp) |
+|---|---|
+| Citizen app: reporting a problem in three steps | Citizen app: city places on a map |
+
+| ![Operations: every request, by state, priority and category](screenshots/operations-queue.webp) | ![Operations: district areas computed by PostGIS](screenshots/operations-districts.webp) |
+|---|---|
+| Operations: every request, by state, priority and category | Operations: district areas computed by PostGIS |
+
+| ![Operations: facilities, which can be closed or reopened](screenshots/operations-facilities.webp) |   |
+|---|---|
+| Operations: facilities, which can be closed or reopened |   |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

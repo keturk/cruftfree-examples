@@ -2,6 +2,18 @@
 
 A team's projects on a board, built as a complete application. Tasks move across columns, a task cannot start while another one blocks it, and whoever needs to know hears about it in chat and by email. The chat and email vendors run as mocks in the same stack, so nothing here needs an account with anyone. Millrace is invented.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Workspace: the projects a person is on](screenshots/workspace-projects.webp) | ![Workspace: a project's board](screenshots/workspace-board.webp) |
+|---|---|
+| Workspace: the projects a person is on | Workspace: a project's board |
+
+| ![Staff desk: every task across projects](screenshots/desk-all-tasks.webp) |   |
+|---|---|
+| Staff desk: every task across projects |   |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

@@ -1,0 +1,22 @@
+{
+  "hero": "workspace-board",
+  "sites": [
+    {
+      "name": "workspace",
+      "url": "http://localhost:4200",
+      "signIn": true,
+      "shots": [
+        {"path": "/projects", "file": "workspace-projects", "caption": "Workspace: the projects a person is on"},
+        {"path": "/projects/53df78b7-46b3-4297-b749-3b97b5de1aca", "file": "workspace-board", "caption": "Workspace: a project's board"}
+      ]
+    },
+    {
+      "name": "desk",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "desk-all-tasks", "caption": "Staff desk: every task across projects"}
+      ]
+    }
+  ]
+}

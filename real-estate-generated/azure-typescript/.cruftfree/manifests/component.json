@@ -1,6 +1,6 @@
 {
   "target": "component",
-  "generated_at": "2026-11-16T02:37:41Z",
+  "generated_at": "2026-11-16T07:06:57Z",
   "files": [
     "config/generated/client-api.console.json",
     "config/generated/client-api.homes.json",
@@ -303,7 +303,7 @@
     "scripts/sync-flutter-client.py": "e1a85283872f09ed8ffd3a4b30f74dd6c5aa55148cba0b98e81f0450e9e6ec4f",
     "scripts/sync-flutter-client.sh": "b57d42f59d6b1d0dd82d05e5199b586bc75d6b4afe72566dbc3613d8edab6ba8"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "realestate_deal_service/.gitignore": [
       "realestate.DealService"

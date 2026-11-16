@@ -1,6 +1,6 @@
 {
   "target": "docker",
-  "generated_at": "2026-11-16T02:28:04Z",
+  "generated_at": "2026-11-16T06:54:30Z",
   "files": [
     "helpdesk_email_mock/.dockerignore",
     "helpdesk_email_mock/Dockerfile",
@@ -39,7 +39,7 @@
     "python-base/Dockerfile": "8a340ec372c5dcd4cae78c824f99b3eab8ef1cab4e85840261183e875b868068",
     "python-base/requirements.txt": "91d9c1fd247b755d175f13ea65c55a511474c5051ff66918cfb357623215a1c9"
   },
-  "output_toolchain": "148192bf37ca2d105e5e373a4cd3e17c653ae96fb94289774e5033806c653ef3",
+  "output_toolchain": "ba57ba3367d4176858e0346e564d2a7c31d14b13d640e1b0ce5f44a1d4556d09",
   "file_owners": {
     "helpdesk_email_mock/.dockerignore": [
       "helpdesk.EmailMock"

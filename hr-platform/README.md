@@ -2,6 +2,30 @@
 
 An HR platform built as a complete application: a candidate applies on a public site, HR takes them through a background check and a signed offer, and the signature makes them an employee who books time off and reads payslips. Payroll needs two people to approve it. The bank, the background check vendor and the e-signature vendor run as mocks in the same stack, so nothing here needs an account with anyone and no money moves. Alderbrook is invented, and so is everyone in it.
 
+<!-- screenshots:start (written by scripts/screenshots; edit screenshots.json instead) -->
+## Screenshots
+
+| ![Employee app: balances and what is next](screenshots/employee-home.webp) | ![Employee app: time off](screenshots/employee-time-off.webp) |
+|---|---|
+| Employee app: balances and what is next | Employee app: time off |
+
+| ![Employee app: payslips](screenshots/employee-payslips.webp) | ![Employee app: the directory](screenshots/employee-directory.webp) |
+|---|---|
+| Employee app: payslips | Employee app: the directory |
+
+| ![Staff console: the HR dashboard](screenshots/console-dashboard.webp) | ![Staff console: people](screenshots/console-people.webp) |
+|---|---|
+| Staff console: the HR dashboard | Staff console: people |
+
+| ![Staff console: time-off requests](screenshots/console-time-off.webp) | ![Staff console: pay runs, approved by two people](screenshots/console-pay-runs.webp) |
+|---|---|
+| Staff console: time-off requests | Staff console: pay runs, approved by two people |
+
+| ![Careers site: open roles](screenshots/careers-open-roles.webp) | ![Careers site: a role](screenshots/careers-role.webp) |
+|---|---|
+| Careers site: open roles | Careers site: a role |
+<!-- screenshots:end -->
+
 ## What it shows
 
 | Feature | Where |

@@ -1,0 +1,23 @@
+{
+  "hero": "customer-restaurants",
+  "sites": [
+    {
+      "name": "customer",
+      "url": "http://localhost:4200",
+      "signIn": false,
+      "shots": [
+        {"path": "/", "file": "customer-restaurants", "caption": "Customer app: restaurants near you"},
+        {"path": "/restaurants/6575c8ac-03f3-522b-a77b-5de10d35f42d", "file": "customer-menu", "caption": "Customer app: a restaurant's menu"}
+      ]
+    },
+    {
+      "name": "kitchen",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "kitchen-restaurants", "caption": "Kitchen app: restaurants and their status"},
+        {"path": "/dishes", "file": "kitchen-dishes", "caption": "Kitchen app: dishes, with a form to add one"}
+      ]
+    }
+  ]
+}

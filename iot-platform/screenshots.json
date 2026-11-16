@@ -1,0 +1,24 @@
+{
+  "hero": "operations-devices",
+  "sites": [
+    {
+      "name": "operations",
+      "url": "http://localhost:4200",
+      "signIn": true,
+      "shots": [
+        {"path": "/sites", "file": "operations-sites", "caption": "Operations: cold stores"},
+        {"path": "/devices", "file": "operations-devices", "caption": "Operations: devices and their latest readings"},
+        {"path": "/alerts", "file": "operations-alerts", "caption": "Operations: alerts for readings out of range"},
+        {"path": "/vendors/simulator", "file": "operations-simulator", "caption": "Operations: the simulated fleet"}
+      ]
+    },
+    {
+      "name": "technician",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/where", "file": "technician-where", "caption": "Technician app: where the sites are"}
+      ]
+    }
+  ]
+}

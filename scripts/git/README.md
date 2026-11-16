@@ -65,14 +65,15 @@ The checks run on the working tree before anything is staged. There is no switch
 remove what they name, then run again. Exit code 1, nothing committed.
 
 - Paths that must never be published: `.env` and `.env.*`, `secrets`, `snapshots`, `node_modules`, `.venv`,
-  `.dart_tool`, `.git`, `ephemeral`, and Flutter's machine-local files (`local.properties`,
+  `.dart_tool`, `.git`, `ephemeral`, `config/resolved` (what a local deploy wrote: its identity client ids),
+  and Flutter's machine-local files (`local.properties`,
   `Generated.xcconfig`, `flutter_export_environment.sh`, `.flutter-plugins-dependencies`,
   `flutter_native_integration.env`).
 - Text that identifies the person running the script: the home folder, the `git config user.email`
   address, the hosts named in `CRUFTFREE_LOCAL_LLM_HOSTS` (loopback excluded), and anything in
   `CRUFTFREE_EXAMPLES_BLOCKED_TEXT`. A refusal names `file:line` only, never the text.
 - `git-scripts.local.env` itself.
-- Credential shapes (AWS access keys, GitHub, Slack and OpenAI tokens) and private-key headers outside tests.
+- Credential shapes (AWS access keys, GitHub, Slack and OpenAI tokens, Google API keys) and private-key headers outside tests.
 
 ## Exit codes
 
