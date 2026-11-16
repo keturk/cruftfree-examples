@@ -1,0 +1,34 @@
+{
+  "hero": "reader-articles",
+  "sites": [
+    {
+      "name": "reader",
+      "url": "http://localhost:4200",
+      "signIn": false,
+      "shots": [
+        {"path": "/", "file": "reader-articles", "caption": "Reader: the articles, with search"},
+        {"path": "/writers", "file": "reader-writers", "caption": "Reader: the writers"},
+        {"path": "/newsletter", "file": "reader-newsletter", "caption": "Reader: subscribing to the newsletter"}
+      ]
+    },
+    {
+      "name": "studio",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/desk", "file": "studio-desk", "caption": "Studio: the editors' desk"},
+        {"path": "/queue", "file": "studio-all-articles", "caption": "Studio: every article and where it stands"},
+        {"path": "/moderation", "file": "studio-moderation", "caption": "Studio: comment moderation"},
+        {"path": "/audience", "file": "studio-audience", "caption": "Studio: the newsletter audience"}
+      ]
+    },
+    {
+      "name": "provider-desk",
+      "url": "http://localhost:4400",
+      "signIn": true,
+      "shots": [
+        {"path": "/moderation/terms", "file": "desk-blocked-terms", "caption": "Provider Desk: the moderation vendor's blocked terms"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "hero": "operations-queue",
+  "sites": [
+    {
+      "name": "citizen",
+      "url": "http://localhost:4200",
+      "signIn": false,
+      "shots": [
+        {"path": "/", "file": "citizen-report", "caption": "Citizen app: reporting a problem in three steps"},
+        {"path": "/places", "file": "citizen-places", "caption": "Citizen app: city places on a map"}
+      ]
+    },
+    {
+      "name": "operations",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/queue", "file": "operations-queue", "caption": "Operations: every request, by state, priority and category"},
+        {"path": "/districts", "file": "operations-districts", "caption": "Operations: district areas computed by PostGIS"},
+        {"path": "/facilities", "file": "operations-facilities", "caption": "Operations: facilities, which can be closed or reopened"}
+      ]
+    }
+  ]
+}

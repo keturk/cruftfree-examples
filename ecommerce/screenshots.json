@@ -1,0 +1,27 @@
+{
+  "hero": "storefront-home",
+  "sites": [
+    {
+      "name": "storefront",
+      "url": "http://localhost:4200",
+      "signIn": false,
+      "shots": [
+        {"path": "/", "file": "storefront-home", "caption": "Storefront: the home page"},
+        {"path": "/products", "file": "storefront-shop", "caption": "Storefront: the shop"},
+        {"path": "/categories/c75abb8e-2693-52f7-ac88-606f0c495ea0/Ceramics", "file": "storefront-category", "caption": "Storefront: a category"},
+        {"path": "/products/3a55c30c-2687-5b8e-9945-1fa7dad4296a", "file": "storefront-product", "caption": "Storefront: a product"}
+      ]
+    },
+    {
+      "name": "admin",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "admin-dashboard", "caption": "Admin: the dashboard"},
+        {"path": "/products", "file": "admin-products", "caption": "Admin: products"},
+        {"path": "/catalog", "file": "admin-catalog", "caption": "Admin: the catalog"},
+        {"path": "/stock", "file": "admin-stock", "caption": "Admin: stock alerts"}
+      ]
+    }
+  ]
+}

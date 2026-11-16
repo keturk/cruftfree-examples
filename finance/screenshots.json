@@ -1,0 +1,17 @@
+{
+  "hero": "back-office-dashboard",
+  "sites": [
+    {
+      "name": "back-office",
+      "url": "http://localhost:4300",
+      "signIn": true,
+      "shots": [
+        {"path": "/", "file": "back-office-dashboard", "caption": "Back office: the dashboard"},
+        {"path": "/customers", "file": "back-office-customers", "caption": "Back office: customers"},
+        {"path": "/transfers", "file": "back-office-transfers", "caption": "Back office: transfers"},
+        {"path": "/alerts", "file": "back-office-alerts", "caption": "Back office: alerts for an officer to review"},
+        {"path": "/ledger", "file": "back-office-ledger", "caption": "Back office: the double-entry ledger"}
+      ]
+    }
+  ]
+}
