@@ -1,8 +1,8 @@
 # cruftfree-examples
 
-Fifteen complete applications, each written as a handful of `.cfree` specification files, next to the code [CruftFree](https://cruftfree.dev) generates from them: backend services, web and mobile clients, database schemas, tests, a local Docker stack and cloud infrastructure for AWS or Azure.
+Fifteen complete applications, each written as a handful of `.cfree` specification files. [CruftFree](https://cruftfree.dev) generates from them backend services, web and mobile clients, database schemas, tests, a local Docker stack and cloud infrastructure for AWS or Azure.
 
-The specs are the source. The generated folders are what comes out, so you can read the output without installing anything.
+The specs are the source. Four of the applications also have their generated output checked in, one for each combination of cloud and backend language (Azure or AWS, Python or TypeScript), so you can read what comes out without installing anything. For the other eleven, generate it yourself, as shown below.
 
 Each of these screenshots is a page of the generated application, running on its local Docker stack and signed in as an invented user. Select one to see the rest of that application.
 
@@ -23,6 +23,7 @@ Each of these screenshots is a page of the generated application, running on its
 |---|---|
 | Applications | 15, from a blog to a bank, each with its own invented company, data and vendors |
 | Backend languages | Python (FastAPI) for 8, TypeScript (NestJS) for 7, from the same kind of spec |
+| Generated output in this repository | 4 applications: Azure with Python, AWS with Python, Azure with TypeScript, AWS with TypeScript |
 | Clients | Angular web apps, and Flutter apps for phones |
 | Local run | Docker Compose, with sign-in, mock vendors and seed data included |
 | Cloud | AWS (CloudFormation) for 7, Azure (Bicep) for 8 |
@@ -31,23 +32,23 @@ Each of these screenshots is a page of the generated application, running on its
 
 Every application is invented, runs entirely against mocks of its outside vendors, and needs no account with anyone. Each folder has its own `README.md` listing the features it shows, the parts and ports, and things to try.
 
-| Application | Folder | What it is | Backend | Cloud |
-|---|---|---|---|---|
-| Fieldnotes | [blog-cms](blog-cms) | A publication: public reader site, writers' studio, scheduled publishing, moderated comments, a newsletter | Python | Azure |
-| Port Alder 311 | [city-services](city-services) | A city service desk: residents report problems from an address, staff work the queue, spatial answers from PostGIS | Python | AWS |
-| Wrenwood | [ecommerce](ecommerce) | A homeware shop: browse without an account, cart, payment, parcel tracking, staff catalog and refunds, two languages | Python | Azure |
-| Quillon Bank | [finance](finance) | A retail bank on a double-entry ledger, with an AI analyst that proposes freezes a second officer must approve | Python | AWS |
-| Saltbox | [food-delivery](food-delivery) | Food delivery for customers, kitchens and drivers | Python | Azure |
-| Ferncrest Clinic | [healthcare](healthcare) | A clinic: booking, front-desk board, signed notes and prescriptions, insurer claims | Python | AWS |
-| Lanternpost | [helpdesk](helpdesk) | A support desk: help centre, tickets, agent board, private notes, a clock a job watches | Python | Azure |
-| Larkhill Academy | [learning-management](learning-management) | Courses, payment, lessons with questions, a tutor, certificates and refunds | Python | Azure |
-| Marram House | [hotel-booking](hotel-booking) | A coastal hotel: date search, a ten-minute room hold, front-desk arrivals and housekeeping | TypeScript | AWS |
-| Alderbrook People | [hr-platform](hr-platform) | Hiring through signed offer to employee, time off, payslips, payroll approved by two people | TypeScript | Azure |
-| Coldframe | [iot-platform](iot-platform) | Cold-storage monitoring: readings, alerts, technicians, staged firmware rollouts | TypeScript | AWS |
-| Quayline Freight | [logistics](logistics) | A parcel carrier: booking, route planning, a driver app, public tracking, partner hand-off | TypeScript | AWS |
-| Cobblestone Homes | [real-estate](real-estate) | Home search, viewings, offers with lender pre-approval, contracts for signature | TypeScript | Azure |
-| Rookery | [social-platform](social-platform) | Short posts and following, every post moderated, a trust-and-safety desk | TypeScript | AWS |
-| Millrace | [task-management](task-management) | Team projects on a board, blocked tasks, chat and email notices | TypeScript | Azure |
+| Application | Folder | What it is | Backend | Cloud | Generated output |
+|---|---|---|---|---|---|
+| Fieldnotes | [blog-cms](blog-cms) | A publication: public reader site, writers' studio, scheduled publishing, moderated comments, a newsletter | Python | Azure | generate it yourself |
+| Port Alder 311 | [city-services](city-services) | A city service desk: residents report problems from an address, staff work the queue, spatial answers from PostGIS | Python | AWS | [city-services-generated](city-services-generated) |
+| Wrenwood | [ecommerce](ecommerce) | A homeware shop: browse without an account, cart, payment, parcel tracking, staff catalog and refunds, two languages | Python | Azure | generate it yourself |
+| Quillon Bank | [finance](finance) | A retail bank on a double-entry ledger, with an AI analyst that proposes freezes a second officer must approve | Python | AWS | generate it yourself |
+| Saltbox | [food-delivery](food-delivery) | Food delivery for customers, kitchens and drivers | Python | Azure | generate it yourself |
+| Ferncrest Clinic | [healthcare](healthcare) | A clinic: booking, front-desk board, signed notes and prescriptions, insurer claims | Python | AWS | generate it yourself |
+| Lanternpost | [helpdesk](helpdesk) | A support desk: help centre, tickets, agent board, private notes, a clock a job watches | Python | Azure | [helpdesk-generated](helpdesk-generated) |
+| Larkhill Academy | [learning-management](learning-management) | Courses, payment, lessons with questions, a tutor, certificates and refunds | Python | Azure | generate it yourself |
+| Marram House | [hotel-booking](hotel-booking) | A coastal hotel: date search, a ten-minute room hold, front-desk arrivals and housekeeping | TypeScript | AWS | [hotel-booking-generated](hotel-booking-generated) |
+| Alderbrook People | [hr-platform](hr-platform) | Hiring through signed offer to employee, time off, payslips, payroll approved by two people | TypeScript | Azure | generate it yourself |
+| Coldframe | [iot-platform](iot-platform) | Cold-storage monitoring: readings, alerts, technicians, staged firmware rollouts | TypeScript | AWS | generate it yourself |
+| Quayline Freight | [logistics](logistics) | A parcel carrier: booking, route planning, a driver app, public tracking, partner hand-off | TypeScript | AWS | generate it yourself |
+| Cobblestone Homes | [real-estate](real-estate) | Home search, viewings, offers with lender pre-approval, contracts for signature | TypeScript | Azure | [real-estate-generated](real-estate-generated) |
+| Rookery | [social-platform](social-platform) | Short posts and following, every post moderated, a trust-and-safety desk | TypeScript | AWS | generate it yourself |
+| Millrace | [task-management](task-management) | Team projects on a board, blocked tasks, chat and email notices | TypeScript | Azure | generate it yourself |
 
 ## Layout
 
@@ -59,13 +60,20 @@ cruftfree-examples/
 │   ├── config/                            .ccfg profiles: test, development, production
 │   ├── seed/, assets/                     first-start data, fonts and images
 │   └── README.md                          what it shows, the parts, things to try
-├── <domain>-generated/
+├── <domain>-generated/                    only for helpdesk, city-services, real-estate and hotel-booking
 │   ├── docker-<language>/                 generated from the `test` profile: a local Compose stack
 │   └── aws-<language>/ or azure-<language>/   generated from the `development` profile: cloud infrastructure
 └── scripts/git/                           commit-and-push and pull for this repository
 ```
 
-`<language>` is `python` or `typescript`. The cloud and the language of each application are in the table above.
+`<language>` is `python` or `typescript`. The cloud and the language of each application are in the table above. The checked-in generated output is:
+
+| Combination | Application | Folder |
+|---|---|---|
+| Azure, Python | Lanternpost | [helpdesk-generated](helpdesk-generated) |
+| AWS, Python | Port Alder 311 | [city-services-generated](city-services-generated) |
+| Azure, TypeScript | Cobblestone Homes | [real-estate-generated](real-estate-generated) |
+| AWS, TypeScript | Marram House | [hotel-booking-generated](hotel-booking-generated) |
 
 ### What a generated tree holds
 
@@ -104,7 +112,7 @@ Each application's own README names the ports it opens and what to try first. Si
 
 ## What has been verified
 
-All fifteen `test` stacks were built and run locally with Docker, and every page of each was opened signed in without console errors or failed requests. The `development` outputs for AWS and Azure are generated and compile (CloudFormation and Bicep), but they have not been deployed to a cloud account.
+All fifteen `test` stacks were built and run locally with Docker, and every page of each was opened signed in without console errors or failed requests. The screenshots for all fifteen come from those runs. The `development` outputs for AWS and Azure are generated and compile (CloudFormation and Bicep), but they have not been deployed to a cloud account.
 
 ## Scripts
 
