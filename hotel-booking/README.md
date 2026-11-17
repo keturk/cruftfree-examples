@@ -22,6 +22,12 @@ A small hotel on the coast, built as a complete application. A guest searches fo
 | Front desk: rooms and rates | Front desk: travel sites |
 <!-- screenshots:end -->
 
+## Diagrams
+
+![System context: the apps, the services they call, and the outside vendors behind them](docs/diagrams/system-context.svg)
+
+The service map, event flow, data models and the rest are in [docs/diagrams](docs/diagrams/README.md), drawn from the specification.
+
 ## What it shows
 
 | Feature | Where |

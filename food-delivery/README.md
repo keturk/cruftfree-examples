@@ -14,6 +14,12 @@ Food delivery with its three audiences, built as a complete application: a custo
 | Kitchen app: restaurants and their status | Kitchen app: dishes, with a form to add one |
 <!-- screenshots:end -->
 
+## Diagrams
+
+![System context: the apps, the services they call, and the outside vendors behind them](docs/diagrams/system-context.svg)
+
+The service map, event flow, data models and the rest are in [docs/diagrams](docs/diagrams/README.md), drawn from the specification.
+
 ## What it shows
 
 | Feature | Where |

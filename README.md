@@ -59,6 +59,7 @@ cruftfree-examples/
 │   ├── providers/, mocks/                 outside vendors as contracts, and their mocks
 │   ├── config/                            .ccfg profiles: test, development, production
 │   ├── seed/, assets/                     first-start data, fonts and images
+│   ├── docs/diagrams/                     system context, service map, event flow, data models, drawn from the spec
 │   └── README.md                          what it shows, the parts, things to try
 ├── <domain>-generated/                    only for helpdesk, city-services, real-estate and hotel-booking
 │   ├── docker-<language>/                 generated from the `test` profile: a local Compose stack

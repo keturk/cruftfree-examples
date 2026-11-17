@@ -26,6 +26,12 @@ An HR platform built as a complete application: a candidate applies on a public 
 | Careers site: open roles | Careers site: a role |
 <!-- screenshots:end -->
 
+## Diagrams
+
+![System context: the apps, the services they call, and the outside vendors behind them](docs/diagrams/system-context.svg)
+
+The service map, event flow, data models and the rest are in [docs/diagrams](docs/diagrams/README.md), drawn from the specification.
+
 ## What it shows
 
 | Feature | Where |

@@ -22,6 +22,12 @@ A place to post short notes and follow people, built as a complete application. 
 | Trust and safety desk: people |   |
 <!-- screenshots:end -->
 
+## Diagrams
+
+![System context: the apps, the services they call, and the outside vendors behind them](docs/diagrams/system-context.svg)
+
+The service map, event flow, data models and the rest are in [docs/diagrams](docs/diagrams/README.md), drawn from the specification.
+
 ## What it shows
 
 | Feature | Where |

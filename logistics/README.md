@@ -22,6 +22,12 @@ A parcel carrier built as a complete application: a dispatcher books a parcel, p
 | Dispatch: texts sent to recipients | Dispatch: the partner carrier hand-off |
 <!-- screenshots:end -->
 
+## Diagrams
+
+![System context: the apps, the services they call, and the outside vendors behind them](docs/diagrams/system-context.svg)
+
+The service map, event flow, data models and the rest are in [docs/diagrams](docs/diagrams/README.md), drawn from the specification.
+
 ## What it shows
 
 | Feature | Where |

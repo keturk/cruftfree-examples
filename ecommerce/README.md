@@ -42,6 +42,12 @@ Provider Desk, give that user the `admins` or `operators` group in Zitadel's con
 | Admin: the catalog | Admin: stock alerts |
 <!-- screenshots:end -->
 
+## Diagrams
+
+![System context: the apps, the services they call, and the outside vendors behind them](docs/diagrams/system-context.svg)
+
+The service map, event flow, data models and the rest are in [docs/diagrams](docs/diagrams/README.md), drawn from the specification.
+
 ## Try this
 
 1. **Look around as a visitor.** Open the Storefront. Nothing asks you to sign in until you reach the checkout.

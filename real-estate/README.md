@@ -18,6 +18,12 @@ A home-selling agency built as a complete application: anyone can search the hom
 | Agent console: offers | Agent console: the lender pre-approval vendor |
 <!-- screenshots:end -->
 
+## Diagrams
+
+![System context: the apps, the services they call, and the outside vendors behind them](docs/diagrams/system-context.svg)
+
+The service map, event flow, data models and the rest are in [docs/diagrams](docs/diagrams/README.md), drawn from the specification.
+
 ## What it shows
 
 | Feature | Where |
